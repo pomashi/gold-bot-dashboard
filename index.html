@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MT5 Gold Bot Dashboard</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">AU</div>
+          <div>
+            <span>MT5 Portfolio</span>
+            <strong>Gold Bot Dashboard</strong>
+          </div>
+        </div>
+
+        <nav class="nav-list" aria-label="Dashboard sections">
+          <a class="nav-item active" href="#overview"><span class="nav-icon">01</span>Overview</a>
+          <a class="nav-item" href="#accounts"><span class="nav-icon">02</span>Accounts</a>
+          <a class="nav-item" href="#bots"><span class="nav-icon">03</span>Bots</a>
+          <a class="nav-item" href="#connector"><span class="nav-icon">04</span>MT5 Connector</a>
+        </nav>
+
+        <div class="connection-panel">
+          <span class="status-dot"></span>
+          <div>
+            <span>Connection</span>
+            <strong id="connectionStatus">Demo data ready</strong>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Live trading control room</p>
+            <h1>สรุปพอร์ต MT5 บอททอง</h1>
+            <p class="subtitle">มอง equity แบบ USD Cent, exposure และพอร์ตเสี่ยงต่ำกว่า $1,000 equivalent ได้ในหน้าเดียว</p>
+          </div>
+          <div class="top-actions">
+            <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">R</button>
+            <button class="primary-button" id="exportBtn">Export CSV</button>
+          </div>
+        </header>
+
+        <section class="metrics-grid" id="overview" aria-label="Portfolio metrics">
+          <article class="metric">
+            <span>Total Equity</span>
+            <strong id="totalEquity">0 USC</strong>
+            <small>รวม equity ทุกพอร์ต</small>
+          </article>
+          <article class="metric">
+            <span>Total Lots</span>
+            <strong id="totalLots">0.00</strong>
+            <small>รวม lot ตาม bot allocation</small>
+          </article>
+          <article class="metric">
+            <span>Largest Account</span>
+            <strong id="largestAccount">-</strong>
+            <small id="largestAccountMeta">-</small>
+          </article>
+          <article class="metric alert">
+            <span>Watchlist</span>
+            <strong id="watchlistCount">0</strong>
+            <small>พอร์ต equity ต่ำกว่า 100,000 USC</small>
+          </article>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="panel span-7">
+            <div class="panel-header">
+              <div>
+                <h2>Equity by Account</h2>
+                <p>เทียบขนาดพอร์ตแต่ละ account จากข้อมูล demo หรือ live</p>
+              </div>
+              <div class="segmented" role="tablist" aria-label="Chart mode">
+                <button class="active" data-chart-mode="bar">Bar</button>
+                <button data-chart-mode="doughnut">Share</button>
+              </div>
+            </div>
+            <div class="chart-wrap">
+              <canvas id="accountChart" aria-label="Equity by account chart"></canvas>
+            </div>
+          </div>
+
+          <div class="panel span-5">
+            <div class="panel-header">
+              <div>
+                <h2>Bot Exposure</h2>
+                <p>รวม lot แยกตามชื่อบอท</p>
+              </div>
+            </div>
+            <div class="chart-wrap compact">
+              <canvas id="botChart" aria-label="Bot exposure chart"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-band" id="accounts">
+          <div class="section-title">
+            <div>
+              <h2>Accounts</h2>
+              <p>ตารางสแกน account, broker, equity, bots, total lot และสถานะ</p>
+            </div>
+            <label class="search-box">
+              <span>Search</span>
+              <input id="searchInput" type="search" placeholder="Account, broker, bot..." />
+            </label>
+          </div>
+          <div class="accounts-table-wrap">
+            <table class="accounts-table">
+              <thead>
+                <tr>
+                  <th>Account</th>
+                  <th>Broker</th>
+                  <th>Equity</th>
+                  <th>Bots</th>
+                  <th>Total Lot</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="accountsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dashboard-grid" id="bots">
+          <div class="panel span-8">
+            <div class="panel-header">
+              <div>
+                <h2>Bot Allocation</h2>
+                <p>ดู lot รวมของแต่ละบอทเพื่อเช็ก exposure เร็ว ๆ</p>
+              </div>
+            </div>
+            <div id="botMatrix" class="bot-matrix"></div>
+          </div>
+
+          <div class="panel span-4">
+            <div class="panel-header">
+              <div>
+                <h2>Today Account P/L & DD</h2>
+                <p>เทียบ equity ตอนนี้กับ baseline แรกของวันนี้</p>
+              </div>
+            </div>
+            <div id="accountPerformance" class="performance-list"></div>
+          </div>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="panel span-4 connector" id="connector">
+            <div class="panel-header">
+              <div>
+                <h2>MT5 Connector</h2>
+                <p>ต่อข้อมูลสดผ่าน EA + Google Apps Script</p>
+              </div>
+              <span class="connector-badge">LIVE</span>
+            </div>
+            <div class="connector-steps">
+              <div>
+                <span>1</span>
+                <p>วาง `GoldDashboardExporter.mq5` ใน `MQL5/Experts` แล้ว compile เป็น `.ex5`</p>
+              </div>
+              <div>
+                <span>2</span>
+                <p>เปิด WebRequest ใน MT5 และใส่ Apps Script Web app URL ใน `InpWebhookUrl`</p>
+              </div>
+              <div>
+                <span>3</span>
+                <p>EA จะส่ง snapshot เข้า Google Sheets แล้ว dashboard จะ fetch live data มาแทน demo</p>
+              </div>
+            </div>
+            <button class="wide-button" id="copySchemaBtn">Copy MT5 payload schema</button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./config.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
