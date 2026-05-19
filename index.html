@@ -1,10 +1,932 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MT5 Gold Bot Dashboard</title>
-    <link rel="stylesheet" href="./styles.css" />
+    <style>
+:root {
+  --bg: #f3f5f2;
+  --surface: #ffffff;
+  --surface-2: #eef2ed;
+  --ink: #141a17;
+  --muted: #66736b;
+  --line: #d9e0d9;
+  --sidebar: #111814;
+  --green: #1f7a4c;
+  --green-soft: #e4f3ea;
+  --gold: #b9892f;
+  --red: #b64a40;
+  --red-soft: #fae8e5;
+  --blue: #295c87;
+  --shadow: 0 14px 34px rgba(20, 26, 23, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: Arial, "Helvetica Neue", Tahoma, system-ui, sans-serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 270px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  padding: 24px 18px;
+  background: var(--sidebar);
+  color: #fff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+.brand-mark {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #201504;
+  font-weight: 900;
+}
+
+.brand span,
+.connection-panel span {
+  display: block;
+  color: #aeb8b1;
+  font-size: 12px;
+}
+
+.brand strong,
+.connection-panel strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+}
+
+.nav-list {
+  display: grid;
+  gap: 6px;
+}
+
+.nav-item {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: #dfe6df;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.nav-icon {
+  width: 25px;
+  color: #bdc7bf;
+  font-size: 11px;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.connection-panel {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #52d273;
+  box-shadow: 0 0 0 6px rgba(82, 210, 115, 0.16);
+}
+
+.main {
+  min-width: 0;
+  padding: 28px;
+}
+
+.topbar,
+.section-title,
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.topbar {
+  margin-bottom: 22px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 6px;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+h2 {
+  margin-bottom: 4px;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+
+.subtitle,
+.panel-header p,
+.section-title p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-button,
+.primary-button,
+.secondary-button,
+.wide-button {
+  min-height: 42px;
+  border-radius: 8px;
+  font-weight: 800;
+}
+
+.icon-button {
+  width: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+
+.primary-button,
+.wide-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  background: var(--green);
+  color: #fff;
+}
+
+.secondary-button,
+.mini-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.secondary-button {
+  padding: 0 14px;
+}
+
+.mini-button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.mini-label {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border-radius: 6px;
+  background: var(--green-soft);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.panel-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.metric,
+.panel,
+.accounts-table-wrap {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.metric {
+  padding: 18px;
+}
+
+.metric span,
+.metric small {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.metric strong {
+  display: block;
+  margin: 8px 0 5px;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.positive-text {
+  color: var(--green);
+}
+
+.negative-text {
+  color: var(--red);
+}
+
+.metric.alert {
+  background: var(--red-soft);
+  border-color: #f0c3bd;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.span-4 {
+  grid-column: span 4;
+}
+
+.span-5 {
+  grid-column: span 5;
+}
+
+.span-7 {
+  grid-column: span 7;
+}
+
+.span-8 {
+  grid-column: span 8;
+}
+
+.span-12 {
+  grid-column: 1 / -1;
+}
+
+.panel {
+  min-width: 0;
+  padding: 18px;
+}
+
+.chart-wrap {
+  height: 320px;
+  margin-top: 18px;
+}
+
+.chart-wrap canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.chart-wrap.compact {
+  height: 270px;
+}
+
+.segmented {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.segmented button {
+  min-width: 72px;
+  min-height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.segmented button.active {
+  background: #fff;
+  color: var(--ink);
+}
+
+.content-band {
+  margin: 18px 0;
+}
+
+.section-title {
+  margin-bottom: 12px;
+}
+
+.search-box {
+  min-height: 42px;
+  width: min(360px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.search-box span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.search-box input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+}
+
+.accounts-table-wrap {
+  overflow-x: auto;
+}
+
+.accounts-table {
+  width: 100%;
+  min-width: 860px;
+  border-collapse: collapse;
+}
+
+.accounts-table th,
+.accounts-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.accounts-table th {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.accounts-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.account-id {
+  font-weight: 900;
+}
+
+.account-note {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.bot-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag,
+.status-pill {
+  min-height: 26px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.tag {
+  background: var(--surface-2);
+  color: #314039;
+}
+
+.status-pill.ok {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.status-pill.watch {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.bot-matrix {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.empty-state {
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.bot-row {
+  display: grid;
+  grid-template-columns: 150px 1fr 70px;
+  align-items: center;
+  gap: 12px;
+}
+
+.bot-row strong {
+  font-size: 13px;
+}
+
+.bar-track {
+  height: 12px;
+  border-radius: 999px;
+  background: #e9eee8;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--gold));
+}
+
+.bot-row span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.performance-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.performance-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px 70px 78px;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.performance-row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.performance-row span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.performance-row .positive {
+  color: var(--green);
+}
+
+.performance-row .negative {
+  color: var(--red);
+}
+
+.performance-row.pending {
+  opacity: 0.82;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.planner-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.planner-form label {
+  display: grid;
+  gap: 6px;
+}
+
+.planner-form label span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.planner-form input,
+.planner-form select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.planner-form .planner-note,
+.planner-form button {
+  grid-column: 1 / -1;
+}
+
+.planner-list-wrap {
+  min-width: 0;
+}
+
+.planner-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.planner-summary span {
+  min-height: 44px;
+  display: grid;
+  align-content: center;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.planner-summary strong {
+  display: block;
+  color: var(--ink);
+  font-size: 18px;
+}
+
+.planner-list {
+  display: grid;
+  gap: 8px;
+  max-height: 330px;
+  overflow: auto;
+}
+
+.planner-row {
+  display: grid;
+  grid-template-columns: 120px 150px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.planner-row strong,
+.planner-row span {
+  display: block;
+}
+
+.planner-row strong {
+  font-size: 13px;
+}
+
+.planner-row span,
+.planner-row-note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.planner-row-note {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk-list,
+.health-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.risk-row,
+.health-item {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.risk-row {
+  grid-template-columns: 120px 140px 1fr;
+}
+
+.risk-row strong,
+.health-item strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.risk-row span,
+.health-item span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.risk-row div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.risk-row em {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.health-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.connector {
+  background: #18221d;
+  color: #fff;
+}
+
+.connector .panel-header p {
+  color: #b6c0b9;
+}
+
+.connector-badge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(82, 210, 115, 0.16);
+  color: #8ff0a8;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.connector-steps {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.connector-steps div {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 10px;
+}
+
+.connector-steps span {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(185, 137, 47, 0.22);
+  color: #f5c66b;
+  font-weight: 900;
+}
+
+.connector-steps p {
+  margin: 3px 0 0;
+  color: #dce4dd;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.wide-button {
+  width: 100%;
+  background: var(--gold);
+  color: #201504;
+}
+
+[data-lucide]::before {
+  content: "OK";
+  font-size: 12px;
+  font-style: normal;
+}
+
+@media (max-width: 1080px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    padding: 14px;
+  }
+
+  .nav-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .connection-panel {
+    display: none;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .span-4,
+  .span-5,
+  .span-7,
+  .span-8 {
+    grid-column: 1 / -1;
+  }
+
+  .planner-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .main {
+    padding: 18px 14px;
+  }
+
+  .topbar,
+  .section-title,
+  .panel-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .top-actions {
+    width: 100%;
+  }
+
+  .primary-button {
+    flex: 1;
+  }
+
+  .nav-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-wrap {
+    height: 260px;
+  }
+
+  .bot-row {
+    grid-template-columns: 116px 1fr 58px;
+  }
+
+  .performance-row {
+    grid-template-columns: minmax(0, 1fr) 88px 58px 68px;
+  }
+
+  .risk-row {
+    grid-template-columns: 1fr;
+  }
+
+  .risk-row div {
+    justify-content: flex-start;
+  }
+
+  .planner-form,
+  .planner-summary,
+  .planner-row {
+    grid-template-columns: 1fr;
+  }
+
+  .planner-row-note {
+    white-space: normal;
+  }
+}
+
+    </style>
   </head>
   <body>
     <div class="app-shell">
@@ -21,7 +943,8 @@
           <a class="nav-item active" href="#overview"><span class="nav-icon">01</span>Overview</a>
           <a class="nav-item" href="#accounts"><span class="nav-icon">02</span>Accounts</a>
           <a class="nav-item" href="#bots"><span class="nav-icon">03</span>Bots</a>
-          <a class="nav-item" href="#connector"><span class="nav-icon">04</span>MT5 Connector</a>
+          <a class="nav-item" href="#bot-planner"><span class="nav-icon">04</span>Bot Planner</a>
+          <a class="nav-item" href="#connector"><span class="nav-icon">05</span>MT5 Connector</a>
         </nav>
 
         <div class="connection-panel">
@@ -37,8 +960,8 @@
         <header class="topbar">
           <div>
             <p class="eyebrow">Live trading control room</p>
-            <h1>สรุปพอร์ต MT5 บอททอง</h1>
-            <p class="subtitle">มอง equity แบบ USD Cent, exposure และพอร์ตเสี่ยงต่ำกว่า $1,000 equivalent ได้ในหน้าเดียว</p>
+            <h1>MT5 Gold Bot Portfolio</h1>
+            <p class="subtitle">Track balance, equity gap, bot exposure, and low-balance accounts in one scan-friendly view.</p>
           </div>
           <div class="top-actions">
             <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">R</button>
@@ -48,14 +971,14 @@
 
         <section class="metrics-grid" id="overview" aria-label="Portfolio metrics">
           <article class="metric">
-            <span>Total Equity</span>
+            <span>Total Balance</span>
             <strong id="totalEquity">0 USC</strong>
-            <small>รวม equity ทุกพอร์ต</small>
+            <small>Total realized balance across all accounts</small>
           </article>
           <article class="metric">
             <span>Total Lots</span>
             <strong id="totalLots">0.00</strong>
-            <small>รวม lot ตาม bot allocation</small>
+            <small>Total lot from bot allocation</small>
           </article>
           <article class="metric">
             <span>Largest Account</span>
@@ -65,7 +988,17 @@
           <article class="metric alert">
             <span>Watchlist</span>
             <strong id="watchlistCount">0</strong>
-            <small>พอร์ต equity ต่ำกว่า 100,000 USC</small>
+            <small>Accounts below 100,000 USC balance</small>
+          </article>
+          <article class="metric">
+            <span>Equity Gap</span>
+            <strong id="floatingPlTotal">0 USC</strong>
+            <small>Equity minus balance for floating DD</small>
+          </article>
+          <article class="metric">
+            <span>Open Lots</span>
+            <strong id="openLotsTotal">0.00</strong>
+            <small>Open lots from live positions</small>
           </article>
         </section>
 
@@ -73,8 +1006,8 @@
           <div class="panel span-7">
             <div class="panel-header">
               <div>
-                <h2>Equity by Account</h2>
-                <p>เทียบขนาดพอร์ตแต่ละ account จากข้อมูล demo หรือ live</p>
+                <h2>Balance by Account</h2>
+                <p>Compare accounts by balance, so realized profit is not distorted by floating DD.</p>
               </div>
               <div class="segmented" role="tablist" aria-label="Chart mode">
                 <button class="active" data-chart-mode="bar">Bar</button>
@@ -82,7 +1015,7 @@
               </div>
             </div>
             <div class="chart-wrap">
-              <canvas id="accountChart" aria-label="Equity by account chart"></canvas>
+              <canvas id="accountChart" aria-label="Balance by account chart"></canvas>
             </div>
           </div>
 
@@ -90,7 +1023,7 @@
             <div class="panel-header">
               <div>
                 <h2>Bot Exposure</h2>
-                <p>รวม lot แยกตามชื่อบอท</p>
+                <p>Total lot grouped by bot name</p>
               </div>
             </div>
             <div class="chart-wrap compact">
@@ -103,7 +1036,7 @@
           <div class="section-title">
             <div>
               <h2>Accounts</h2>
-              <p>ตารางสแกน account, broker, equity, bots, total lot และสถานะ</p>
+              <p>Scan account, broker, balance, equity, bots, total lot, and status.</p>
             </div>
             <label class="search-box">
               <span>Search</span>
@@ -116,7 +1049,7 @@
                 <tr>
                   <th>Account</th>
                   <th>Broker</th>
-                  <th>Equity</th>
+                  <th>Balance / Equity</th>
                   <th>Bots</th>
                   <th>Total Lot</th>
                   <th>Status</th>
@@ -127,12 +1060,34 @@
           </div>
         </section>
 
+        <section class="dashboard-grid">
+          <div class="panel span-8">
+            <div class="panel-header">
+              <div>
+                <h2>Risk Focus</h2>
+                <p>Accounts to check first, based on low balance, equity gap, DD, and stale data.</p>
+              </div>
+            </div>
+            <div id="riskFocus" class="risk-list"></div>
+          </div>
+
+          <div class="panel span-4">
+            <div class="panel-header">
+              <div>
+                <h2>Live Health</h2>
+                <p>Freshness of the latest MT5 terminal updates</p>
+              </div>
+            </div>
+            <div id="liveHealth" class="health-list"></div>
+          </div>
+        </section>
+
         <section class="dashboard-grid" id="bots">
           <div class="panel span-8">
             <div class="panel-header">
               <div>
                 <h2>Bot Allocation</h2>
-                <p>ดู lot รวมของแต่ละบอทเพื่อเช็ก exposure เร็ว ๆ</p>
+                <p>Review total lot by bot for quick exposure checks.</p>
               </div>
             </div>
             <div id="botMatrix" class="bot-matrix"></div>
@@ -141,11 +1096,57 @@
           <div class="panel span-4">
             <div class="panel-header">
               <div>
-                <h2>Today Account P/L & DD</h2>
-                <p>เทียบ equity ตอนนี้กับ baseline แรกของวันนี้</p>
+                <h2>Today Balance P/L & DD</h2>
+                <p>Profit uses balance versus the first daily baseline; DD uses equity gap.</p>
               </div>
             </div>
             <div id="accountPerformance" class="performance-list"></div>
+          </div>
+        </section>
+
+        <section class="dashboard-grid" id="bot-planner">
+          <div class="panel span-12">
+            <div class="panel-header">
+              <div>
+                <h2>Bot Lot Planner</h2>
+                <p>Log planned bot lot changes and apply them to dashboard exposure when the time arrives.</p>
+              </div>
+              <div class="panel-actions">
+                <button class="secondary-button" id="openBotDocBtn">Open doc</button>
+                <button class="secondary-button" id="exportPlannerBtn">Export log</button>
+              </div>
+            </div>
+
+            <div class="planner-grid">
+              <form id="botPlannerForm" class="planner-form">
+                <label>
+                  <span>Account</span>
+                  <select id="plannerAccount"></select>
+                </label>
+                <label>
+                  <span>Bot</span>
+                  <select id="plannerBot"></select>
+                </label>
+                <label>
+                  <span>New lot</span>
+                  <input id="plannerLot" type="number" min="0" step="0.01" placeholder="0.03" />
+                </label>
+                <label>
+                  <span>Effective time</span>
+                  <input id="plannerEffectiveAt" type="datetime-local" />
+                </label>
+                <label class="planner-note">
+                  <span>Note</span>
+                  <input id="plannerNote" type="text" placeholder="Example: raise Smart Gold next week" />
+                </label>
+                <button class="primary-button" type="submit">Save lot change</button>
+              </form>
+
+              <div class="planner-list-wrap">
+                <div class="planner-summary" id="plannerSummary"></div>
+                <div id="botPlannerList" class="planner-list"></div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -154,22 +1155,22 @@
             <div class="panel-header">
               <div>
                 <h2>MT5 Connector</h2>
-                <p>ต่อข้อมูลสดผ่าน EA + Google Apps Script</p>
+                <p>Connect live data through the EA and Google Apps Script</p>
               </div>
               <span class="connector-badge">LIVE</span>
             </div>
             <div class="connector-steps">
               <div>
                 <span>1</span>
-                <p>วาง `GoldDashboardExporter.mq5` ใน `MQL5/Experts` แล้ว compile เป็น `.ex5`</p>
+                <p>Put `GoldDashboardExporter.mq5` in `MQL5/Experts`, then compile it into `.ex5`.</p>
               </div>
               <div>
                 <span>2</span>
-                <p>เปิด WebRequest ใน MT5 และใส่ Apps Script Web app URL ใน `InpWebhookUrl`</p>
+                <p>Enable WebRequest in MT5 and paste the Apps Script Web app URL into `InpWebhookUrl`.</p>
               </div>
               <div>
                 <span>3</span>
-                <p>EA จะส่ง snapshot เข้า Google Sheets แล้ว dashboard จะ fetch live data มาแทน demo</p>
+                <p>The EA sends snapshots into Google Sheets, then the dashboard fetches live data instead of demo data.</p>
               </div>
             </div>
             <button class="wide-button" id="copySchemaBtn">Copy MT5 payload schema</button>
@@ -178,7 +1179,981 @@
       </main>
     </div>
 
-    <script src="./config.js"></script>
-    <script src="./app.js"></script>
+    <script>
+window.GOLD_DASHBOARD_CONFIG = {
+  // Paste the deployed Google Apps Script Web app URL here.
+  liveDataUrl: "https://script.google.com/macros/s/AKfycbz9T90SGrGyRGb8aKpdEatDRSVj9xsr8ev4KuRDNs97N9f5JlE6bwkNRmgyLBI-JN8/exec",
+  botConfigDocUrl: "https://docs.google.com/spreadsheets/d/1x15ioO3qHqyF_hfj2UFpHNA0T2HYfWob25ESjjiqzpc",
+  plannerWriteKey: "",
+};
+
+let accounts = [
+  {
+    id: "201101469",
+    equity: 9432,
+    broker: "MH",
+    bots: [
+      { name: "Gold Sniper", lot: 0.1 },
+      { name: "Smart Gold", lot: 0.1 },
+      { name: "Gold Slayer", lot: 0.03 },
+      { name: "Gold Devil", lot: 0.02 },
+    ],
+  },
+  {
+    id: "201101470",
+    equity: 10152,
+    broker: "MH",
+    bots: [
+      { name: "Smart Gold", lot: 0.1 },
+      { name: "Gold Devil", lot: 0.06 },
+      { name: "Gold Slayer", lot: 0.03 },
+      { name: "Gold Sniper", lot: 0.09 },
+    ],
+  },
+  {
+    id: "24892586",
+    equity: 3429,
+    broker: "VT",
+    bots: [
+      { name: "Grandma Gold", lot: 0.07 },
+      { name: "Gold Devil", lot: 0.02 },
+      { name: "Gold Slayer", lot: 0.01 },
+    ],
+  },
+  {
+    id: "201100915",
+    equity: 17083,
+    broker: "MH",
+    bots: [
+      { name: "Smart Gold", lot: 0.2 },
+      { name: "Gold Slayer", lot: 0.05 },
+      { name: "Gold Sniper", lot: 0.19 },
+      { name: "Gold Devil", lot: 0.07 },
+    ],
+  },
+  {
+    id: "201100978",
+    equity: 660,
+    broker: "MH",
+    note: "Wave",
+    bots: [{ name: "Smart Gold", lot: 0.02 }],
+  },
+  {
+    id: "201101468",
+    equity: 439,
+    broker: "MH",
+    bots: [{ name: "Prince of Persia", lot: 0.01 }],
+  },
+  {
+    id: "201100977",
+    equity: 2596,
+    broker: "MH",
+    bots: [
+      { name: "John Wick", lot: 0.04 },
+      { name: "Gold Slayer", lot: 0.02 },
+    ],
+  },
+  {
+    id: "7012808",
+    equity: 100,
+    broker: "MH",
+    bots: [
+      { name: "Gold Devil", lot: 0.01 },
+      { name: "Gold Sniper", lot: 0.03 },
+    ],
+  },
+];
+
+const configuredBotsByAccount = new Map(
+  accounts.map((account) => [account.id, account.bots.map((bot) => ({ ...bot }))]),
+);
+
+const moneyFormat = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
+const ACCOUNT_UNIT = "USC";
+const WATCHLIST_USC = 100000;
+const STALE_AFTER_MINUTES = 10;
+const BOT_PLANNER_STORAGE_KEY = "gold-dashboard-bot-lot-planner-v1";
+
+function formatMoney(value) {
+  return `${moneyFormat.format(Number(value || 0))} ${ACCOUNT_UNIT}`;
+}
+
+function formatSignedMoney(value) {
+  const number = Number(value || 0);
+  const sign = number > 0 ? "+" : "";
+  return `${sign}${formatMoney(number)}`;
+}
+
+function parseTimestamp(value) {
+  if (!value) return null;
+  const normalized = String(value).replace(/^(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3");
+  const parsed = new Date(normalized);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function minutesSince(value) {
+  const parsed = parseTimestamp(value);
+  if (!parsed) return Number.POSITIVE_INFINITY;
+  return Math.max(0, (Date.now() - parsed.getTime()) / 60000);
+}
+
+function formatAge(value) {
+  const minutes = minutesSince(value);
+  if (!Number.isFinite(minutes)) return "unknown";
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${Math.round(minutes)}m ago`;
+  return `${Math.round(minutes / 60)}h ago`;
+}
+
+function formatLocalDateTime(value) {
+  const parsed = parseTimestamp(value);
+  if (!parsed) return "-";
+  return parsed.toLocaleString("th-TH", {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function parseArray(value, fallback = []) {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string" || !value.trim()) return fallback;
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+const lotFormat = new Intl.NumberFormat("en-US", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+let accountChart;
+let botChart;
+let chartMode = "bar";
+let botPlannerEntries = loadBotPlannerEntries();
+const chartColors = ["#1f7a4c", "#bd8b2f", "#275a8d", "#b94d43", "#5b8e7d", "#9c6b2e", "#496f9d", "#7a8a42"];
+
+function accountLotTotal(account) {
+  return account.bots.reduce((sum, bot) => sum + bot.lot, 0);
+}
+
+function accountBalance(account) {
+  return Number(account.balance || account.equity || 0);
+}
+
+function accountEquity(account) {
+  return Number(account.equity || account.balance || 0);
+}
+
+function currentDrawdownPct(account) {
+  const balance = accountBalance(account);
+  const equity = accountEquity(account);
+  return balance > 0 ? Math.max(0, ((balance - equity) / balance) * 100) : 0;
+}
+
+function loadBotPlannerEntries() {
+  try {
+    const raw = window.localStorage?.getItem(BOT_PLANNER_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((entry) => entry.account && entry.bot) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveBotPlannerEntries() {
+  try {
+    window.localStorage?.setItem(BOT_PLANNER_STORAGE_KEY, JSON.stringify(botPlannerEntries));
+  } catch {
+    console.warn("Could not save bot planner entries");
+  }
+}
+
+function normalizeBotPlannerEntry(entry) {
+  if (!entry) return null;
+  const account = String(entry.account || "");
+  const bot = String(entry.bot || "");
+  if (!account || !bot) return null;
+  return {
+    id: String(entry.id || `${account}-${bot}-${entry.effectiveAt || entry.effective_at || Date.now()}`),
+    account,
+    bot,
+    oldLot: Number(entry.oldLot ?? entry.old_lot ?? 0),
+    newLot: Number(entry.newLot ?? entry.new_lot ?? 0),
+    effectiveAt: entry.effectiveAt || entry.effective_at || new Date().toISOString(),
+    note: String(entry.note || ""),
+    createdAt: entry.createdAt || entry.created_at || new Date().toISOString(),
+    source: entry.source || "local",
+  };
+}
+
+function mergeBotPlannerEntries(primary, secondary) {
+  const byId = new Map();
+  [...primary, ...secondary].forEach((entry) => {
+    const normalized = normalizeBotPlannerEntry(entry);
+    if (normalized) byId.set(normalized.id, normalized);
+  });
+  return [...byId.values()];
+}
+
+async function syncBotPlannerEntry(entry) {
+  const liveDataUrl = window.GOLD_DASHBOARD_CONFIG?.liveDataUrl;
+  const plannerWriteKey = window.GOLD_DASHBOARD_CONFIG?.plannerWriteKey;
+  if (!liveDataUrl || !plannerWriteKey) return false;
+
+  const response = await fetch(liveDataUrl, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      type: "bot_planner",
+      planner_key: plannerWriteKey,
+      id: entry.id,
+      account: entry.account,
+      bot: entry.bot,
+      old_lot: entry.oldLot,
+      new_lot: entry.newLot,
+      effective_at: entry.effectiveAt,
+      note: entry.note,
+      created_at: entry.createdAt,
+    }),
+  });
+
+  if (!response.ok) throw new Error(`Planner HTTP ${response.status}`);
+  const payload = await response.json();
+  return Boolean(payload.ok);
+}
+
+function effectiveBotPlannerEntries(now = new Date()) {
+  return botPlannerEntries.filter((entry) => {
+    const effectiveAt = parseTimestamp(entry.effectiveAt);
+    return effectiveAt && effectiveAt <= now;
+  });
+}
+
+function applyBotPlannerEntries() {
+  const latestByBot = new Map();
+
+  effectiveBotPlannerEntries().forEach((entry) => {
+    const key = `${entry.account}::${entry.bot}`;
+    const current = latestByBot.get(key);
+    if (!current || parseTimestamp(entry.effectiveAt) >= parseTimestamp(current.effectiveAt)) {
+      latestByBot.set(key, entry);
+    }
+  });
+
+  accounts = accounts.map((account) => ({
+    ...account,
+    bots: account.bots.map((bot) => {
+      const entry = latestByBot.get(`${account.id}::${bot.name}`);
+      return entry ? { ...bot, lot: Number(entry.newLot || bot.lot) } : bot;
+    }),
+  }));
+}
+
+function botTotals() {
+  return accounts
+    .flatMap((account) => account.bots)
+    .reduce((map, bot) => {
+      map[bot.name] = (map[bot.name] || 0) + bot.lot;
+      return map;
+    }, {});
+}
+
+function accountPerformanceRows() {
+  return accounts
+    .map((account) => ({
+      id: account.id,
+      broker: account.broker,
+      balance: accountBalance(account),
+      equity: accountEquity(account),
+      baselineBalance: account.baselineBalance || account.baselineEquity,
+      dailyProfit: account.dailyProfit,
+      dailyProfitPct: account.dailyProfitPct,
+      dailyDrawdownPct: Number.isFinite(account.dailyDrawdownPct)
+        ? account.dailyDrawdownPct
+        : currentDrawdownPct(account),
+      hasMetric: Number.isFinite(account.dailyProfitPct),
+    }))
+    .sort((a, b) => (b.dailyProfitPct || -999) - (a.dailyProfitPct || -999));
+}
+
+function setMetrics() {
+  const totalBalance = accounts.reduce((sum, account) => sum + accountBalance(account), 0);
+  const totalEquity = accounts.reduce((sum, account) => sum + accountEquity(account), 0);
+  const totalLots = accounts.reduce((sum, account) => sum + accountLotTotal(account), 0);
+  const totalOpenLots = accounts.reduce((sum, account) => sum + account.openLots, 0);
+  const largest = [...accounts].sort((a, b) => accountBalance(b) - accountBalance(a))[0];
+  const watchlist = accounts.filter((account) => accountBalance(account) < WATCHLIST_USC).length;
+
+  document.getElementById("totalEquity").textContent = formatMoney(totalBalance);
+  document.getElementById("totalLots").textContent = lotFormat.format(totalLots);
+  document.getElementById("largestAccount").textContent = largest.id;
+  document.getElementById("largestAccountMeta").textContent =
+    `${largest.broker} - Balance ${formatMoney(accountBalance(largest))}`;
+  document.getElementById("watchlistCount").textContent = String(watchlist);
+  const equityGap = totalEquity - totalBalance;
+  document.getElementById("floatingPlTotal").textContent = `${formatSignedMoney(equityGap)} equity gap`;
+  document.getElementById("floatingPlTotal").classList.toggle("negative-text", equityGap < 0);
+  document.getElementById("floatingPlTotal").classList.toggle("positive-text", equityGap > 0);
+  document.getElementById("openLotsTotal").textContent = lotFormat.format(totalOpenLots);
+}
+
+function drawAccountChart() {
+  const canvas = document.getElementById("accountChart");
+  prepareCanvas(canvas);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (chartMode === "doughnut") {
+  drawDoughnutChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => account.id));
+    return;
+  }
+
+  drawBarChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => account.id));
+}
+
+function drawBotChart() {
+  const totals = botTotals();
+  const labels = Object.keys(totals);
+  const canvas = document.getElementById("botChart");
+  prepareCanvas(canvas);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawDoughnutChart(ctx, canvas, labels.map((label) => totals[label]), labels, true);
+}
+
+function prepareCanvas(canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const scale = window.devicePixelRatio || 1;
+  canvas.width = Math.floor(rect.width * scale);
+  canvas.height = Math.floor(rect.height * scale);
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  canvas.widthCss = rect.width;
+  canvas.heightCss = rect.height;
+}
+
+function drawBarChart(ctx, canvas, values, labels) {
+  const width = canvas.widthCss;
+  const height = canvas.heightCss;
+  const padding = { top: 20, right: 18, bottom: 82, left: 60 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  const max = Math.max(...values, 1) * 1.12;
+  const barGap = 10;
+  const barWidth = Math.max(18, (chartWidth - barGap * (values.length - 1)) / values.length);
+
+  ctx.strokeStyle = "#dfe4dc";
+  ctx.lineWidth = 1;
+  ctx.fillStyle = "#647067";
+  ctx.font = "12px Arial";
+  ctx.textAlign = "right";
+
+  for (let i = 0; i <= 4; i += 1) {
+    const y = padding.top + chartHeight * (i / 4);
+    const value = max - max * (i / 4);
+    ctx.beginPath();
+    ctx.moveTo(padding.left, y);
+    ctx.lineTo(width - padding.right, y);
+    ctx.stroke();
+    ctx.fillText(`${Math.round(value / 1000)}k`, padding.left - 8, y + 4);
+  }
+
+  values.forEach((value, index) => {
+    const x = padding.left + index * (barWidth + barGap);
+    const barHeight = (value / max) * chartHeight;
+    const y = padding.top + chartHeight - barHeight;
+    roundRect(ctx, x, y, barWidth, barHeight, 6, "#1f7a4c");
+
+    ctx.fillStyle = "#17201b";
+    ctx.textAlign = "center";
+    ctx.font = "800 11px Arial";
+    if (barHeight > 22) ctx.fillText(`${Math.round(value / 1000)}k`, x + barWidth / 2, Math.max(14, y - 7));
+
+    ctx.save();
+    ctx.translate(x + barWidth / 2, height - 38);
+    ctx.rotate(-0.28);
+    ctx.fillStyle = "#17201b";
+    ctx.textAlign = "right";
+    ctx.font = "12px Arial";
+    ctx.fillText(labels[index], 0, 0);
+    ctx.restore();
+  });
+}
+
+function drawDoughnutChart(ctx, canvas, values, labels, isLotChart = false) {
+  const width = canvas.widthCss;
+  const height = canvas.heightCss;
+  const radius = Math.min(width, height) * 0.28;
+  const centerX = width * 0.38;
+  const centerY = height * 0.45;
+  const total = values.reduce((sum, value) => sum + value, 0);
+  if (total <= 0) {
+    ctx.fillStyle = "#647067";
+    ctx.textAlign = "center";
+    ctx.font = "14px Arial";
+    ctx.fillText("No data", width / 2, height / 2);
+    return;
+  }
+  let start = -Math.PI / 2;
+
+  values.forEach((value, index) => {
+    const angle = (value / total) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, start, start + angle);
+    ctx.arc(centerX, centerY, radius * 0.58, start + angle, start, true);
+    ctx.closePath();
+    ctx.fillStyle = chartColors[index % chartColors.length];
+    ctx.fill();
+    start += angle;
+  });
+
+  ctx.fillStyle = "#17201b";
+  ctx.textAlign = "center";
+  ctx.font = "800 18px Arial";
+  ctx.fillText(isLotChart ? lotFormat.format(total) : formatMoney(total), centerX, centerY + 4);
+  ctx.font = "12px Arial";
+  ctx.fillStyle = "#647067";
+  ctx.fillText(isLotChart ? "total lot" : "total equity", centerX, centerY + 24);
+
+  const legendX = width * 0.68;
+  const firstY = Math.max(26, centerY - labels.length * 12);
+  labels.forEach((label, index) => {
+    const y = firstY + index * 24;
+    ctx.fillStyle = chartColors[index % chartColors.length];
+    ctx.fillRect(legendX, y - 9, 10, 10);
+    ctx.fillStyle = "#17201b";
+    ctx.textAlign = "left";
+    ctx.font = "12px Arial";
+    const value = isLotChart ? lotFormat.format(values[index]) : formatMoney(values[index]);
+    ctx.fillText(`${label} - ${value}`, legendX + 16, y);
+  });
+}
+
+function roundRect(ctx, x, y, width, height, radius, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function renderAccounts(filter = "") {
+  const normalized = filter.trim().toLowerCase();
+  const rows = accounts.filter((account) => {
+    const haystack = `${account.id} ${account.broker} ${account.note || ""} ${account.bots.map((bot) => bot.name).join(" ")}`;
+    return haystack.toLowerCase().includes(normalized);
+  });
+
+  document.getElementById("accountsBody").innerHTML = rows
+    .map((account) => {
+      const balance = accountBalance(account);
+      const equity = accountEquity(account);
+      const ddPct = currentDrawdownPct(account);
+      const isWatch = balance < WATCHLIST_USC;
+      const tags = account.bots
+        .map((bot) => `<span class="tag">${bot.name} ${lotFormat.format(bot.lot)}</span>`)
+        .join("");
+
+      return `
+        <tr>
+          <td>
+            <span class="account-id">${account.id}</span>
+            ${account.note ? `<span class="account-note">${account.note}</span>` : ""}
+          </td>
+          <td>${account.broker}</td>
+          <td>
+            <strong>${formatMoney(balance)}</strong>
+            <span class="account-note">Equity ${formatMoney(equity)}${ddPct > 0 ? ` - DD ${ddPct.toFixed(2)}%` : ""}</span>
+          </td>
+          <td><div class="bot-tags">${tags}</div></td>
+          <td>${lotFormat.format(accountLotTotal(account))}</td>
+          <td><span class="status-pill ${isWatch ? "watch" : "ok"}">${isWatch ? "Watch" : "OK"}</span></td>
+        </tr>
+      `;
+    })
+    .join("");
+}
+
+function renderBotMatrix() {
+  const totals = botTotals();
+  const maxLot = Math.max(...Object.values(totals));
+
+  if (!Number.isFinite(maxLot) || maxLot <= 0) {
+    document.getElementById("botMatrix").innerHTML = '<div class="empty-state">No bot exposure data</div>';
+    return;
+  }
+
+  document.getElementById("botMatrix").innerHTML = Object.entries(totals)
+    .sort((a, b) => b[1] - a[1])
+    .map(([bot, lot]) => {
+      const width = Math.max(4, (lot / maxLot) * 100);
+      return `
+        <div class="bot-row">
+          <strong>${bot}</strong>
+          <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+          <span>${lotFormat.format(lot)}</span>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function setDefaultPlannerTime() {
+  const input = document.getElementById("plannerEffectiveAt");
+  if (!input || input.value) return;
+  const nextHour = new Date(Date.now() + 60 * 60 * 1000);
+  nextHour.setMinutes(0, 0, 0);
+  input.value = new Date(nextHour.getTime() - nextHour.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
+function populatePlannerAccounts() {
+  const select = document.getElementById("plannerAccount");
+  if (!select) return;
+
+  const current = select.value;
+  select.innerHTML = accounts
+    .map((account) => `<option value="${account.id}">${account.id} (${account.broker})</option>`)
+    .join("");
+
+  if (current && accounts.some((account) => account.id === current)) {
+    select.value = current;
+  }
+
+  populatePlannerBots();
+  setDefaultPlannerTime();
+}
+
+function populatePlannerBots() {
+  const accountSelect = document.getElementById("plannerAccount");
+  const botSelect = document.getElementById("plannerBot");
+  if (!accountSelect || !botSelect) return;
+
+  const account = accounts.find((item) => item.id === accountSelect.value) || accounts[0];
+  const current = botSelect.value;
+  botSelect.innerHTML = (account?.bots || [])
+    .map((bot) => `<option value="${bot.name}">${bot.name} (${lotFormat.format(bot.lot)})</option>`)
+    .join("");
+
+  if (current && account?.bots.some((bot) => bot.name === current)) {
+    botSelect.value = current;
+  }
+
+  fillPlannerCurrentLot();
+}
+
+function fillPlannerCurrentLot() {
+  const accountId = document.getElementById("plannerAccount")?.value;
+  const botName = document.getElementById("plannerBot")?.value;
+  const lotInput = document.getElementById("plannerLot");
+  if (!accountId || !botName || !lotInput) return;
+
+  const bot = accounts.find((account) => account.id === accountId)?.bots.find((item) => item.name === botName);
+  if (bot && !lotInput.value) lotInput.value = lotFormat.format(bot.lot);
+}
+
+async function addBotPlannerEntry(event) {
+  event.preventDefault();
+
+  const account = document.getElementById("plannerAccount")?.value;
+  const bot = document.getElementById("plannerBot")?.value;
+  const newLot = Number(document.getElementById("plannerLot")?.value || Number.NaN);
+  const effectiveAt = document.getElementById("plannerEffectiveAt")?.value;
+  const note = document.getElementById("plannerNote")?.value.trim() || "";
+  const currentLot = accounts.find((item) => item.id === account)?.bots.find((item) => item.name === bot)?.lot ?? 0;
+
+  if (!account || !bot || !Number.isFinite(newLot) || newLot < 0 || !effectiveAt) {
+    document.getElementById("plannerSummary").textContent = "Fill account, bot, lot, and time first.";
+    return;
+  }
+
+  const entry = {
+    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+    account,
+    bot,
+    oldLot: Number(currentLot),
+    newLot,
+    effectiveAt: new Date(effectiveAt).toISOString(),
+    note,
+    createdAt: new Date().toISOString(),
+  };
+
+  let synced = false;
+  try {
+    synced = await syncBotPlannerEntry(entry);
+  } catch (error) {
+    console.warn("Could not sync planner entry", error);
+  }
+
+  botPlannerEntries.unshift({ ...entry, source: synced ? "sheet" : "local" });
+
+  saveBotPlannerEntries();
+  document.getElementById("plannerLot").value = "";
+  document.getElementById("plannerNote").value = "";
+  refreshDashboard();
+}
+
+function removeBotPlannerEntry(id) {
+  botPlannerEntries = botPlannerEntries.filter((entry) => entry.id !== id);
+  saveBotPlannerEntries();
+  refreshDashboard();
+}
+
+function renderBotPlanner() {
+  const list = document.getElementById("botPlannerList");
+  const summary = document.getElementById("plannerSummary");
+  if (!list || !summary) return;
+
+  const now = new Date();
+  const active = effectiveBotPlannerEntries(now).length;
+  const planned = botPlannerEntries.length - active;
+  summary.innerHTML = `
+    <span><strong>${active}</strong> active changes</span>
+    <span><strong>${planned}</strong> scheduled</span>
+    <span><strong>${botPlannerEntries.length}</strong> total logs</span>
+  `;
+
+  if (!botPlannerEntries.length) {
+    list.innerHTML = '<div class="empty-state">No bot lot change logs yet</div>';
+    return;
+  }
+
+  list.innerHTML = botPlannerEntries
+    .slice()
+    .sort((a, b) => parseTimestamp(b.effectiveAt) - parseTimestamp(a.effectiveAt))
+    .map((entry) => {
+      const isActive = parseTimestamp(entry.effectiveAt) <= now;
+      return `
+        <div class="planner-row">
+          <div>
+            <strong>${entry.account}</strong>
+            <span>${entry.bot}</span>
+          </div>
+          <div>
+            <strong>${lotFormat.format(entry.oldLot)} -> ${lotFormat.format(entry.newLot)}</strong>
+            <span>${formatLocalDateTime(entry.effectiveAt)} - ${isActive ? "active" : "scheduled"} - ${entry.source || "local"}</span>
+          </div>
+          <div class="planner-row-note">${entry.note || "-"}</div>
+          ${
+            entry.source === "sheet"
+              ? '<span class="mini-label">Sheet</span>'
+              : `<button type="button" class="mini-button" data-delete-planner="${entry.id}">Delete</button>`
+          }
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function exportPlannerLog() {
+  const header = ["account", "bot", "old_lot", "new_lot", "effective_at", "status", "note", "created_at"];
+  const now = new Date();
+  const rows = botPlannerEntries.map((entry) => [
+    entry.account,
+    entry.bot,
+    entry.oldLot,
+    entry.newLot,
+    entry.effectiveAt,
+    parseTimestamp(entry.effectiveAt) <= now ? "active" : "scheduled",
+    entry.note || "",
+    entry.createdAt,
+  ]);
+  const csv = [header, ...rows]
+    .map((row) => row.map((value) => `"${String(value ?? "").replaceAll('"', '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "mt5-gold-bot-lot-planner.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function openBotConfigDoc() {
+  const url = window.GOLD_DASHBOARD_CONFIG?.botConfigDocUrl || "./docs/CONNECT_MT5_AND_HOST_FREE.md";
+  window.open(url, "_blank", "noopener");
+}
+
+function renderAccountPerformance() {
+  const rows = accountPerformanceRows();
+  const target = document.getElementById("accountPerformance");
+
+  if (!target) return;
+
+  if (!rows.length) {
+    target.innerHTML = '<div class="empty-state">No account data</div>';
+    return;
+  }
+
+  target.innerHTML = rows
+    .map((row) => {
+      const isReady = row.hasMetric;
+      const profitClass = isReady && row.dailyProfitPct >= 0 ? "positive" : "negative";
+      return `
+        <div class="performance-row ${isReady ? "" : "pending"}">
+          <strong>${row.id}</strong>
+          <span class="${profitClass}">${isReady ? formatSignedMoney(row.dailyProfit) : "Need history"}</span>
+          <span class="${profitClass}">${isReady ? `${row.dailyProfitPct.toFixed(2)}%` : "-"}</span>
+          <span>${isReady ? `${row.dailyDrawdownPct.toFixed(2)}% DD` : "Need baseline"}</span>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function riskRows() {
+  return accounts
+    .map((account) => {
+      const stale = minutesSince(account.receivedAt) > STALE_AFTER_MINUTES;
+      const balance = accountBalance(account);
+      const equity = accountEquity(account);
+      const drawdown = Number.isFinite(account.dailyDrawdownPct) ? account.dailyDrawdownPct : currentDrawdownPct(account);
+      const floatingRisk = equity < balance ? ((balance - equity) / Math.max(balance, 1)) * 100 : 0;
+      const lowEquity = balance < WATCHLIST_USC ? 100 : 0;
+      const score = drawdown * 2 + floatingRisk + lowEquity + (stale ? 50 : 0);
+      return { ...account, balance, equity, stale, drawdown, floatingRisk, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+}
+
+function renderRiskFocus() {
+  const target = document.getElementById("riskFocus");
+  if (!target) return;
+
+  const rows = riskRows();
+  if (!rows.length) {
+    target.innerHTML = '<div class="empty-state">No risk data</div>';
+    return;
+  }
+
+  target.innerHTML = rows
+    .map((account) => {
+      const flags = [];
+      if (account.balance < WATCHLIST_USC) flags.push("Low balance");
+      if (account.equity < account.balance) flags.push(`Equity gap ${formatSignedMoney(account.equity - account.balance)}`);
+      if (account.drawdown > 0) flags.push(`DD ${account.drawdown.toFixed(2)}%`);
+      if (account.stale) flags.push("Stale");
+      if (!flags.length) flags.push("OK");
+
+      return `
+        <div class="risk-row">
+          <strong>${account.id}</strong>
+          <span>${formatMoney(account.balance)}</span>
+          <div>${flags.map((flag) => `<em>${flag}</em>`).join("")}</div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function renderLiveHealth() {
+  const target = document.getElementById("liveHealth");
+  if (!target) return;
+
+  const staleCount = accounts.filter((account) => minutesSince(account.receivedAt) > STALE_AFTER_MINUTES).length;
+  const newest = [...accounts].sort((a, b) => minutesSince(a.receivedAt) - minutesSince(b.receivedAt))[0];
+  const oldest = [...accounts].sort((a, b) => minutesSince(b.receivedAt) - minutesSince(a.receivedAt))[0];
+
+  target.innerHTML = `
+    <div class="health-item"><span>Accounts Online</span><strong>${accounts.length}/8</strong></div>
+    <div class="health-item"><span>Stale Accounts</span><strong>${staleCount}</strong></div>
+    <div class="health-item"><span>Newest Update</span><strong>${newest ? `${newest.id} - ${formatAge(newest.receivedAt)}` : "-"}</strong></div>
+    <div class="health-item"><span>Oldest Update</span><strong>${oldest ? `${oldest.id} - ${formatAge(oldest.receivedAt)}` : "-"}</strong></div>
+  `;
+}
+
+function exportCsv() {
+  const header = ["account", "broker", "equity_usc", "note", "bot", "lot"];
+  const rows = accounts.flatMap((account) =>
+    account.bots.map((bot) => [account.id, account.broker, account.equity, account.note || "", bot.name, bot.lot]),
+  );
+  const csv = [header, ...rows]
+    .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "mt5-gold-bot-dashboard.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+async function copySchema() {
+  const schema = {
+    account: "201101469",
+    broker: "MH",
+    balance: 9432,
+    equity: 9432,
+    floating_pl: 0,
+    margin_level: 0,
+    updated_at: new Date().toISOString(),
+    bots: [{ name: "Gold Sniper", lot: 0.1, open_orders: 0, floating_pl: 0 }],
+  };
+
+  const payload = JSON.stringify(schema, null, 2);
+  try {
+    if (!navigator.clipboard) throw new Error("Clipboard API unavailable");
+    await navigator.clipboard.writeText(payload);
+  } catch {
+    const textarea = document.createElement("textarea");
+    textarea.value = payload;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+  }
+  const button = document.getElementById("copySchemaBtn");
+  const oldText = button.innerHTML;
+  button.innerHTML = '<i data-lucide="check"></i> Copied schema';
+  setTimeout(() => {
+    button.innerHTML = oldText;
+  }, 1600);
+}
+
+function bindEvents() {
+  document.querySelectorAll("[data-chart-mode]").forEach((button) => {
+    button.addEventListener("click", () => {
+      chartMode = button.dataset.chartMode;
+      document.querySelectorAll("[data-chart-mode]").forEach((item) => item.classList.toggle("active", item === button));
+      drawAccountChart();
+    });
+  });
+
+  document.getElementById("searchInput").addEventListener("input", (event) => renderAccounts(event.target.value));
+  document.getElementById("exportBtn").addEventListener("click", exportCsv);
+  document.getElementById("copySchemaBtn").addEventListener("click", copySchema);
+  document.getElementById("refreshBtn").addEventListener("click", refreshDashboard);
+
+  document.getElementById("botPlannerForm")?.addEventListener("submit", addBotPlannerEntry);
+  document.getElementById("plannerAccount")?.addEventListener("change", () => {
+    document.getElementById("plannerLot").value = "";
+    populatePlannerBots();
+  });
+  document.getElementById("plannerBot")?.addEventListener("change", () => {
+    document.getElementById("plannerLot").value = "";
+    fillPlannerCurrentLot();
+  });
+  document.getElementById("botPlannerList")?.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-delete-planner]");
+    if (button) removeBotPlannerEntry(button.dataset.deletePlanner);
+  });
+  document.getElementById("exportPlannerBtn")?.addEventListener("click", exportPlannerLog);
+  document.getElementById("openBotDocBtn")?.addEventListener("click", openBotConfigDoc);
+
+  window.addEventListener("resize", () => {
+    drawAccountChart();
+    drawBotChart();
+  });
+}
+
+function normalizeLiveAccount(account) {
+  const id = String(account.account || account.id || "");
+  const baselineBalance = Number(account.baseline_balance || account.baselineBalance || 0);
+  const hasBalanceBaseline = Number.isFinite(baselineBalance) && baselineBalance > 0;
+  const liveBotsSource = parseArray(account.bots);
+  const botMetricsSource = parseArray(account.bot_metrics || account.botMetrics);
+  const liveBots = liveBotsSource.length
+    ? liveBotsSource
+        .map((bot) => ({ name: String(bot.name || ""), lot: Number(bot.lot || 0) }))
+        .filter((bot) => bot.name)
+    : [];
+  const configuredBots = configuredBotsByAccount.get(id) || [];
+  const hasPlaceholderBots =
+    liveBots.length === 0 || liveBots.every((bot) => bot.name === id || bot.name === account.account || bot.lot <= 0);
+
+  return {
+    id,
+    equity: Number(account.equity || 0),
+    balance: Number(account.balance || 0),
+    broker: String(account.broker || ""),
+    note: String(account.note || ""),
+    floatingPl: Number(account.floating_pl || account.floatingPl || 0),
+    openPositions: Number(account.open_positions || account.openPositions || 0),
+    openLots: Number(account.open_lots || account.openLots || 0),
+    marginLevel: Number(account.margin_level || account.marginLevel || 0),
+    updatedAt: account.updated_at || account.updatedAt || "",
+    receivedAt: account.received_at || account.receivedAt || account.updated_at || account.updatedAt || "",
+    baselineBalance,
+    baselineEquity: Number(account.baseline_equity || account.baselineEquity || 0),
+    dailyProfit: hasBalanceBaseline ? Number(account.daily_profit || account.dailyProfit || 0) : Number.NaN,
+    dailyProfitPct:
+      !hasBalanceBaseline || account.daily_profit_pct === "" || account.dailyProfitPct === ""
+        ? Number.NaN
+        : Number(account.daily_profit_pct ?? account.dailyProfitPct ?? Number.NaN),
+    dailyDrawdownPct:
+      account.daily_drawdown_pct === "" || account.dailyDrawdownPct === ""
+        ? Number.NaN
+        : Number(account.daily_drawdown_pct ?? account.dailyDrawdownPct ?? Number.NaN),
+    botMetrics: botMetricsSource.map((metric) => ({
+      name: String(metric.name || ""),
+      profit: Number(metric.profit || 0),
+      profitPct: Number(metric.profit_pct || metric.profitPct || 0),
+      drawdownPct: Number(metric.drawdown_pct || metric.drawdownPct || 0),
+    })),
+    bots: configuredBots.length ? configuredBots.map((bot) => ({ ...bot })) : liveBots,
+  };
+}
+
+async function loadLiveData() {
+  const liveDataUrl = window.GOLD_DASHBOARD_CONFIG?.liveDataUrl;
+  if (!liveDataUrl) return;
+
+  try {
+    document.getElementById("connectionStatus").textContent = "Loading live data";
+    const response = await fetch(liveDataUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    if (!Array.isArray(payload.accounts)) throw new Error("Missing accounts array");
+    accounts = payload.accounts.map(normalizeLiveAccount).filter((account) => account.id);
+    if (Array.isArray(payload.bot_planner)) {
+      botPlannerEntries = mergeBotPlannerEntries(
+        payload.bot_planner.map((entry) => ({ ...entry, source: "sheet" })),
+        loadBotPlannerEntries(),
+      );
+      saveBotPlannerEntries();
+    }
+    document.getElementById("connectionStatus").textContent = `Live ${new Date().toLocaleTimeString("th-TH")}`;
+  } catch (error) {
+    document.getElementById("connectionStatus").textContent = "Live data failed";
+    console.warn("Could not load live MT5 data", error);
+  }
+}
+
+async function refreshDashboard() {
+  await loadLiveData();
+  applyBotPlannerEntries();
+  setMetrics();
+  renderAccounts(document.getElementById("searchInput")?.value || "");
+  renderBotMatrix();
+  renderAccountPerformance();
+  renderRiskFocus();
+  renderLiveHealth();
+  populatePlannerAccounts();
+  renderBotPlanner();
+  drawAccountChart();
+  drawBotChart();
+}
+
+bindEvents();
+refreshDashboard();
+
+    </script>
   </body>
 </html>
