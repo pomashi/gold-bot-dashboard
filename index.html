@@ -1,4 +1,4 @@
->↻</button><!doctype html>
+<!doctype html>
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
@@ -18,6 +18,8 @@
   --gold: #b9892f;
   --red: #b64a40;
   --red-soft: #fae8e5;
+  --yellow: #b9892f;
+  --yellow-soft: #fbf1db;
   --blue: #295c87;
   --shadow: 0 14px 34px rgba(20, 26, 23, 0.08);
 }
@@ -241,6 +243,28 @@ h2 {
   box-shadow: var(--shadow);
 }
 
+.refresh-icon {
+  width: 17px;
+  height: 17px;
+  display: block;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  position: relative;
+}
+
+.refresh-icon::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(38deg);
+}
+
 .primary-button,
 .wide-button {
   display: inline-flex;
@@ -338,6 +362,67 @@ h2 {
 .metric.alert {
   background: var(--red-soft);
   border-color: #f0c3bd;
+}
+
+.danger-panel {
+  margin-bottom: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.danger-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.danger-card {
+  min-height: 104px;
+  display: grid;
+  align-content: space-between;
+  gap: 8px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-left-width: 5px;
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.danger-card span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.danger-card strong {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.danger-card em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.danger-card.red {
+  border-left-color: var(--red);
+  background: var(--red-soft);
+}
+
+.danger-card.yellow {
+  border-left-color: var(--yellow);
+  background: var(--yellow-soft);
+}
+
+.danger-card.green {
+  border-left-color: var(--green);
+  background: var(--green-soft);
 }
 
 .dashboard-grid {
@@ -450,7 +535,7 @@ h2 {
 
 .accounts-table {
   width: 100%;
-  min-width: 860px;
+  min-width: 1280px;
   border-collapse: collapse;
 }
 
@@ -471,6 +556,14 @@ h2 {
 
 .accounts-table tr:last-child td {
   border-bottom: 0;
+}
+
+.accounts-table tr.risk-red td {
+  background: rgba(250, 232, 229, 0.38);
+}
+
+.accounts-table tr.risk-yellow td {
+  background: rgba(251, 241, 219, 0.44);
 }
 
 .account-id {
@@ -514,6 +607,45 @@ h2 {
 .status-pill.watch {
   background: var(--red-soft);
   color: var(--red);
+}
+
+.risk-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.risk-chip {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.risk-chip.red {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.risk-chip.yellow {
+  background: var(--yellow-soft);
+  color: #7c5b1f;
+}
+
+.risk-chip.green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.risk-text-red {
+  color: var(--red);
+}
+
+.risk-text-yellow {
+  color: #8a641f;
 }
 
 .bot-matrix {
@@ -660,6 +792,154 @@ h2 {
   opacity: 0.82;
 }
 
+.goal-panel {
+  border-color: rgba(185, 137, 47, 0.32);
+}
+
+.goal-disclaimer {
+  max-width: 320px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.goal-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.75fr) minmax(0, 1fr) minmax(320px, 0.9fr);
+  gap: 14px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+.goal-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.goal-controls label {
+  display: grid;
+  gap: 6px;
+}
+
+.goal-controls label span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.goal-controls input,
+.goal-controls select {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.hidden-control {
+  display: none !important;
+}
+
+.goal-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.goal-main,
+.goal-stat {
+  min-height: 74px;
+  display: grid;
+  align-content: center;
+  gap: 5px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.goal-main {
+  grid-column: 1 / -1;
+  min-height: 122px;
+  border-left: 5px solid var(--gold);
+  background: linear-gradient(180deg, #fff, #fbf7eb);
+}
+
+.goal-main.completed {
+  border-left-color: var(--green);
+  background: var(--green-soft);
+}
+
+.goal-main.warning {
+  border-left-color: var(--red);
+  background: var(--red-soft);
+}
+
+.goal-main span,
+.goal-stat span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.goal-main strong {
+  font-size: 32px;
+  line-height: 1;
+}
+
+.goal-stat strong {
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+.goal-main small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.goal-scenarios-wrap {
+  overflow-x: auto;
+}
+
+.goal-scenarios {
+  width: 100%;
+  min-width: 360px;
+  border-collapse: collapse;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.goal-scenarios th,
+.goal-scenarios td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 12px;
+}
+
+.goal-scenarios th {
+  color: var(--muted);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.goal-scenarios tr:last-child td {
+  border-bottom: 0;
+}
+
 .planner-grid {
   display: grid;
   grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
@@ -798,6 +1078,16 @@ h2 {
   grid-template-columns: 120px 140px 1fr;
 }
 
+.risk-row.risk-red {
+  border-color: rgba(182, 74, 64, 0.34);
+  background: var(--red-soft);
+}
+
+.risk-row.risk-yellow {
+  border-color: rgba(185, 137, 47, 0.35);
+  background: var(--yellow-soft);
+}
+
 .risk-row strong,
 .health-item strong {
   min-width: 0;
@@ -889,6 +1179,17 @@ h2 {
   line-height: 1.55;
 }
 
+.privacy-footnote {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5ce;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .wide-button {
   width: 100%;
   background: var(--gold);
@@ -933,6 +1234,10 @@ h2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .danger-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .span-4,
   .span-5,
   .span-7,
@@ -943,11 +1248,51 @@ h2 {
   .planner-grid {
     grid-template-columns: 1fr;
   }
+
+  .goal-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-disclaimer {
+    max-width: none;
+    text-align: left;
+  }
 }
 
 @media (max-width: 680px) {
   .main {
+    display: flex;
+    flex-direction: column;
     padding: 14px 10px;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    gap: 8px;
+    padding: 10px;
+    box-shadow: 0 10px 24px rgba(17, 24, 20, 0.2);
+  }
+
+  .brand {
+    gap: 9px;
+    padding: 0 2px;
+  }
+
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    font-size: 14px;
+  }
+
+  .brand span {
+    font-size: 11px;
+  }
+
+  .brand strong {
+    font-size: 13px;
   }
 
   .topbar,
@@ -957,10 +1302,29 @@ h2 {
     flex-direction: column;
   }
 
+  .topbar {
+    order: 0;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .topbar h1 {
+    font-size: 25px;
+    line-height: 1.12;
+  }
+
+  .subtitle,
+  .panel-header p,
+  .section-title p {
+    font-size: 12px;
+    line-height: 1.42;
+  }
+
   .top-actions {
     width: 100%;
     display: grid;
     grid-template-columns: 42px 42px minmax(0, 1fr);
+    gap: 8px;
   }
 
   .primary-button {
@@ -968,16 +1332,59 @@ h2 {
   }
 
   .nav-list {
+    gap: 6px;
     margin: 0 -2px;
+    padding-bottom: 0;
+  }
+
+  .nav-item {
+    min-width: 108px;
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .nav-icon {
+    width: 20px;
+    font-size: 10px;
   }
 
   .metrics-grid {
+    order: 2;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
+  .danger-panel {
+    order: 1;
+    margin-bottom: 10px;
+    padding: 14px;
+  }
+
+  .danger-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .danger-card {
+    min-height: 86px;
+    padding: 12px;
+  }
+
+  .danger-card strong {
+    font-size: 15px;
+  }
+
+  .danger-card em {
+    font-size: 12px;
+  }
+
   .metric {
     padding: 13px;
+  }
+
+  .metric:nth-child(1),
+  .metric:nth-child(5) {
+    grid-column: 1 / -1;
   }
 
   .metric strong {
@@ -999,8 +1406,68 @@ h2 {
     height: 220px;
   }
 
+  #accounts {
+    order: 3;
+    margin: 12px 0;
+  }
+
+  .risk-grid {
+    order: 4;
+  }
+
+  .goal-grid {
+    order: 5;
+  }
+
+  .charts-grid {
+    order: 6;
+  }
+
+  #bots {
+    order: 7;
+  }
+
+  #bot-planner {
+    order: 8;
+  }
+
+  .dashboard-grid:last-of-type {
+    order: 9;
+  }
+
+  .goal-layout {
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .goal-controls,
+  .goal-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .goal-main {
+    min-height: 106px;
+  }
+
+  .goal-main strong {
+    font-size: 28px;
+  }
+
+  .goal-scenarios {
+    min-width: 340px;
+  }
+
   .panel {
     padding: 14px;
+  }
+
+  .section-title {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .search-box {
+    width: 100%;
   }
 
   .accounts-table {
@@ -1020,16 +1487,21 @@ h2 {
   }
 
   .accounts-table tr {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--line);
+    margin-bottom: 10px;
+    padding: 11px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(20, 26, 23, 0.05);
   }
 
   .accounts-table td {
     display: grid;
-    grid-template-columns: 92px minmax(0, 1fr);
+    grid-template-columns: 102px minmax(0, 1fr);
     gap: 10px;
-    padding: 7px 0;
+    padding: 6px 0;
     border-bottom: 0;
+    font-size: 13px;
   }
 
   .accounts-table td::before {
@@ -1038,6 +1510,16 @@ h2 {
     font-size: 11px;
     font-weight: 900;
     text-transform: uppercase;
+  }
+
+  .account-id {
+    font-size: 17px;
+  }
+
+  .tag,
+  .risk-chip {
+    min-height: 24px;
+    font-size: 11px;
   }
 
   .bot-row {
@@ -1092,10 +1574,11 @@ h2 {
 
         <nav class="nav-list" aria-label="Dashboard sections">
           <a class="nav-item active" href="#overview"><span class="nav-icon">01</span>Overview</a>
-          <a class="nav-item" href="#accounts"><span class="nav-icon">02</span>Accounts</a>
-          <a class="nav-item" href="#bots"><span class="nav-icon">03</span>Bots</a>
-          <a class="nav-item" href="#bot-planner"><span class="nav-icon">04</span>Bot Planner</a>
-          <a class="nav-item" href="#connector"><span class="nav-icon">05</span>MT5 Connector</a>
+          <a class="nav-item" href="#danger"><span class="nav-icon">02</span>Danger</a>
+          <a class="nav-item" href="#accounts"><span class="nav-icon">03</span>Accounts</a>
+          <a class="nav-item" href="#bots"><span class="nav-icon">04</span>Bots</a>
+          <a class="nav-item" href="#bot-planner"><span class="nav-icon">05</span>Bot Planner</a>
+          <a class="nav-item" href="#connector"><span class="nav-icon">06</span>MT5 Connector</a>
         </nav>
 
         <div class="connection-panel">
@@ -1116,10 +1599,21 @@ h2 {
           </div>
           <div class="top-actions">
             <button class="ghost-button privacy-toggle" id="privacyToggleBtn" title="Toggle dashboard detail lock" aria-label="Toggle dashboard detail lock">AU</button>
-            <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">R</button>
+            <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data"><span class="refresh-icon" aria-hidden="true"></span></button>
             <button class="primary-button" id="exportBtn">Export CSV</button>
           </div>
         </header>
+
+        <section class="danger-panel" id="danger" aria-label="Danger now">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Risk first</p>
+              <h2>Danger Now</h2>
+              <p>Highest priority signals from missing data, stale updates, DD, equity gap, open lots, and margin level.</p>
+            </div>
+          </div>
+          <div id="dangerNow" class="danger-grid"></div>
+        </section>
 
         <section class="metrics-grid" id="overview" aria-label="Portfolio metrics">
           <article class="metric">
@@ -1154,7 +1648,67 @@ h2 {
           </article>
         </section>
 
-        <section class="dashboard-grid">
+        <section class="dashboard-grid goal-grid" id="goal-projection">
+          <div class="panel span-12 goal-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Scenario projection</p>
+                <h2>Mission to 200K</h2>
+                <p>Motivational projection using your selected portfolio value and assumed monthly growth.</p>
+              </div>
+              <span class="goal-disclaimer">Scenario only. Not a guarantee. Gold bots can experience drawdown.</span>
+            </div>
+
+            <div class="goal-layout">
+              <form class="goal-controls" id="goalProjectionForm">
+                <label>
+                  <span>Current value</span>
+                  <select id="goalValueMode">
+                    <option value="conservative" selected>Conservative Value</option>
+                    <option value="balance">Balance</option>
+                    <option value="equity">Equity</option>
+                  </select>
+                </label>
+                <label>
+                  <span>Target USD</span>
+                  <input id="goalTarget" type="number" min="1" step="1000" value="200000" />
+                </label>
+                <label>
+                  <span>Monthly growth</span>
+                  <select id="goalRatePreset">
+                    <option value="3">3%</option>
+                    <option value="5" selected>5%</option>
+                    <option value="7">7%</option>
+                    <option value="10">10%</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                </label>
+                <label id="goalCustomRateWrap">
+                  <span>Custom %</span>
+                  <input id="goalCustomRate" type="number" min="-100" step="0.1" value="5" />
+                </label>
+              </form>
+
+              <div class="goal-summary" id="goalSummary"></div>
+
+              <div class="goal-scenarios-wrap">
+                <table class="goal-scenarios">
+                  <thead>
+                    <tr>
+                      <th>Monthly</th>
+                      <th>Days</th>
+                      <th>Months</th>
+                      <th>Target date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="goalScenarioBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="dashboard-grid charts-grid">
           <div class="panel span-7">
             <div class="panel-header">
               <div>
@@ -1188,7 +1742,7 @@ h2 {
           <div class="section-title">
             <div>
               <h2>Accounts</h2>
-              <p>Scan account, broker, balance, equity, bots, total lot, and status.</p>
+              <p>Risk-first view: balance is realized P/L, equity is live truth, and equity gap shows floating pressure.</p>
             </div>
             <label class="search-box">
               <span>Search</span>
@@ -1200,11 +1754,15 @@ h2 {
               <thead>
                 <tr>
                   <th>Account</th>
-                  <th>Broker</th>
-                  <th>Balance / Equity</th>
-                  <th>Bots</th>
-                  <th>Total Lot</th>
-                  <th>Status</th>
+                  <th>Bot / Strategy</th>
+                  <th>Balance</th>
+                  <th>Equity</th>
+                  <th>Equity Gap</th>
+                  <th>DD%</th>
+                  <th>Open Lots</th>
+                  <th>Margin</th>
+                  <th>Last Update</th>
+                  <th>Risk Reasons</th>
                 </tr>
               </thead>
               <tbody id="accountsBody"></tbody>
@@ -1212,7 +1770,7 @@ h2 {
           </div>
         </section>
 
-        <section class="dashboard-grid">
+        <section class="dashboard-grid risk-grid">
           <div class="panel span-8">
             <div class="panel-header">
               <div>
@@ -1325,26 +1883,42 @@ h2 {
                 <p>The EA sends snapshots into Google Sheets, then the dashboard fetches live data instead of demo data.</p>
               </div>
             </div>
+            <p class="privacy-footnote">Public demo page. Real dashboard data requires read key. No MT5 passwords or trading credentials are stored in this repository.</p>
             <button class="wide-button" id="copySchemaBtn">Copy MT5 payload schema</button>
           </div>
         </section>
       </main>
     </div>
-
     <script>
 window.GOLD_DASHBOARD_CONFIG = {
-  // Paste the deployed Google Apps Script Web app URL here.
-  liveDataUrl: "https://script.google.com/macros/s/AKfycbz9T90SGrGyRGb8aKpdEatDRSVj9xsr8ev4KuRDNs97N9f5JlE6bwkNRmgyLBI-JN8/exec",
-  botConfigDocUrl: "https://docs.google.com/spreadsheets/d/1x15ioO3qHqyF_hfj2UFpHNA0T2HYfWob25ESjjiqzpc",
-  // Leave blank on public hosting. The dashboard asks for an access key and stores it only in this browser.
+  // Public-safe defaults. Put live URLs, sheet URLs, and private account config in config.private.js.
+  liveDataUrl: "",
+  botConfigDocUrl: "./docs/CONNECT_MT5_AND_HOST_FREE.md",
   plannerWriteKey: "",
+  MASK_ACCOUNT_NUMBERS: true,
+  SHOW_FULL_ACCOUNT_AFTER_AUTH: false,
+  PUBLIC_MODE: true,
+  EXPORT_FULL_ACCOUNT_NUMBERS: false,
+  // Risk thresholds are intentionally simple so the dashboard stays easy to audit.
+  riskThresholds: {
+    staleYellowMinutes: 5,
+    staleRedMinutes: 15,
+    ddYellowPct: 5,
+    ddRedPct: 10,
+    equityGapYellowPct: -5,
+    equityGapRedPct: -10,
+    openLotsYellow: 0.25,
+    openLotsRed: 0.5,
+    marginLevelYellow: 300,
+    marginLevelRed: 150,
+  },
 };
 
-</script>
-<script>
+    </script>
+    <script>
 let accounts = [
   {
-    id: "201101469",
+    id: "2011****69",
     equity: 9432,
     broker: "MH",
     bots: [
@@ -1355,7 +1929,7 @@ let accounts = [
     ],
   },
   {
-    id: "201101470",
+    id: "2011****70",
     equity: 10152,
     broker: "MH",
     bots: [
@@ -1366,7 +1940,7 @@ let accounts = [
     ],
   },
   {
-    id: "24892586",
+    id: "2489****86",
     equity: 3429,
     broker: "VT",
     bots: [
@@ -1376,7 +1950,7 @@ let accounts = [
     ],
   },
   {
-    id: "201100915",
+    id: "2011****15",
     equity: 17083,
     broker: "MH",
     bots: [
@@ -1387,20 +1961,20 @@ let accounts = [
     ],
   },
   {
-    id: "201100978",
+    id: "2011****78",
     equity: 660,
     broker: "MH",
     note: "Wave",
-    bots: [{ name: "Smart Gold", lot: 0.02 }],
+    bots: [{ name: "Smart Gold", lot: 0.03 }],
   },
   {
-    id: "201101468",
+    id: "2011****68",
     equity: 439,
     broker: "MH",
     bots: [{ name: "Prince of Persia", lot: 0.01 }],
   },
   {
-    id: "201100977",
+    id: "2011****77",
     equity: 2596,
     broker: "MH",
     bots: [
@@ -1409,7 +1983,7 @@ let accounts = [
     ],
   },
   {
-    id: "7012808",
+    id: "7012****08",
     equity: 100,
     broker: "MH",
     bots: [
@@ -1423,16 +1997,37 @@ const configuredBotsByAccount = new Map(
   accounts.map((account) => [account.id, account.bots.map((bot) => ({ ...bot }))]),
 );
 
+const DEFAULT_EXPECTED_ACCOUNTS = accounts.map((account) => ({
+  id: account.id,
+  broker: account.broker,
+  note: account.note || "",
+  bots: account.bots.map((bot) => ({ ...bot })),
+}));
+
+const DEFAULT_RISK_THRESHOLDS = {
+  staleYellowMinutes: 5,
+  staleRedMinutes: 15,
+  ddYellowPct: 5,
+  ddRedPct: 10,
+  equityGapYellowPct: -5,
+  equityGapRedPct: -10,
+  openLotsYellow: 0.25,
+  openLotsRed: 0.5,
+  marginLevelYellow: 300,
+  marginLevelRed: 150,
+};
+
 const moneyFormat = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
 
 const ACCOUNT_UNIT = "USC";
+const USC_PER_USD = 100;
 const WATCHLIST_USC = 100000;
-const STALE_AFTER_MINUTES = 10;
 const BOT_PLANNER_STORAGE_KEY = "gold-dashboard-bot-lot-planner-v1";
 const ACCESS_KEY_STORAGE_KEY = "gold-dashboard-access-key-v1";
+const LIVE_DATA_URL_STORAGE_KEY = "gold-dashboard-live-data-url-v1";
 const PRIVACY_STORAGE_KEY = "gold-dashboard-privacy-hidden-v1";
 const MASK = "********";
 
@@ -1444,6 +2039,10 @@ function formatSignedMoney(value) {
   const number = Number(value || 0);
   const sign = number > 0 ? "+" : "";
   return `${sign}${formatMoney(number)}`;
+}
+
+function formatUsd(value) {
+  return `${moneyFormat.format(Number(value || 0))}`;
 }
 
 function parseTimestamp(value) {
@@ -1465,6 +2064,22 @@ function formatAge(value) {
   if (minutes < 1) return "just now";
   if (minutes < 60) return `${Math.round(minutes)}m ago`;
   return `${Math.round(minutes / 60)}h ago`;
+}
+
+function formatAgeMinutes(minutes) {
+  if (!Number.isFinite(minutes)) return "no update";
+  if (minutes < 1) return "<1m";
+  if (minutes < 60) return `${Math.round(minutes)}m`;
+  return `${Math.round(minutes / 60)}h`;
+}
+
+function formatPct(value) {
+  return Number.isFinite(value) ? `${value.toFixed(2)}%` : "-";
+}
+
+function formatMarginLevel(value) {
+  const marginLevel = Number(value || 0);
+  return marginLevel > 0 ? `${moneyFormat.format(marginLevel)}%` : "-";
 }
 
 function formatLocalDateTime(value) {
@@ -1489,6 +2104,39 @@ function parseArray(value, fallback = []) {
   }
 }
 
+function riskThresholds() {
+  return {
+    ...DEFAULT_RISK_THRESHOLDS,
+    ...(window.GOLD_DASHBOARD_CONFIG?.riskThresholds || {}),
+  };
+}
+
+function expectedAccounts() {
+  const configured = window.GOLD_DASHBOARD_CONFIG?.expectedAccounts;
+  const source = Array.isArray(configured) && configured.length ? configured : DEFAULT_EXPECTED_ACCOUNTS;
+  return source
+    .map((account) => ({
+      id: String(account.id || account.account || ""),
+      broker: String(account.broker || ""),
+      note: String(account.note || ""),
+      bots: Array.isArray(account.bots) ? account.bots.map((bot) => ({ name: String(bot.name || ""), lot: Number(bot.lot || 0) })) : [],
+      openLotsYellow: Number(account.openLotsYellow || account.open_lots_yellow || 0),
+      openLotsRed: Number(account.openLotsRed || account.open_lots_red || 0),
+    }))
+    .filter((account) => account.id);
+}
+
+function severityRank(severity) {
+  return { red: 3, yellow: 2, green: 1 }[severity] || 0;
+}
+
+function worstSeverity(reasons) {
+  return reasons.reduce(
+    (worst, reason) => (severityRank(reason.severity) > severityRank(worst) ? reason.severity : worst),
+    "green",
+  );
+}
+
 function getStoredAccessKey() {
   try {
     return window.localStorage?.getItem(ACCESS_KEY_STORAGE_KEY) || "";
@@ -1507,6 +2155,39 @@ function setStoredAccessKey(value) {
   } catch {
     console.warn("Could not save dashboard access key");
   }
+}
+
+function getStoredLiveDataUrl() {
+  try {
+    return window.localStorage?.getItem(LIVE_DATA_URL_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function setStoredLiveDataUrl(value) {
+  try {
+    if (value) {
+      window.localStorage?.setItem(LIVE_DATA_URL_STORAGE_KEY, value);
+    } else {
+      window.localStorage?.removeItem(LIVE_DATA_URL_STORAGE_KEY);
+    }
+  } catch {
+    console.warn("Could not save live data URL");
+  }
+}
+
+function getLiveDataUrl(promptIfMissing = false) {
+  const configured = String(window.GOLD_DASHBOARD_CONFIG?.liveDataUrl || "").trim();
+  if (configured) return configured;
+
+  const stored = getStoredLiveDataUrl();
+  if (stored || !promptIfMissing) return stored;
+
+  const entered = window.prompt("Enter Google Apps Script Web app URL");
+  const url = String(entered || "").trim();
+  if (url) setStoredLiveDataUrl(url);
+  return url;
 }
 
 function getDashboardAccessKey(promptIfMissing = false) {
@@ -1552,6 +2233,27 @@ function maskPlain(value = MASK) {
   return privacyHidden ? MASK : value;
 }
 
+function configFlag(name, fallback) {
+  const value = window.GOLD_DASHBOARD_CONFIG?.[name];
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function maskAccountNumber(value, options = {}) {
+  const raw = String(value || "");
+  if (!raw) return "-";
+  if (raw.includes("*")) return raw;
+  if (!configFlag("MASK_ACCOUNT_NUMBERS", true)) return raw;
+  if (options.forExport && configFlag("EXPORT_FULL_ACCOUNT_NUMBERS", false)) return raw;
+  if (!options.forExport && !privacyHidden && configFlag("SHOW_FULL_ACCOUNT_AFTER_AUTH", false)) return raw;
+  if (raw.length <= 4) return "****";
+  if (raw.length <= 6) return `${raw.slice(0, 2)}****${raw.slice(-1)}`;
+  return `${raw.slice(0, 4)}****${raw.slice(-2)}`;
+}
+
+function displayAccountNumber(value) {
+  return privacyHidden ? MASK : maskAccountNumber(value);
+}
+
 function updatePrivacyControls() {
   document.body.classList.toggle("privacy-hidden", privacyHidden);
   const button = document.getElementById("privacyToggleBtn");
@@ -1576,8 +2278,9 @@ function renderPrivacyNotice(targetId, message = "Dashboard details are hidden. 
 
 async function togglePrivacyMode() {
   if (privacyHidden) {
-    const key = getDashboardAccessKey(Boolean(window.GOLD_DASHBOARD_CONFIG?.liveDataUrl));
-    if (window.GOLD_DASHBOARD_CONFIG?.liveDataUrl && !key) return;
+    const liveDataUrl = getLiveDataUrl(Boolean(configFlag("PUBLIC_MODE", true)));
+    const key = getDashboardAccessKey(Boolean(liveDataUrl));
+    if (liveDataUrl && !key) return;
     privacyHidden = false;
   } else {
     privacyHidden = true;
@@ -1616,6 +2319,140 @@ function currentDrawdownPct(account) {
   const balance = accountBalance(account);
   const equity = accountEquity(account);
   return balance > 0 ? Math.max(0, ((balance - equity) / balance) * 100) : 0;
+}
+
+function accountStrategyLabel(account) {
+  return (account.bots || [])
+    .map((bot) => `${bot.name} ${lotFormat.format(Number(bot.lot || 0))}`)
+    .join(", ");
+}
+
+function getOpenLotThreshold(account, key) {
+  const thresholds = riskThresholds();
+  const accountSpecific = Number(account[key] || 0);
+  if (accountSpecific > 0) return accountSpecific;
+  return Number(thresholds[key] || 0);
+}
+
+function createRiskReason(type, label, value, severity, score) {
+  return { type, label, value, severity, score };
+}
+
+function calculateAccountRisk(account) {
+  const thresholds = riskThresholds();
+  const balance = accountBalance(account);
+  const equity = accountEquity(account);
+  const equityGap = equity - balance;
+  const equityGapPct = balance > 0 ? (equityGap / balance) * 100 : 0;
+  const ddPct = currentDrawdownPct(account);
+  const openLots = Number(account.openLots || 0);
+  const marginLevel = Number(account.marginLevel || 0);
+  const ageMinutes = account.missing ? Number.POSITIVE_INFINITY : minutesSince(account.receivedAt || account.updatedAt);
+  const reasons = [];
+
+  if (account.missing) {
+    reasons.push(createRiskReason("missing", "Missing account data", "missing", "red", 300));
+  } else if (ageMinutes >= thresholds.staleRedMinutes) {
+    reasons.push(createRiskReason("stale", "Stale account data", `stale ${formatAgeMinutes(ageMinutes)}`, "red", 120));
+  } else if (ageMinutes >= thresholds.staleYellowMinutes) {
+    reasons.push(createRiskReason("stale", "Stale account data", `stale ${formatAgeMinutes(ageMinutes)}`, "yellow", 60));
+  }
+
+  if (ddPct >= thresholds.ddRedPct) {
+    reasons.push(createRiskReason("dd", "High DD", `DD ${formatPct(ddPct)}`, "red", 100));
+  } else if (ddPct >= thresholds.ddYellowPct) {
+    reasons.push(createRiskReason("dd", "High DD", `DD ${formatPct(ddPct)}`, "yellow", 50));
+  }
+
+  if (equityGapPct <= thresholds.equityGapRedPct) {
+    reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)}`, "red", 100));
+  } else if (equityGapPct <= thresholds.equityGapYellowPct) {
+    reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)}`, "yellow", 50));
+  }
+
+  const openLotsRed = getOpenLotThreshold(account, "openLotsRed");
+  const openLotsYellow = getOpenLotThreshold(account, "openLotsYellow");
+  if (openLotsRed > 0 && openLots >= openLotsRed) {
+    reasons.push(createRiskReason("open_lots", "High open lots", `open ${lotFormat.format(openLots)}`, "red", 70));
+  } else if (openLotsYellow > 0 && openLots >= openLotsYellow) {
+    reasons.push(createRiskReason("open_lots", "High open lots", `open ${lotFormat.format(openLots)}`, "yellow", 35));
+  }
+
+  if (marginLevel > 0 && marginLevel <= thresholds.marginLevelRed) {
+    reasons.push(createRiskReason("margin", "Low margin level", `margin ${formatMarginLevel(marginLevel)}`, "red", 90));
+  } else if (marginLevel > 0 && marginLevel <= thresholds.marginLevelYellow) {
+    reasons.push(createRiskReason("margin", "Low margin level", `margin ${formatMarginLevel(marginLevel)}`, "yellow", 45));
+  }
+
+  if (!account.missing && balance > 0 && balance < WATCHLIST_USC) {
+    reasons.push(createRiskReason("low_balance", "Low balance watchlist", `balance ${formatMoney(balance)}`, "yellow", 20));
+  }
+
+  const riskScore = reasons.reduce((sum, reason) => sum + reason.score, 0);
+  return {
+    ...account,
+    balance,
+    equity,
+    equityGap,
+    equityGapPct,
+    ddPct,
+    openLots,
+    marginLevel,
+    ageMinutes,
+    riskReasons: reasons,
+    riskScore,
+    severity: worstSeverity(reasons),
+  };
+}
+
+function riskAccountRows() {
+  const expected = expectedAccounts();
+  const liveById = new Map(accounts.map((account) => [String(account.id), account]));
+  const rows = expected.map((expectedAccount) => {
+    const liveAccount = liveById.get(expectedAccount.id);
+    if (!liveAccount) {
+      return calculateAccountRisk({
+        ...expectedAccount,
+        balance: 0,
+        equity: 0,
+        openLots: 0,
+        marginLevel: 0,
+        updatedAt: "",
+        receivedAt: "",
+        missing: true,
+      });
+    }
+
+    liveById.delete(expectedAccount.id);
+    return calculateAccountRisk({
+      ...expectedAccount,
+      ...liveAccount,
+      broker: liveAccount.broker || expectedAccount.broker,
+      note: liveAccount.note || expectedAccount.note,
+      bots: liveAccount.bots?.length ? liveAccount.bots : expectedAccount.bots,
+    });
+  });
+
+  liveById.forEach((account) => rows.push(calculateAccountRisk({ ...account, unexpected: true })));
+  return rows.sort((a, b) => b.riskScore - a.riskScore || severityRank(b.severity) - severityRank(a.severity));
+}
+
+function dangerSignals() {
+  const dangerTypes = new Set(["missing", "stale", "dd", "equity_gap", "open_lots", "margin"]);
+  return riskAccountRows()
+    .flatMap((account) =>
+      account.riskReasons
+        .filter((reason) => dangerTypes.has(reason.type))
+        .map((reason) => ({
+          account: account.id,
+          reason: reason.label,
+          value: reason.value,
+          severity: reason.severity,
+          score: reason.score,
+        })),
+    )
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity) || b.score - a.score)
+    .slice(0, 6);
 }
 
 function loadBotPlannerEntries() {
@@ -1665,7 +2502,7 @@ function mergeBotPlannerEntries(primary, secondary) {
 }
 
 async function syncBotPlannerEntry(entry) {
-  const liveDataUrl = window.GOLD_DASHBOARD_CONFIG?.liveDataUrl;
+  const liveDataUrl = getLiveDataUrl(false);
   const plannerWriteKey = window.GOLD_DASHBOARD_CONFIG?.plannerWriteKey || getStoredAccessKey();
   if (!liveDataUrl || !plannerWriteKey) return false;
 
@@ -1769,6 +2606,139 @@ function portfolioPerformanceRows() {
   });
 }
 
+function portfolioValueUsd(mode = "conservative") {
+  const totalBalance = accounts.reduce((sum, account) => sum + accountBalance(account), 0);
+  const totalEquity = accounts.reduce((sum, account) => sum + accountEquity(account), 0);
+  const value = mode === "balance" ? totalBalance : mode === "equity" ? totalEquity : Math.min(totalBalance, totalEquity);
+  return value / USC_PER_USD;
+}
+
+function goalProjection(currentValue, targetValue, monthlyRatePct) {
+  const current = Number(currentValue || 0);
+  const target = Number(targetValue || 0);
+  const rate = Number(monthlyRatePct || 0) / 100;
+
+  if (current <= 0 || target <= 0) return { status: "invalid" };
+  if (current >= target) {
+    return {
+      status: "completed",
+      current,
+      target,
+      remaining: 0,
+      multiple: 1,
+      months: 0,
+      days: 0,
+      date: new Date(),
+    };
+  }
+  if (rate <= 0) return { status: "bad-rate", current, target, rate };
+
+  const months = Math.log(target / current) / Math.log(1 + rate);
+  const days = months * 30.4375;
+  const date = new Date(Date.now() + days * 86400000);
+  return {
+    status: "projected",
+    current,
+    target,
+    remaining: target - current,
+    multiple: target / current,
+    months,
+    days,
+    date,
+  };
+}
+
+function formatProjectionDate(date) {
+  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "2-digit" });
+}
+
+function selectedGoalRate() {
+  const preset = document.getElementById("goalRatePreset")?.value || "5";
+  if (preset === "custom") return Number(document.getElementById("goalCustomRate")?.value || 0);
+  return Number(preset);
+}
+
+function renderGoalProjection() {
+  const summary = document.getElementById("goalSummary");
+  const scenarioBody = document.getElementById("goalScenarioBody");
+  if (!summary || !scenarioBody) return;
+
+  const customWrap = document.getElementById("goalCustomRateWrap");
+  const preset = document.getElementById("goalRatePreset")?.value || "5";
+  if (customWrap) customWrap.classList.toggle("hidden-control", preset !== "custom");
+
+  if (privacyHidden) {
+    summary.innerHTML = '<div class="privacy-note">Goal projection is hidden on the public view. Unlock this browser to run scenarios.</div>';
+    scenarioBody.innerHTML = "";
+    return;
+  }
+
+  const mode = document.getElementById("goalValueMode")?.value || "conservative";
+  const current = portfolioValueUsd(mode);
+  const target = Number(document.getElementById("goalTarget")?.value || 200000);
+  const ratePct = selectedGoalRate();
+  const projection = goalProjection(current, target, ratePct);
+  const modeLabel = mode === "balance" ? "Balance" : mode === "equity" ? "Equity" : "Conservative Value";
+
+  if (projection.status === "invalid") {
+    summary.innerHTML = `
+      <div class="goal-main warning">
+        <span>${modeLabel}</span>
+        <strong>Need portfolio value</strong>
+        <small>Waiting for balance/equity data before projecting.</small>
+      </div>
+    `;
+  } else if (projection.status === "completed") {
+    summary.innerHTML = `
+      <div class="goal-main completed">
+        <span>${modeLabel} ${formatUsd(current)}</span>
+        <strong>Mission completed</strong>
+        <small>Target ${formatUsd(target)} reached or exceeded.</small>
+      </div>
+    `;
+  } else if (projection.status === "bad-rate") {
+    summary.innerHTML = `
+      <div class="goal-main warning">
+        <span>${modeLabel} ${formatUsd(current)}</span>
+        <strong>Monthly rate must be above 0%</strong>
+        <small>Projection needs a positive assumption. Scenario only, not a guarantee.</small>
+      </div>
+    `;
+  } else {
+    summary.innerHTML = `
+      <div class="goal-main">
+        <span>${modeLabel} ${formatUsd(current)} at ${ratePct.toFixed(1)}% monthly</span>
+        <strong>${Math.ceil(projection.days).toLocaleString("en-US")} days</strong>
+        <small>${projection.months.toFixed(1)} months to ${formatUsd(target)} around ${formatProjectionDate(projection.date)}</small>
+      </div>
+      <div class="goal-stat"><span>Remaining</span><strong>${formatUsd(projection.remaining)}</strong></div>
+      <div class="goal-stat"><span>Required multiple</span><strong>${projection.multiple.toFixed(2)}x</strong></div>
+      <div class="goal-stat"><span>Target date</span><strong>${formatProjectionDate(projection.date)}</strong></div>
+    `;
+  }
+
+  scenarioBody.innerHTML = [3, 5, 7, 10]
+    .map((rate) => {
+      const row = goalProjection(current, target, rate);
+      if (row.status === "completed") {
+        return `<tr><td>${rate}%</td><td>0</td><td>0.0</td><td>Completed</td></tr>`;
+      }
+      if (row.status !== "projected") {
+        return `<tr><td>${rate}%</td><td>-</td><td>-</td><td>-</td></tr>`;
+      }
+      return `
+        <tr>
+          <td>${rate}%</td>
+          <td>${Math.ceil(row.days).toLocaleString("en-US")}</td>
+          <td>${row.months.toFixed(1)}</td>
+          <td>${formatProjectionDate(row.date)}</td>
+        </tr>
+      `;
+    })
+    .join("");
+}
+
 function setMetrics() {
   const totalBalance = accounts.reduce((sum, account) => sum + accountBalance(account), 0);
   const totalEquity = accounts.reduce((sum, account) => sum + accountEquity(account), 0);
@@ -1779,7 +2749,7 @@ function setMetrics() {
 
   document.getElementById("totalEquity").innerHTML = maskValue(formatMoney(totalBalance));
   document.getElementById("totalLots").innerHTML = maskValue(lotFormat.format(totalLots));
-  document.getElementById("largestAccount").innerHTML = maskValue(largest.id);
+  document.getElementById("largestAccount").innerHTML = displayAccountNumber(largest.id);
   document.getElementById("largestAccountMeta").innerHTML = maskValue(
     `${largest.broker} - Balance ${formatMoney(accountBalance(largest))}`,
   );
@@ -1803,11 +2773,11 @@ function drawAccountChart() {
   }
 
   if (chartMode === "doughnut") {
-  drawDoughnutChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => account.id));
+  drawDoughnutChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => maskAccountNumber(account.id)));
     return;
   }
 
-  drawBarChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => account.id));
+  drawBarChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => maskAccountNumber(account.id)));
 }
 
 function drawBotChart() {
@@ -1962,46 +2932,49 @@ function roundRect(ctx, x, y, width, height, radius, color) {
 
 function renderAccounts(filter = "") {
   const normalized = filter.trim().toLowerCase();
+  const riskRows = riskAccountRows();
   const rows = privacyHidden
-    ? accounts
-    : accounts.filter((account) => {
-        const haystack = `${account.id} ${account.broker} ${account.note || ""} ${account.bots.map((bot) => bot.name).join(" ")}`;
+    ? riskRows
+    : riskRows.filter((account) => {
+        const haystack = `${account.id} ${account.broker} ${account.note || ""} ${(account.bots || []).map((bot) => bot.name).join(" ")} ${account.riskReasons.map((reason) => reason.label).join(" ")}`;
         return haystack.toLowerCase().includes(normalized);
       });
 
   document.getElementById("accountsBody").innerHTML = rows
     .map((account) => {
-      const balance = accountBalance(account);
-      const equity = accountEquity(account);
-      const ddPct = currentDrawdownPct(account);
-      const isWatch = balance < WATCHLIST_USC;
-      const tags = account.bots
+      const tags = (account.bots || [])
         .map((bot) => `<span class="tag">${maskPlain(`${bot.name} ${lotFormat.format(bot.lot)}`)}</span>`)
         .join("");
-      const accountLabel = maskPlain(account.id);
+      const accountLabel = displayAccountNumber(account.id);
       const noteLabel = privacyHidden ? "" : account.note;
-      const brokerLabel = maskPlain(account.broker);
-      const balanceLabel = maskPlain(formatMoney(balance));
-      const equityLabel = privacyHidden
-        ? MASK
-        : `Equity ${formatMoney(equity)}${ddPct > 0 ? ` - DD ${ddPct.toFixed(2)}%` : ""}`;
-      const lotLabel = maskPlain(lotFormat.format(accountLotTotal(account)));
-      const statusLabel = privacyHidden ? MASK : isWatch ? "Watch" : "OK";
+      const brokerLabel = privacyHidden || !account.broker ? "" : `<span class="account-note">${account.broker}</span>`;
+      const balanceLabel = account.missing ? "-" : formatMoney(account.balance);
+      const equityLabel = account.missing ? "-" : formatMoney(account.equity);
+      const gapClass = account.equityGap < 0 ? "negative-text" : account.equityGap > 0 ? "positive-text" : "";
+      const ddClass = account.ddPct >= riskThresholds().ddRedPct ? "risk-text-red" : account.ddPct >= riskThresholds().ddYellowPct ? "risk-text-yellow" : "";
+      const lastUpdateLabel = account.missing
+        ? "Missing"
+        : `${formatAge(account.receivedAt || account.updatedAt)}${account.updatedAt ? ` / ${formatLocalDateTime(account.updatedAt)}` : ""}`;
+      const reasons = account.riskReasons.length
+        ? account.riskReasons.map((reason) => `<span class="risk-chip ${reason.severity}">${reason.value}</span>`).join("")
+        : '<span class="risk-chip green">OK</span>';
 
       return `
-        <tr>
+        <tr class="risk-${account.severity}">
           <td data-label="Account">
             <span class="account-id">${accountLabel}</span>
+            ${brokerLabel}
             ${noteLabel ? `<span class="account-note">${noteLabel}</span>` : ""}
           </td>
-          <td data-label="Broker">${brokerLabel}</td>
-          <td data-label="Balance / Equity">
-            <strong>${balanceLabel}</strong>
-            <span class="account-note">${equityLabel}</span>
-          </td>
-          <td data-label="Bots"><div class="bot-tags">${tags}</div></td>
-          <td data-label="Total Lot">${lotLabel}</td>
-          <td data-label="Status"><span class="status-pill ${isWatch && !privacyHidden ? "watch" : "ok"}">${statusLabel}</span></td>
+          <td data-label="Bot / Strategy"><div class="bot-tags">${tags || maskPlain("-")}</div></td>
+          <td data-label="Balance">${maskPlain(balanceLabel)}</td>
+          <td data-label="Equity">${maskPlain(equityLabel)}</td>
+          <td data-label="Equity Gap"><strong class="${privacyHidden ? "" : gapClass}">${maskPlain(account.missing ? "-" : formatSignedMoney(account.equityGap))}</strong></td>
+          <td data-label="DD%"><strong class="${privacyHidden ? "" : ddClass}">${maskPlain(account.missing ? "-" : formatPct(account.ddPct))}</strong></td>
+          <td data-label="Open Lots">${maskPlain(account.missing ? "-" : lotFormat.format(account.openLots))}</td>
+          <td data-label="Margin">${maskPlain(formatMarginLevel(account.marginLevel))}</td>
+          <td data-label="Last Update">${maskPlain(lastUpdateLabel)}</td>
+          <td data-label="Risk Reasons"><div class="risk-chip-list">${privacyHidden ? MASK : reasons}</div></td>
         </tr>
       `;
     })
@@ -2056,7 +3029,7 @@ function populatePlannerAccounts() {
 
   const current = select.value;
   select.innerHTML = accounts
-    .map((account) => `<option value="${account.id}">${account.id} (${account.broker})</option>`)
+    .map((account) => `<option value="${account.id}">${maskAccountNumber(account.id)} (${account.broker})</option>`)
     .join("");
 
   if (current && accounts.some((account) => account.id === current)) {
@@ -2192,7 +3165,7 @@ function renderBotPlanner() {
       return `
         <div class="planner-row">
           <div>
-            <strong>${entry.account}</strong>
+            <strong>${maskAccountNumber(entry.account)}</strong>
             <span>${entry.bot}</span>
           </div>
           <div>
@@ -2220,7 +3193,7 @@ function exportPlannerLog() {
   const header = ["account", "bot", "old_lot", "new_lot", "effective_at", "status", "note", "created_at"];
   const now = new Date();
   const rows = botPlannerEntries.map((entry) => [
-    entry.account,
+    maskAccountNumber(entry.account, { forExport: true }),
     entry.bot,
     entry.oldLot,
     entry.newLot,
@@ -2293,7 +3266,7 @@ function renderAccountPerformance() {
       const profitClass = isReady && row.dailyProfitPct >= 0 ? "positive" : "negative";
       return `
         <div class="performance-row ${isReady ? "" : "pending"}">
-          <strong>${row.id}</strong>
+          <strong>${maskAccountNumber(row.id)}</strong>
           <span class="${profitClass}">${isReady ? formatSignedMoney(row.dailyProfit) : "Need history"}</span>
           <span class="${profitClass}">${isReady ? `${row.dailyProfitPct.toFixed(2)}%` : "-"}</span>
           <span>${isReady ? `${row.dailyDrawdownPct.toFixed(2)}% DD` : "Need baseline"}</span>
@@ -2305,20 +3278,38 @@ function renderAccountPerformance() {
   target.innerHTML = `${periodHtml}<div class="account-performance-mini">${accountHtml}</div>`;
 }
 
-function riskRows() {
-  return accounts
-    .map((account) => {
-      const stale = minutesSince(account.receivedAt) > STALE_AFTER_MINUTES;
-      const balance = accountBalance(account);
-      const equity = accountEquity(account);
-      const drawdown = Number.isFinite(account.dailyDrawdownPct) ? account.dailyDrawdownPct : currentDrawdownPct(account);
-      const floatingRisk = equity < balance ? ((balance - equity) / Math.max(balance, 1)) * 100 : 0;
-      const lowEquity = balance < WATCHLIST_USC ? 100 : 0;
-      const score = drawdown * 2 + floatingRisk + lowEquity + (stale ? 50 : 0);
-      return { ...account, balance, equity, stale, drawdown, floatingRisk, score };
-    })
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 5);
+function renderDangerNow() {
+  const target = document.getElementById("dangerNow");
+  if (!target) return;
+
+  if (privacyHidden) {
+    target.innerHTML = '<div class="privacy-note">Danger signals are hidden on the public view.</div>';
+    return;
+  }
+
+  const signals = dangerSignals();
+  if (!signals.length) {
+    target.innerHTML = `
+      <div class="danger-card green">
+        <span>All clear</span>
+        <strong>Expected accounts are fresh</strong>
+        <em>No urgent DD, equity gap, open lot, or margin signal right now.</em>
+      </div>
+    `;
+    return;
+  }
+
+  target.innerHTML = signals
+    .map(
+      (signal) => `
+        <div class="danger-card ${signal.severity}">
+          <span>${maskAccountNumber(signal.account)}</span>
+          <strong>${signal.reason}</strong>
+          <em>${signal.value}</em>
+        </div>
+      `,
+    )
+    .join("");
 }
 
 function renderRiskFocus() {
@@ -2330,7 +3321,7 @@ function renderRiskFocus() {
     return;
   }
 
-  const rows = riskRows();
+  const rows = riskAccountRows().filter((account) => account.riskScore > 0).slice(0, 5);
   if (!rows.length) {
     target.innerHTML = '<div class="empty-state">No risk data</div>';
     return;
@@ -2338,17 +3329,12 @@ function renderRiskFocus() {
 
   target.innerHTML = rows
     .map((account) => {
-      const flags = [];
-      if (account.balance < WATCHLIST_USC) flags.push("Low balance");
-      if (account.equity < account.balance) flags.push(`Equity gap ${formatSignedMoney(account.equity - account.balance)}`);
-      if (account.drawdown > 0) flags.push(`DD ${account.drawdown.toFixed(2)}%`);
-      if (account.stale) flags.push("Stale");
-      if (!flags.length) flags.push("OK");
+      const flags = account.riskReasons.length ? account.riskReasons.map((reason) => reason.value) : ["OK"];
 
       return `
-        <div class="risk-row">
-          <strong>${account.id}</strong>
-          <span>${formatMoney(account.balance)}</span>
+        <div class="risk-row risk-${account.severity}">
+          <strong>${maskAccountNumber(account.id)}</strong>
+          <span>${account.missing ? "Missing" : `Score ${account.riskScore}`}</span>
           <div>${flags.map((flag) => `<em>${flag}</em>`).join("")}</div>
         </div>
       `;
@@ -2370,15 +3356,20 @@ function renderLiveHealth() {
     return;
   }
 
-  const staleCount = accounts.filter((account) => minutesSince(account.receivedAt) > STALE_AFTER_MINUTES).length;
-  const newest = [...accounts].sort((a, b) => minutesSince(a.receivedAt) - minutesSince(b.receivedAt))[0];
-  const oldest = [...accounts].sort((a, b) => minutesSince(b.receivedAt) - minutesSince(a.receivedAt))[0];
+  const rows = riskAccountRows();
+  const expectedCount = expectedAccounts().length;
+  const missingCount = rows.filter((account) => account.missing).length;
+  const staleCount = rows.filter((account) => account.riskReasons.some((reason) => reason.type === "stale")).length;
+  const liveRows = rows.filter((account) => !account.missing);
+  const newest = [...liveRows].sort((a, b) => a.ageMinutes - b.ageMinutes)[0];
+  const oldest = [...liveRows].sort((a, b) => b.ageMinutes - a.ageMinutes)[0];
 
   target.innerHTML = `
-    <div class="health-item"><span>Accounts Online</span><strong>${accounts.length}/8</strong></div>
+    <div class="health-item"><span>Accounts Online</span><strong>${expectedCount - missingCount}/${expectedCount}</strong></div>
     <div class="health-item"><span>Stale Accounts</span><strong>${staleCount}</strong></div>
-    <div class="health-item"><span>Newest Update</span><strong>${newest ? `${newest.id} - ${formatAge(newest.receivedAt)}` : "-"}</strong></div>
-    <div class="health-item"><span>Oldest Update</span><strong>${oldest ? `${oldest.id} - ${formatAge(oldest.receivedAt)}` : "-"}</strong></div>
+    <div class="health-item"><span>Missing Accounts</span><strong>${missingCount}</strong></div>
+    <div class="health-item"><span>Newest Update</span><strong>${newest ? `${maskAccountNumber(newest.id)} - ${formatAge(newest.receivedAt)}` : "-"}</strong></div>
+    <div class="health-item"><span>Oldest Update</span><strong>${oldest ? `${maskAccountNumber(oldest.id)} - ${formatAge(oldest.receivedAt)}` : "-"}</strong></div>
   `;
 }
 
@@ -2388,10 +3379,38 @@ function exportCsv() {
     return;
   }
 
-  const header = ["account", "broker", "equity_usc", "note", "bot", "lot"];
-  const rows = accounts.flatMap((account) =>
-    account.bots.map((bot) => [account.id, account.broker, account.equity, account.note || "", bot.name, bot.lot]),
-  );
+  const header = [
+    "account",
+    "broker",
+    "note",
+    "bots",
+    "balance",
+    "equity",
+    "equity_gap",
+    "dd_pct",
+    "open_lots",
+    "margin_level",
+    "last_update",
+    "age_minutes",
+    "risk_score",
+    "risk_reasons",
+  ];
+  const rows = riskAccountRows().map((account) => [
+    maskAccountNumber(account.id, { forExport: true }),
+    account.broker || "",
+    account.note || "",
+    accountStrategyLabel(account),
+    account.missing ? "" : account.balance,
+    account.missing ? "" : account.equity,
+    account.missing ? "" : account.equityGap,
+    account.missing ? "" : account.ddPct,
+    account.missing ? "" : account.openLots,
+    account.marginLevel || "",
+    account.receivedAt || account.updatedAt || "",
+    Number.isFinite(account.ageMinutes) ? Math.round(account.ageMinutes) : "",
+    account.riskScore,
+    account.riskReasons.map((reason) => `${reason.label}: ${reason.value}`).join("; "),
+  ]);
   const csv = [header, ...rows]
     .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
     .join("\n");
@@ -2467,6 +3486,10 @@ function bindEvents() {
   });
   document.getElementById("exportPlannerBtn")?.addEventListener("click", exportPlannerLog);
   document.getElementById("openBotDocBtn")?.addEventListener("click", openBotConfigDoc);
+  document.getElementById("goalValueMode")?.addEventListener("change", renderGoalProjection);
+  document.getElementById("goalTarget")?.addEventListener("input", renderGoalProjection);
+  document.getElementById("goalRatePreset")?.addEventListener("change", renderGoalProjection);
+  document.getElementById("goalCustomRate")?.addEventListener("input", renderGoalProjection);
 
   window.addEventListener("resize", () => {
     drawAccountChart();
@@ -2550,7 +3573,7 @@ function normalizePerformancePeriod(item) {
 }
 
 async function loadLiveData() {
-  const liveDataUrl = window.GOLD_DASHBOARD_CONFIG?.liveDataUrl;
+  const liveDataUrl = getLiveDataUrl(false);
   if (!liveDataUrl) return;
 
   if (privacyHidden) {
@@ -2598,6 +3621,8 @@ async function refreshDashboard() {
   await loadLiveData();
   applyBotPlannerEntries();
   setMetrics();
+  renderGoalProjection();
+  renderDangerNow();
   renderAccounts(document.getElementById("searchInput")?.value || "");
   renderBotMatrix();
   renderAccountPerformance();
@@ -2612,6 +3637,6 @@ async function refreshDashboard() {
 bindEvents();
 refreshDashboard();
 
-</script>
+    </script>
   </body>
 </html>
