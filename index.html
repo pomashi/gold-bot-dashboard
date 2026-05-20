@@ -1548,7 +1548,7 @@ h2 {
   }
 }
 
-</style>
+    </style>
   </head>
   <body>
     <div class="app-shell">
@@ -1913,7 +1913,7 @@ window.GOLD_DASHBOARD_CONFIG = {
 let accounts = [
   {
     id: "2011****69",
-    equity: 9432,
+    equity: 943200,
     broker: "MH",
     bots: [
       { name: "Gold Sniper", lot: 0.1 },
@@ -1924,7 +1924,7 @@ let accounts = [
   },
   {
     id: "2011****70",
-    equity: 10152,
+    equity: 1015200,
     broker: "MH",
     bots: [
       { name: "Smart Gold", lot: 0.1 },
@@ -1935,7 +1935,7 @@ let accounts = [
   },
   {
     id: "2489****86",
-    equity: 3429,
+    equity: 342900,
     broker: "VT",
     bots: [
       { name: "Grandma Gold", lot: 0.07 },
@@ -1945,7 +1945,7 @@ let accounts = [
   },
   {
     id: "2011****15",
-    equity: 17083,
+    equity: 1708300,
     broker: "MH",
     bots: [
       { name: "Smart Gold", lot: 0.2 },
@@ -1956,20 +1956,20 @@ let accounts = [
   },
   {
     id: "2011****78",
-    equity: 660,
+    equity: 66000,
     broker: "MH",
     note: "Wave",
     bots: [{ name: "Smart Gold", lot: 0.03 }],
   },
   {
     id: "2011****68",
-    equity: 439,
+    equity: 43900,
     broker: "MH",
     bots: [{ name: "Prince of Persia", lot: 0.01 }],
   },
   {
     id: "2011****77",
-    equity: 2596,
+    equity: 259600,
     broker: "MH",
     bots: [
       { name: "John Wick", lot: 0.04 },
@@ -1978,7 +1978,7 @@ let accounts = [
   },
   {
     id: "7012****08",
-    equity: 100,
+    equity: 10000,
     broker: "MH",
     bots: [
       { name: "Gold Devil", lot: 0.01 },
@@ -2018,6 +2018,7 @@ const moneyFormat = new Intl.NumberFormat("en-US", {
 
 const ACCOUNT_UNIT = "USC";
 const USC_PER_USD = 100;
+const ACCOUNT_VALUE_SCALE = Number(window.GOLD_DASHBOARD_CONFIG?.ACCOUNT_VALUE_SCALE ?? window.GOLD_DASHBOARD_CONFIG?.accountValueScale ?? 100);
 const WATCHLIST_USC = 100000;
 const BOT_PLANNER_STORAGE_KEY = "gold-dashboard-bot-lot-planner-v1";
 const ACCESS_KEY_STORAGE_KEY = "gold-dashboard-access-key-v1";
@@ -2039,10 +2040,30 @@ function formatUsd(value) {
   return `${moneyFormat.format(Number(value || 0))}`;
 }
 
+function toAccountUnit(value) {
+  const number = Number(value || 0);
+  return Number.isFinite(number) ? number * ACCOUNT_VALUE_SCALE : 0;
+}
+
 function parseTimestamp(value) {
   if (!value) return null;
-  const normalized = String(value).replace(/^(\d{4})\.(\d{2})\.(\d{2})/, "$1-$2-$3");
-  const parsed = new Date(normalized);
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    if (value > 1000000000000) return new Date(value);
+    if (value > 1000000000) return new Date(value * 1000);
+    return new Date(Math.round((value - 25569) * 86400 * 1000));
+  }
+
+  const raw = String(value).trim();
+  const direct = new Date(raw);
+  if (!Number.isNaN(direct.getTime())) return direct;
+
+  const match = raw.match(/^(\d{4})[.-](\d{1,2})[.-](\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return null;
+
+  const [, year, month, day, hour, minute, second = "0"] = match;
+  const parsed = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
@@ -2085,6 +2106,12 @@ function formatLocalDateTime(value) {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+function bestAccountTimestamp(account) {
+  if (parseTimestamp(account.receivedAt)) return account.receivedAt;
+  if (parseTimestamp(account.updatedAt)) return account.updatedAt;
+  return "";
 }
 
 function parseArray(value, fallback = []) {
@@ -2341,7 +2368,7 @@ function calculateAccountRisk(account) {
   const ddPct = currentDrawdownPct(account);
   const openLots = Number(account.openLots || 0);
   const marginLevel = Number(account.marginLevel || 0);
-  const ageMinutes = account.missing ? Number.POSITIVE_INFINITY : minutesSince(account.receivedAt || account.updatedAt);
+  const ageMinutes = account.missing ? Number.POSITIVE_INFINITY : minutesSince(bestAccountTimestamp(account));
   const reasons = [];
 
   if (account.missing) {
@@ -2946,9 +2973,11 @@ function renderAccounts(filter = "") {
       const equityLabel = account.missing ? "-" : formatMoney(account.equity);
       const gapClass = account.equityGap < 0 ? "negative-text" : account.equityGap > 0 ? "positive-text" : "";
       const ddClass = account.ddPct >= riskThresholds().ddRedPct ? "risk-text-red" : account.ddPct >= riskThresholds().ddYellowPct ? "risk-text-yellow" : "";
+      const lastUpdateSource = bestAccountTimestamp(account);
+      const lastUpdateDetail = parseTimestamp(account.updatedAt) ? account.updatedAt : lastUpdateSource;
       const lastUpdateLabel = account.missing
         ? "Missing"
-        : `${formatAge(account.receivedAt || account.updatedAt)}${account.updatedAt ? ` / ${formatLocalDateTime(account.updatedAt)}` : ""}`;
+        : `${formatAge(lastUpdateSource)}${lastUpdateDetail ? ` / ${formatLocalDateTime(lastUpdateDetail)}` : ""}`;
       const reasons = account.riskReasons.length
         ? account.riskReasons.map((reason) => `<span class="risk-chip ${reason.severity}">${reason.value}</span>`).join("")
         : '<span class="risk-chip green">OK</span>';
@@ -3362,8 +3391,8 @@ function renderLiveHealth() {
     <div class="health-item"><span>Accounts Online</span><strong>${expectedCount - missingCount}/${expectedCount}</strong></div>
     <div class="health-item"><span>Stale Accounts</span><strong>${staleCount}</strong></div>
     <div class="health-item"><span>Missing Accounts</span><strong>${missingCount}</strong></div>
-    <div class="health-item"><span>Newest Update</span><strong>${newest ? `${maskAccountNumber(newest.id)} - ${formatAge(newest.receivedAt)}` : "-"}</strong></div>
-    <div class="health-item"><span>Oldest Update</span><strong>${oldest ? `${maskAccountNumber(oldest.id)} - ${formatAge(oldest.receivedAt)}` : "-"}</strong></div>
+    <div class="health-item"><span>Newest Update</span><strong>${newest ? `${maskAccountNumber(newest.id)} - ${formatAge(bestAccountTimestamp(newest))}` : "-"}</strong></div>
+    <div class="health-item"><span>Oldest Update</span><strong>${oldest ? `${maskAccountNumber(oldest.id)} - ${formatAge(bestAccountTimestamp(oldest))}` : "-"}</strong></div>
   `;
 }
 
@@ -3400,7 +3429,7 @@ function exportCsv() {
     account.missing ? "" : account.ddPct,
     account.missing ? "" : account.openLots,
     account.marginLevel || "",
-    account.receivedAt || account.updatedAt || "",
+    bestAccountTimestamp(account),
     Number.isFinite(account.ageMinutes) ? Math.round(account.ageMinutes) : "",
     account.riskScore,
     account.riskReasons.map((reason) => `${reason.label}: ${reason.value}`).join("; "),
@@ -3493,7 +3522,7 @@ function bindEvents() {
 
 function normalizeLiveAccount(account) {
   const id = String(account.account || account.id || "");
-  const baselineBalance = Number(account.baseline_balance || account.baselineBalance || 0);
+  const baselineBalance = toAccountUnit(account.baseline_balance || account.baselineBalance || 0);
   const hasBalanceBaseline = Number.isFinite(baselineBalance) && baselineBalance > 0;
   const liveBotsSource = parseArray(account.bots);
   const botMetricsSource = parseArray(account.bot_metrics || account.botMetrics);
@@ -3509,19 +3538,21 @@ function normalizeLiveAccount(account) {
 
   return {
     id,
-    equity: Number(account.equity || 0),
-    balance: Number(account.balance || 0),
+    equity: toAccountUnit(account.equity || 0),
+    balance: toAccountUnit(account.balance || 0),
     broker: String(account.broker || ""),
     note: String(account.note || ""),
-    floatingPl: Number(account.floating_pl || account.floatingPl || 0),
+    floatingPl: toAccountUnit(account.floating_pl || account.floatingPl || 0),
     openPositions: Number(account.open_positions || account.openPositions || 0),
     openLots: Number(account.open_lots || account.openLots || 0),
+    margin: toAccountUnit(account.margin || 0),
+    freeMargin: toAccountUnit(account.free_margin || account.freeMargin || 0),
     marginLevel: Number(account.margin_level || account.marginLevel || 0),
     updatedAt: account.updated_at || account.updatedAt || "",
     receivedAt: account.received_at || account.receivedAt || account.updated_at || account.updatedAt || "",
     baselineBalance,
-    baselineEquity: Number(account.baseline_equity || account.baselineEquity || 0),
-    dailyProfit: hasBalanceBaseline ? Number(account.daily_profit || account.dailyProfit || 0) : Number.NaN,
+    baselineEquity: toAccountUnit(account.baseline_equity || account.baselineEquity || 0),
+    dailyProfit: hasBalanceBaseline ? toAccountUnit(account.daily_profit || account.dailyProfit || 0) : Number.NaN,
     dailyProfitPct:
       !hasBalanceBaseline || account.daily_profit_pct === "" || account.dailyProfitPct === ""
         ? Number.NaN
@@ -3533,7 +3564,7 @@ function normalizeLiveAccount(account) {
     performance: normalizePerformancePeriods(account.performance),
     botMetrics: botMetricsSource.map((metric) => ({
       name: String(metric.name || ""),
-      profit: Number(metric.profit || 0),
+      profit: toAccountUnit(metric.profit || 0),
       profitPct: Number(metric.profit_pct || metric.profitPct || 0),
       drawdownPct: Number(metric.drawdown_pct || metric.drawdownPct || 0),
     })),
@@ -3551,9 +3582,9 @@ function normalizePerformancePeriods(value) {
 
 function normalizePerformancePeriod(item) {
   if (!item || typeof item !== "object") return {};
-  const baselineBalance = Number(item.baselineBalance ?? item.baseline_balance ?? 0);
-  const latestBalance = Number(item.latestBalance ?? item.latest_balance ?? 0);
-  const profit = Number(item.profit ?? 0);
+  const baselineBalance = toAccountUnit(item.baselineBalance ?? item.baseline_balance ?? 0);
+  const latestBalance = toAccountUnit(item.latestBalance ?? item.latest_balance ?? 0);
+  const profit = toAccountUnit(item.profit ?? 0);
   const profitPct = Number(item.profitPct ?? item.profit_pct ?? Number.NaN);
   const drawdownPct = Number(item.drawdownPct ?? item.drawdown_pct ?? Number.NaN);
   return {
