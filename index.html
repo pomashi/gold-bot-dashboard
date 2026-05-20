@@ -1170,14 +1170,14 @@ h2 {
                   <input id="plannerLot" type="number" min="0" step="0.01" placeholder="0.03" />
                 </label>
                 <label>
-                  <span>Effective time</span>
+                  <span>Apply time</span>
                   <input id="plannerEffectiveAt" type="datetime-local" />
                 </label>
                 <label class="planner-note">
                   <span>Note</span>
-                  <input id="plannerNote" type="text" placeholder="Example: raise Smart Gold next week" />
+                  <input id="plannerNote" type="text" placeholder="Example: changed Smart Gold in MT5" />
                 </label>
-                <button class="primary-button" type="submit">Save lot change</button>
+                <button class="primary-button" type="submit">Apply lot now</button>
               </form>
 
               <div class="planner-list-wrap">
@@ -1781,9 +1781,8 @@ function renderBotMatrix() {
 function setDefaultPlannerTime() {
   const input = document.getElementById("plannerEffectiveAt");
   if (!input || input.value) return;
-  const nextHour = new Date(Date.now() + 60 * 60 * 1000);
-  nextHour.setMinutes(0, 0, 0);
-  input.value = new Date(nextHour.getTime() - nextHour.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  const now = new Date();
+  input.value = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 }
 
 function populatePlannerAccounts() {
@@ -1841,18 +1840,19 @@ async function addBotPlannerEntry(event) {
   const note = document.getElementById("plannerNote")?.value.trim() || "";
   const currentLot = accounts.find((item) => item.id === account)?.bots.find((item) => item.name === bot)?.lot ?? 0;
 
-  if (!account || !bot || !Number.isFinite(newLot) || newLot < 0 || !effectiveAt) {
-    document.getElementById("plannerSummary").textContent = "Fill account, bot, lot, and time first.";
+  if (!account || !bot || !Number.isFinite(newLot) || newLot < 0) {
+    document.getElementById("plannerSummary").textContent = "Fill account, bot, and lot first.";
     return;
   }
 
+  const appliedAt = effectiveAt ? new Date(effectiveAt) : new Date();
   const entry = {
     id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
     account,
     bot,
     oldLot: Number(currentLot),
     newLot,
-    effectiveAt: new Date(effectiveAt).toISOString(),
+    effectiveAt: appliedAt.toISOString(),
     note,
     createdAt: new Date().toISOString(),
   };
@@ -1869,6 +1869,7 @@ async function addBotPlannerEntry(event) {
   saveBotPlannerEntries();
   document.getElementById("plannerLot").value = "";
   document.getElementById("plannerNote").value = "";
+  document.getElementById("plannerEffectiveAt").value = "";
   refreshDashboard();
 }
 
@@ -2169,6 +2170,7 @@ function normalizeLiveAccount(account) {
   const configuredBots = configuredBotsByAccount.get(id) || [];
   const hasPlaceholderBots =
     liveBots.length === 0 || liveBots.every((bot) => bot.name === id || bot.name === account.account || bot.lot <= 0);
+  const displayBots = !hasPlaceholderBots && liveBots.length ? liveBots : configuredBots;
 
   return {
     id,
@@ -2200,7 +2202,7 @@ function normalizeLiveAccount(account) {
       profitPct: Number(metric.profit_pct || metric.profitPct || 0),
       drawdownPct: Number(metric.drawdown_pct || metric.drawdownPct || 0),
     })),
-    bots: configuredBots.length ? configuredBots.map((bot) => ({ ...bot })) : liveBots,
+    bots: displayBots.map((bot) => ({ ...bot })),
   };
 }
 
