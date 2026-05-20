@@ -2388,8 +2388,9 @@ function accountStrategyLabel(account) {
 
 function maskedAccountPattern(value) {
   return String(value || "")
-    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    .replace(/\\\*+/g, "\\d+");
+    .split(/\*+/)
+    .map((part) => part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("\\d+");
 }
 
 function accountIdMatches(expectedId, liveId) {
