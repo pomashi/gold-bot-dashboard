@@ -244,25 +244,14 @@ h2 {
 }
 
 .refresh-icon {
-  width: 17px;
-  height: 17px;
+  width: 21px;
+  height: 21px;
   display: block;
-  border: 2px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 999px;
-  position: relative;
-}
-
-.refresh-icon::after {
-  content: "";
-  position: absolute;
-  right: -3px;
-  top: 0;
-  width: 6px;
-  height: 6px;
-  border-top: 2px solid currentColor;
-  border-right: 2px solid currentColor;
-  transform: rotate(38deg);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.35;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .primary-button,
@@ -1599,7 +1588,12 @@ h2 {
           </div>
           <div class="top-actions">
             <button class="ghost-button privacy-toggle" id="privacyToggleBtn" title="Toggle dashboard detail lock" aria-label="Toggle dashboard detail lock">AU</button>
-            <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data"><span class="refresh-icon" aria-hidden="true"></span></button>
+            <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">
+              <svg class="refresh-icon" aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M20 11a8 8 0 1 0-2.3 5.7" />
+                <path d="M20 5v6h-6" />
+              </svg>
+            </button>
             <button class="primary-button" id="exportBtn">Export CSV</button>
           </div>
         </header>
