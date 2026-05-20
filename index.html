@@ -1893,6 +1893,8 @@ window.GOLD_DASHBOARD_CONFIG = {
   SHOW_FULL_ACCOUNT_AFTER_AUTH: false,
   PUBLIC_MODE: true,
   EXPORT_FULL_ACCOUNT_NUMBERS: false,
+  // MT5 cent accounts usually report balance/equity in USC already. Use 100 only if your webhook sends USD values.
+  ACCOUNT_VALUE_SCALE: 1,
   // Risk thresholds are intentionally simple so the dashboard stays easy to audit.
   riskThresholds: {
     staleYellowMinutes: 5,
@@ -2018,7 +2020,7 @@ const moneyFormat = new Intl.NumberFormat("en-US", {
 
 const ACCOUNT_UNIT = "USC";
 const USC_PER_USD = 100;
-const ACCOUNT_VALUE_SCALE = Number(window.GOLD_DASHBOARD_CONFIG?.ACCOUNT_VALUE_SCALE ?? window.GOLD_DASHBOARD_CONFIG?.accountValueScale ?? 100);
+const ACCOUNT_VALUE_SCALE = Number(window.GOLD_DASHBOARD_CONFIG?.ACCOUNT_VALUE_SCALE ?? window.GOLD_DASHBOARD_CONFIG?.accountValueScale ?? 1);
 const WATCHLIST_USC = 100000;
 const BOT_PLANNER_STORAGE_KEY = "gold-dashboard-bot-lot-planner-v1";
 const ACCESS_KEY_STORAGE_KEY = "gold-dashboard-access-key-v1";
