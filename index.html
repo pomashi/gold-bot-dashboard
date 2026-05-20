@@ -208,12 +208,28 @@ h2 {
 }
 
 .icon-button,
+.ghost-button,
 .primary-button,
 .secondary-button,
 .wide-button {
   min-height: 42px;
   border-radius: 8px;
   font-weight: 800;
+}
+
+.ghost-button {
+  min-width: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.ghost-button.active {
+  background: var(--sidebar);
+  color: #fff;
+  border-color: var(--sidebar);
 }
 
 .icon-button {
@@ -513,6 +529,21 @@ h2 {
   color: var(--muted);
   background: var(--surface-2);
   font-size: 13px;
+}
+
+.privacy-mask {
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.privacy-note {
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .bot-row {
@@ -878,11 +909,20 @@ h2 {
   .sidebar {
     position: static;
     height: auto;
-    padding: 14px;
+    gap: 12px;
+    padding: 12px 14px;
   }
 
   .nav-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .nav-item {
+    flex: 0 0 auto;
+    min-width: 128px;
   }
 
   .connection-panel {
@@ -907,7 +947,7 @@ h2 {
 
 @media (max-width: 680px) {
   .main {
-    padding: 18px 14px;
+    padding: 14px 10px;
   }
 
   .topbar,
@@ -919,6 +959,8 @@ h2 {
 
   .top-actions {
     width: 100%;
+    display: grid;
+    grid-template-columns: 42px 42px minmax(0, 1fr);
   }
 
   .primary-button {
@@ -926,23 +968,94 @@ h2 {
   }
 
   .nav-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0 -2px;
   }
 
   .metrics-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .metric {
+    padding: 13px;
+  }
+
+  .metric strong {
+    font-size: 20px;
+    line-height: 1.1;
+  }
+
+  .metric span,
+  .metric small {
+    font-size: 11px;
   }
 
   .chart-wrap {
-    height: 260px;
+    height: 220px;
+    margin-top: 12px;
+  }
+
+  .chart-wrap.compact {
+    height: 220px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .accounts-table {
+    min-width: 0;
+  }
+
+  .accounts-table thead {
+    display: none;
+  }
+
+  .accounts-table,
+  .accounts-table tbody,
+  .accounts-table tr,
+  .accounts-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .accounts-table tr {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .accounts-table td {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 0;
+  }
+
+  .accounts-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
   }
 
   .bot-row {
-    grid-template-columns: 116px 1fr 58px;
+    grid-template-columns: minmax(92px, 0.8fr) 1fr 52px;
+    gap: 8px;
+  }
+
+  .performance-head {
+    display: none;
   }
 
   .performance-row {
-    grid-template-columns: minmax(0, 1fr) 88px 58px 68px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .performance-row span {
+    text-align: left;
   }
 
   .risk-row {
@@ -1002,6 +1115,7 @@ h2 {
             <p class="subtitle">Track balance, equity gap, bot exposure, and low-balance accounts in one scan-friendly view.</p>
           </div>
           <div class="top-actions">
+            <button class="ghost-button privacy-toggle" id="privacyToggleBtn" title="Toggle dashboard detail lock" aria-label="Toggle dashboard detail lock">AU</button>
             <button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">R</button>
             <button class="primary-button" id="exportBtn">Export CSV</button>
           </div>
@@ -1204,7 +1318,7 @@ h2 {
               </div>
               <div>
                 <span>2</span>
-                <p>Enable WebRequest in MT5 and paste the Apps Script Web app URL into `InpWebhookUrl`.</p>
+                <p>Enable WebRequest in MT5, paste the Apps Script Web app URL into `InpWebhookUrl`, then add `InpWriteKey`.</p>
               </div>
               <div>
                 <span>3</span>
@@ -1222,6 +1336,7 @@ window.GOLD_DASHBOARD_CONFIG = {
   // Paste the deployed Google Apps Script Web app URL here.
   liveDataUrl: "https://script.google.com/macros/s/AKfycbz9T90SGrGyRGb8aKpdEatDRSVj9xsr8ev4KuRDNs97N9f5JlE6bwkNRmgyLBI-JN8/exec",
   botConfigDocUrl: "https://docs.google.com/spreadsheets/d/1x15ioO3qHqyF_hfj2UFpHNA0T2HYfWob25ESjjiqzpc",
+  // Leave blank on public hosting. The dashboard asks for an access key and stores it only in this browser.
   plannerWriteKey: "",
 };
 
@@ -1317,6 +1432,9 @@ const ACCOUNT_UNIT = "USC";
 const WATCHLIST_USC = 100000;
 const STALE_AFTER_MINUTES = 10;
 const BOT_PLANNER_STORAGE_KEY = "gold-dashboard-bot-lot-planner-v1";
+const ACCESS_KEY_STORAGE_KEY = "gold-dashboard-access-key-v1";
+const PRIVACY_STORAGE_KEY = "gold-dashboard-privacy-hidden-v1";
+const MASK = "********";
 
 function formatMoney(value) {
   return `${moneyFormat.format(Number(value || 0))} ${ACCOUNT_UNIT}`;
@@ -1371,6 +1489,104 @@ function parseArray(value, fallback = []) {
   }
 }
 
+function getStoredAccessKey() {
+  try {
+    return window.localStorage?.getItem(ACCESS_KEY_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function setStoredAccessKey(value) {
+  try {
+    if (value) {
+      window.localStorage?.setItem(ACCESS_KEY_STORAGE_KEY, value);
+    } else {
+      window.localStorage?.removeItem(ACCESS_KEY_STORAGE_KEY);
+    }
+  } catch {
+    console.warn("Could not save dashboard access key");
+  }
+}
+
+function getDashboardAccessKey(promptIfMissing = false) {
+  const stored = getStoredAccessKey();
+  if (stored || !promptIfMissing) return stored;
+
+  const entered = window.prompt("Enter Gold Dashboard access key");
+  const key = String(entered || "").trim();
+  if (key) setStoredAccessKey(key);
+  return key;
+}
+
+function buildAuthenticatedLiveUrl(liveDataUrl, promptIfMissing = false) {
+  const key = getDashboardAccessKey(promptIfMissing);
+  if (!key) return "";
+
+  const url = new URL(liveDataUrl);
+  url.searchParams.set("read_key", key);
+  return url.toString();
+}
+
+function loadPrivacyHidden() {
+  try {
+    return window.localStorage?.getItem(PRIVACY_STORAGE_KEY) !== "visible";
+  } catch {
+    return true;
+  }
+}
+
+function savePrivacyHidden() {
+  try {
+    window.localStorage?.setItem(PRIVACY_STORAGE_KEY, privacyHidden ? "hidden" : "visible");
+  } catch {
+    console.warn("Could not save dashboard privacy mode");
+  }
+}
+
+function maskValue(value = MASK) {
+  return privacyHidden ? `<span class="privacy-mask">${MASK}</span>` : value;
+}
+
+function maskPlain(value = MASK) {
+  return privacyHidden ? MASK : value;
+}
+
+function updatePrivacyControls() {
+  document.body.classList.toggle("privacy-hidden", privacyHidden);
+  const button = document.getElementById("privacyToggleBtn");
+  if (button) {
+    button.classList.toggle("active", !privacyHidden);
+    button.textContent = privacyHidden ? "AU" : "ON";
+    button.title = privacyHidden ? "Unlock dashboard details" : "Hide dashboard details";
+    button.setAttribute("aria-pressed", String(!privacyHidden));
+  }
+
+  const search = document.getElementById("searchInput");
+  if (search) {
+    search.disabled = privacyHidden;
+    if (privacyHidden) search.value = "";
+  }
+}
+
+function renderPrivacyNotice(targetId, message = "Dashboard details are hidden. Use the small AU control in the top-right to unlock this browser.") {
+  const target = document.getElementById(targetId);
+  if (target) target.innerHTML = `<div class="privacy-note">${message}</div>`;
+}
+
+async function togglePrivacyMode() {
+  if (privacyHidden) {
+    const key = getDashboardAccessKey(Boolean(window.GOLD_DASHBOARD_CONFIG?.liveDataUrl));
+    if (window.GOLD_DASHBOARD_CONFIG?.liveDataUrl && !key) return;
+    privacyHidden = false;
+  } else {
+    privacyHidden = true;
+  }
+
+  savePrivacyHidden();
+  await refreshDashboard();
+}
+
 const lotFormat = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
@@ -1381,6 +1597,7 @@ let botChart;
 let chartMode = "bar";
 let botPlannerEntries = loadBotPlannerEntries();
 let portfolioPerformance = {};
+let privacyHidden = loadPrivacyHidden();
 const chartColors = ["#1f7a4c", "#bd8b2f", "#275a8d", "#b94d43", "#5b8e7d", "#9c6b2e", "#496f9d", "#7a8a42"];
 
 function accountLotTotal(account) {
@@ -1449,7 +1666,7 @@ function mergeBotPlannerEntries(primary, secondary) {
 
 async function syncBotPlannerEntry(entry) {
   const liveDataUrl = window.GOLD_DASHBOARD_CONFIG?.liveDataUrl;
-  const plannerWriteKey = window.GOLD_DASHBOARD_CONFIG?.plannerWriteKey;
+  const plannerWriteKey = window.GOLD_DASHBOARD_CONFIG?.plannerWriteKey || getStoredAccessKey();
   if (!liveDataUrl || !plannerWriteKey) return false;
 
   const response = await fetch(liveDataUrl, {
@@ -1560,17 +1777,18 @@ function setMetrics() {
   const largest = [...accounts].sort((a, b) => accountBalance(b) - accountBalance(a))[0];
   const watchlist = accounts.filter((account) => accountBalance(account) < WATCHLIST_USC).length;
 
-  document.getElementById("totalEquity").textContent = formatMoney(totalBalance);
-  document.getElementById("totalLots").textContent = lotFormat.format(totalLots);
-  document.getElementById("largestAccount").textContent = largest.id;
-  document.getElementById("largestAccountMeta").textContent =
-    `${largest.broker} - Balance ${formatMoney(accountBalance(largest))}`;
-  document.getElementById("watchlistCount").textContent = String(watchlist);
+  document.getElementById("totalEquity").innerHTML = maskValue(formatMoney(totalBalance));
+  document.getElementById("totalLots").innerHTML = maskValue(lotFormat.format(totalLots));
+  document.getElementById("largestAccount").innerHTML = maskValue(largest.id);
+  document.getElementById("largestAccountMeta").innerHTML = maskValue(
+    `${largest.broker} - Balance ${formatMoney(accountBalance(largest))}`,
+  );
+  document.getElementById("watchlistCount").innerHTML = maskValue(String(watchlist));
   const equityGap = totalEquity - totalBalance;
-  document.getElementById("floatingPlTotal").textContent = `${formatSignedMoney(equityGap)} equity gap`;
+  document.getElementById("floatingPlTotal").innerHTML = maskValue(`${formatSignedMoney(equityGap)} equity gap`);
   document.getElementById("floatingPlTotal").classList.toggle("negative-text", equityGap < 0);
   document.getElementById("floatingPlTotal").classList.toggle("positive-text", equityGap > 0);
-  document.getElementById("openLotsTotal").textContent = lotFormat.format(totalOpenLots);
+  document.getElementById("openLotsTotal").innerHTML = maskValue(lotFormat.format(totalOpenLots));
 }
 
 function drawAccountChart() {
@@ -1578,6 +1796,11 @@ function drawAccountChart() {
   prepareCanvas(canvas);
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (privacyHidden) {
+    drawLockedChart(ctx, canvas, "Balance details hidden");
+    return;
+  }
 
   if (chartMode === "doughnut") {
   drawDoughnutChart(ctx, canvas, accounts.map(accountBalance), accounts.map((account) => account.id));
@@ -1594,6 +1817,10 @@ function drawBotChart() {
   prepareCanvas(canvas);
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (privacyHidden) {
+    drawLockedChart(ctx, canvas, "Bot exposure hidden");
+    return;
+  }
   drawDoughnutChart(ctx, canvas, labels.map((label) => totals[label]), labels, true);
 }
 
@@ -1689,7 +1916,7 @@ function drawDoughnutChart(ctx, canvas, values, labels, isLotChart = false) {
   ctx.fillText(isLotChart ? lotFormat.format(total) : formatMoney(total), centerX, centerY + 4);
   ctx.font = "12px Arial";
   ctx.fillStyle = "#647067";
-  ctx.fillText(isLotChart ? "total lot" : "total equity", centerX, centerY + 24);
+  ctx.fillText(isLotChart ? "total lot" : "total balance", centerX, centerY + 24);
 
   const legendX = width * 0.68;
   const firstY = Math.max(26, centerY - labels.length * 12);
@@ -1703,6 +1930,22 @@ function drawDoughnutChart(ctx, canvas, values, labels, isLotChart = false) {
     const value = isLotChart ? lotFormat.format(values[index]) : formatMoney(values[index]);
     ctx.fillText(`${label} - ${value}`, legendX + 16, y);
   });
+}
+
+function drawLockedChart(ctx, canvas, label) {
+  const width = canvas.widthCss;
+  const height = canvas.heightCss;
+  ctx.fillStyle = "#eef2ed";
+  ctx.fillRect(0, 0, width, height);
+  ctx.strokeStyle = "#d9e0d9";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, width - 1, height - 1);
+  ctx.fillStyle = "#66736b";
+  ctx.textAlign = "center";
+  ctx.font = "800 14px Arial";
+  ctx.fillText(MASK, width / 2, height / 2 - 8);
+  ctx.font = "12px Arial";
+  ctx.fillText(label, width / 2, height / 2 + 16);
 }
 
 function roundRect(ctx, x, y, width, height, radius, color) {
@@ -1719,10 +1962,12 @@ function roundRect(ctx, x, y, width, height, radius, color) {
 
 function renderAccounts(filter = "") {
   const normalized = filter.trim().toLowerCase();
-  const rows = accounts.filter((account) => {
-    const haystack = `${account.id} ${account.broker} ${account.note || ""} ${account.bots.map((bot) => bot.name).join(" ")}`;
-    return haystack.toLowerCase().includes(normalized);
-  });
+  const rows = privacyHidden
+    ? accounts
+    : accounts.filter((account) => {
+        const haystack = `${account.id} ${account.broker} ${account.note || ""} ${account.bots.map((bot) => bot.name).join(" ")}`;
+        return haystack.toLowerCase().includes(normalized);
+      });
 
   document.getElementById("accountsBody").innerHTML = rows
     .map((account) => {
@@ -1731,23 +1976,32 @@ function renderAccounts(filter = "") {
       const ddPct = currentDrawdownPct(account);
       const isWatch = balance < WATCHLIST_USC;
       const tags = account.bots
-        .map((bot) => `<span class="tag">${bot.name} ${lotFormat.format(bot.lot)}</span>`)
+        .map((bot) => `<span class="tag">${maskPlain(`${bot.name} ${lotFormat.format(bot.lot)}`)}</span>`)
         .join("");
+      const accountLabel = maskPlain(account.id);
+      const noteLabel = privacyHidden ? "" : account.note;
+      const brokerLabel = maskPlain(account.broker);
+      const balanceLabel = maskPlain(formatMoney(balance));
+      const equityLabel = privacyHidden
+        ? MASK
+        : `Equity ${formatMoney(equity)}${ddPct > 0 ? ` - DD ${ddPct.toFixed(2)}%` : ""}`;
+      const lotLabel = maskPlain(lotFormat.format(accountLotTotal(account)));
+      const statusLabel = privacyHidden ? MASK : isWatch ? "Watch" : "OK";
 
       return `
         <tr>
-          <td>
-            <span class="account-id">${account.id}</span>
-            ${account.note ? `<span class="account-note">${account.note}</span>` : ""}
+          <td data-label="Account">
+            <span class="account-id">${accountLabel}</span>
+            ${noteLabel ? `<span class="account-note">${noteLabel}</span>` : ""}
           </td>
-          <td>${account.broker}</td>
-          <td>
-            <strong>${formatMoney(balance)}</strong>
-            <span class="account-note">Equity ${formatMoney(equity)}${ddPct > 0 ? ` - DD ${ddPct.toFixed(2)}%` : ""}</span>
+          <td data-label="Broker">${brokerLabel}</td>
+          <td data-label="Balance / Equity">
+            <strong>${balanceLabel}</strong>
+            <span class="account-note">${equityLabel}</span>
           </td>
-          <td><div class="bot-tags">${tags}</div></td>
-          <td>${lotFormat.format(accountLotTotal(account))}</td>
-          <td><span class="status-pill ${isWatch ? "watch" : "ok"}">${isWatch ? "Watch" : "OK"}</span></td>
+          <td data-label="Bots"><div class="bot-tags">${tags}</div></td>
+          <td data-label="Total Lot">${lotLabel}</td>
+          <td data-label="Status"><span class="status-pill ${isWatch && !privacyHidden ? "watch" : "ok"}">${statusLabel}</span></td>
         </tr>
       `;
     })
@@ -1755,6 +2009,11 @@ function renderAccounts(filter = "") {
 }
 
 function renderBotMatrix() {
+  if (privacyHidden) {
+    renderPrivacyNotice("botMatrix", "Bot names and lot allocation are hidden on the public view.");
+    return;
+  }
+
   const totals = botTotals();
   const maxLot = Math.max(...Object.values(totals));
 
@@ -1789,6 +2048,12 @@ function populatePlannerAccounts() {
   const select = document.getElementById("plannerAccount");
   if (!select) return;
 
+  if (privacyHidden) {
+    select.innerHTML = '<option value="">Hidden</option>';
+    populatePlannerBots();
+    return;
+  }
+
   const current = select.value;
   select.innerHTML = accounts
     .map((account) => `<option value="${account.id}">${account.id} (${account.broker})</option>`)
@@ -1806,6 +2071,12 @@ function populatePlannerBots() {
   const accountSelect = document.getElementById("plannerAccount");
   const botSelect = document.getElementById("plannerBot");
   if (!accountSelect || !botSelect) return;
+
+  if (privacyHidden) {
+    botSelect.innerHTML = '<option value="">Hidden</option>';
+    fillPlannerCurrentLot();
+    return;
+  }
 
   const account = accounts.find((item) => item.id === accountSelect.value) || accounts[0];
   const current = botSelect.value;
@@ -1832,6 +2103,11 @@ function fillPlannerCurrentLot() {
 
 async function addBotPlannerEntry(event) {
   event.preventDefault();
+
+  if (privacyHidden) {
+    document.getElementById("plannerSummary").textContent = "Unlock dashboard details before logging bot lot changes.";
+    return;
+  }
 
   const account = document.getElementById("plannerAccount")?.value;
   const bot = document.getElementById("plannerBot")?.value;
@@ -1884,6 +2160,16 @@ function renderBotPlanner() {
   const summary = document.getElementById("plannerSummary");
   if (!list || !summary) return;
 
+  if (privacyHidden) {
+    summary.innerHTML = `
+      <span><strong>${MASK}</strong> active changes</span>
+      <span><strong>${MASK}</strong> scheduled</span>
+      <span><strong>${MASK}</strong> total logs</span>
+    `;
+    list.innerHTML = '<div class="privacy-note">Planner details are hidden on the public view.</div>';
+    return;
+  }
+
   const now = new Date();
   const active = effectiveBotPlannerEntries(now).length;
   const planned = botPlannerEntries.length - active;
@@ -1926,6 +2212,11 @@ function renderBotPlanner() {
 }
 
 function exportPlannerLog() {
+  if (privacyHidden) {
+    window.alert("Unlock dashboard details before exporting planner log.");
+    return;
+  }
+
   const header = ["account", "bot", "old_lot", "new_lot", "effective_at", "status", "note", "created_at"];
   const now = new Date();
   const rows = botPlannerEntries.map((entry) => [
@@ -1961,6 +2252,11 @@ function renderAccountPerformance() {
   const target = document.getElementById("accountPerformance");
 
   if (!target) return;
+
+  if (privacyHidden) {
+    target.innerHTML = '<div class="privacy-note">Balance P/L and DD are hidden on the public view.</div>';
+    return;
+  }
 
   if (!accountRows.length) {
     target.innerHTML = '<div class="empty-state">No account data</div>';
@@ -2029,6 +2325,11 @@ function renderRiskFocus() {
   const target = document.getElementById("riskFocus");
   if (!target) return;
 
+  if (privacyHidden) {
+    target.innerHTML = '<div class="privacy-note">Risk details are hidden on the public view.</div>';
+    return;
+  }
+
   const rows = riskRows();
   if (!rows.length) {
     target.innerHTML = '<div class="empty-state">No risk data</div>';
@@ -2059,6 +2360,16 @@ function renderLiveHealth() {
   const target = document.getElementById("liveHealth");
   if (!target) return;
 
+  if (privacyHidden) {
+    target.innerHTML = `
+      <div class="health-item"><span>Accounts Online</span><strong>${MASK}</strong></div>
+      <div class="health-item"><span>Stale Accounts</span><strong>${MASK}</strong></div>
+      <div class="health-item"><span>Newest Update</span><strong>${MASK}</strong></div>
+      <div class="health-item"><span>Oldest Update</span><strong>${MASK}</strong></div>
+    `;
+    return;
+  }
+
   const staleCount = accounts.filter((account) => minutesSince(account.receivedAt) > STALE_AFTER_MINUTES).length;
   const newest = [...accounts].sort((a, b) => minutesSince(a.receivedAt) - minutesSince(b.receivedAt))[0];
   const oldest = [...accounts].sort((a, b) => minutesSince(b.receivedAt) - minutesSince(a.receivedAt))[0];
@@ -2072,6 +2383,11 @@ function renderLiveHealth() {
 }
 
 function exportCsv() {
+  if (privacyHidden) {
+    window.alert("Unlock dashboard details before exporting CSV.");
+    return;
+  }
+
   const header = ["account", "broker", "equity_usc", "note", "bot", "lot"];
   const rows = accounts.flatMap((account) =>
     account.bots.map((bot) => [account.id, account.broker, account.equity, account.note || "", bot.name, bot.lot]),
@@ -2090,8 +2406,9 @@ function exportCsv() {
 
 async function copySchema() {
   const schema = {
-    account: "201101469",
-    broker: "MH",
+    write_key: "YOUR_MT5_WRITE_KEY",
+    account: "YOUR_ACCOUNT_ID",
+    broker: "YOUR_BROKER",
     balance: 9432,
     equity: 9432,
     floating_pl: 0,
@@ -2130,6 +2447,7 @@ function bindEvents() {
   });
 
   document.getElementById("searchInput").addEventListener("input", (event) => renderAccounts(event.target.value));
+  document.getElementById("privacyToggleBtn")?.addEventListener("click", togglePrivacyMode);
   document.getElementById("exportBtn").addEventListener("click", exportCsv);
   document.getElementById("copySchemaBtn").addEventListener("click", copySchema);
   document.getElementById("refreshBtn").addEventListener("click", refreshDashboard);
@@ -2235,11 +2553,29 @@ async function loadLiveData() {
   const liveDataUrl = window.GOLD_DASHBOARD_CONFIG?.liveDataUrl;
   if (!liveDataUrl) return;
 
+  if (privacyHidden) {
+    document.getElementById("connectionStatus").textContent = "Details hidden";
+    return;
+  }
+
   try {
     document.getElementById("connectionStatus").textContent = "Loading live data";
-    const response = await fetch(liveDataUrl, { cache: "no-store" });
+    const authenticatedUrl = buildAuthenticatedLiveUrl(liveDataUrl, true);
+    if (!authenticatedUrl) {
+      document.getElementById("connectionStatus").textContent = "Access key needed";
+      return;
+    }
+
+    const response = await fetch(authenticatedUrl, { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
+    if (payload && payload.error === "unauthorized") {
+      setStoredAccessKey("");
+      privacyHidden = true;
+      savePrivacyHidden();
+      updatePrivacyControls();
+      throw new Error("Unauthorized access key");
+    }
     if (!Array.isArray(payload.accounts)) throw new Error("Missing accounts array");
     accounts = payload.accounts.map(normalizeLiveAccount).filter((account) => account.id);
     portfolioPerformance = normalizePerformancePeriods(payload.performance);
@@ -2258,6 +2594,7 @@ async function loadLiveData() {
 }
 
 async function refreshDashboard() {
+  updatePrivacyControls();
   await loadLiveData();
   applyBotPlannerEntries();
   setMetrics();
@@ -2278,4 +2615,3 @@ refreshDashboard();
 </script>
   </body>
 </html>
-
