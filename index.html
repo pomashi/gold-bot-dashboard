@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -552,9 +552,34 @@ h2 {
   margin-top: 14px;
 }
 
+.performance-table,
+.account-performance-mini {
+  display: grid;
+  gap: 8px;
+}
+
+.account-performance-mini {
+  margin-top: 12px;
+}
+
+.performance-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 118px 72px 78px;
+  gap: 8px;
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.performance-head span:not(:first-child) {
+  text-align: right;
+}
+
 .performance-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 110px 70px 78px;
+  grid-template-columns: minmax(0, 1fr) 118px 72px 78px;
   align-items: center;
   gap: 8px;
   min-height: 42px;
@@ -572,11 +597,24 @@ h2 {
   font-size: 13px;
 }
 
+.performance-row strong small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
 .performance-row span {
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
   text-align: right;
+}
+
+.performance-row.portfolio {
+  background: #ffffff;
+  border-color: rgba(31, 122, 76, 0.22);
 }
 
 .performance-row .positive {
@@ -926,7 +964,7 @@ h2 {
   }
 }
 
-    </style>
+</style>
   </head>
   <body>
     <div class="app-shell">
@@ -1096,8 +1134,8 @@ h2 {
           <div class="panel span-4">
             <div class="panel-header">
               <div>
-                <h2>Today Balance P/L & DD</h2>
-                <p>Profit uses balance versus the first daily baseline; DD uses equity gap.</p>
+                <h2>Balance P/L & DD</h2>
+                <p>Daily, weekly, and monthly realized P/L use balance; DD uses equity gap.</p>
               </div>
             </div>
             <div id="accountPerformance" class="performance-list"></div>
@@ -1187,6 +1225,8 @@ window.GOLD_DASHBOARD_CONFIG = {
   plannerWriteKey: "",
 };
 
+</script>
+<script>
 let accounts = [
   {
     id: "201101469",
@@ -1340,6 +1380,7 @@ let accountChart;
 let botChart;
 let chartMode = "bar";
 let botPlannerEntries = loadBotPlannerEntries();
+let portfolioPerformance = {};
 const chartColors = ["#1f7a4c", "#bd8b2f", "#275a8d", "#b94d43", "#5b8e7d", "#9c6b2e", "#496f9d", "#7a8a42"];
 
 function accountLotTotal(account) {
@@ -1485,6 +1526,30 @@ function accountPerformanceRows() {
       hasMetric: Number.isFinite(account.dailyProfitPct),
     }))
     .sort((a, b) => (b.dailyProfitPct || -999) - (a.dailyProfitPct || -999));
+}
+
+function portfolioPerformanceRows() {
+  const labels = [
+    ["day", "Today"],
+    ["week", "This Week"],
+    ["month", "This Month"],
+  ];
+
+  return labels.map(([key, label]) => {
+    const item = portfolioPerformance[key] || {};
+    const hasMetric = Number.isFinite(item.profitPct);
+    return {
+      key,
+      label,
+      baselineBalance: Number(item.baselineBalance || 0),
+      latestBalance: Number(item.latestBalance || 0),
+      profit: hasMetric ? Number(item.profit || 0) : Number.NaN,
+      profitPct: hasMetric ? Number(item.profitPct || 0) : Number.NaN,
+      drawdownPct: Number.isFinite(item.drawdownPct) ? Number(item.drawdownPct) : Number.NaN,
+      accounts: Number(item.accounts || 0),
+      hasMetric,
+    };
+  });
 }
 
 function setMetrics() {
@@ -1890,17 +1955,42 @@ function openBotConfigDoc() {
 }
 
 function renderAccountPerformance() {
-  const rows = accountPerformanceRows();
+  const periodRows = portfolioPerformanceRows();
+  const accountRows = accountPerformanceRows();
   const target = document.getElementById("accountPerformance");
 
   if (!target) return;
 
-  if (!rows.length) {
+  if (!accountRows.length) {
     target.innerHTML = '<div class="empty-state">No account data</div>';
     return;
   }
 
-  target.innerHTML = rows
+  const periodHtml = `
+    <div class="performance-table">
+      <div class="performance-head">
+        <span>Period</span>
+        <span>Balance P/L</span>
+        <span>P/L %</span>
+        <span>DD</span>
+      </div>
+      ${periodRows
+        .map((row) => {
+          const profitClass = row.hasMetric && row.profit >= 0 ? "positive" : "negative";
+          return `
+            <div class="performance-row portfolio ${row.hasMetric ? "" : "pending"}">
+              <strong>${row.label}<small>${row.accounts ? `${row.accounts}/8 accounts` : "Need history"}</small></strong>
+              <span class="${profitClass}">${row.hasMetric ? formatSignedMoney(row.profit) : "Need history"}</span>
+              <span class="${profitClass}">${row.hasMetric ? `${row.profitPct.toFixed(2)}%` : "-"}</span>
+              <span>${Number.isFinite(row.drawdownPct) ? `${row.drawdownPct.toFixed(2)}%` : "Need baseline"}</span>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+
+  const accountHtml = accountRows
     .map((row) => {
       const isReady = row.hasMetric;
       const profitClass = isReady && row.dailyProfitPct >= 0 ? "positive" : "negative";
@@ -1914,6 +2004,8 @@ function renderAccountPerformance() {
       `;
     })
     .join("");
+
+  target.innerHTML = `${periodHtml}<div class="account-performance-mini">${accountHtml}</div>`;
 }
 
 function riskRows() {
@@ -2101,6 +2193,7 @@ function normalizeLiveAccount(account) {
       account.daily_drawdown_pct === "" || account.dailyDrawdownPct === ""
         ? Number.NaN
         : Number(account.daily_drawdown_pct ?? account.dailyDrawdownPct ?? Number.NaN),
+    performance: normalizePerformancePeriods(account.performance),
     botMetrics: botMetricsSource.map((metric) => ({
       name: String(metric.name || ""),
       profit: Number(metric.profit || 0),
@@ -2108,6 +2201,31 @@ function normalizeLiveAccount(account) {
       drawdownPct: Number(metric.drawdown_pct || metric.drawdownPct || 0),
     })),
     bots: configuredBots.length ? configuredBots.map((bot) => ({ ...bot })) : liveBots,
+  };
+}
+
+function normalizePerformancePeriods(value) {
+  const performance = value && typeof value === "object" ? value : {};
+  return ["day", "week", "month"].reduce((map, key) => {
+    map[key] = normalizePerformancePeriod(performance[key]);
+    return map;
+  }, {});
+}
+
+function normalizePerformancePeriod(item) {
+  if (!item || typeof item !== "object") return {};
+  const baselineBalance = Number(item.baselineBalance ?? item.baseline_balance ?? 0);
+  const latestBalance = Number(item.latestBalance ?? item.latest_balance ?? 0);
+  const profit = Number(item.profit ?? 0);
+  const profitPct = Number(item.profitPct ?? item.profit_pct ?? Number.NaN);
+  const drawdownPct = Number(item.drawdownPct ?? item.drawdown_pct ?? Number.NaN);
+  return {
+    baselineBalance,
+    latestBalance,
+    profit,
+    profitPct,
+    drawdownPct,
+    accounts: Number(item.accounts || 0),
   };
 }
 
@@ -2122,6 +2240,7 @@ async function loadLiveData() {
     const payload = await response.json();
     if (!Array.isArray(payload.accounts)) throw new Error("Missing accounts array");
     accounts = payload.accounts.map(normalizeLiveAccount).filter((account) => account.id);
+    portfolioPerformance = normalizePerformancePeriods(payload.performance);
     if (Array.isArray(payload.bot_planner)) {
       botPlannerEntries = mergeBotPlannerEntries(
         payload.bot_planner.map((entry) => ({ ...entry, source: "sheet" })),
@@ -2154,6 +2273,7 @@ async function refreshDashboard() {
 bindEvents();
 refreshDashboard();
 
-    </script>
+</script>
   </body>
 </html>
+
