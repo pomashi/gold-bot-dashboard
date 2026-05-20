@@ -2037,7 +2037,7 @@ function formatSignedMoney(value) {
 }
 
 function formatUsd(value) {
-  return `${moneyFormat.format(Number(value || 0))}`;
+  return `$${moneyFormat.format(Number(value || 0))}`;
 }
 
 function toAccountUnit(value) {
@@ -2386,6 +2386,25 @@ function accountStrategyLabel(account) {
     .join(", ");
 }
 
+function maskedAccountPattern(value) {
+  return String(value || "")
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/\\\*+/g, "\\d+");
+}
+
+function accountIdMatches(expectedId, liveId) {
+  const expected = String(expectedId || "");
+  const live = String(liveId || "");
+  if (!expected || !live) return false;
+  if (expected === live) return true;
+  if (!expected.includes("*")) return false;
+  return new RegExp(`^${maskedAccountPattern(expected)}$`).test(live);
+}
+
+function findMatchingLiveAccount(expectedAccount, liveAccounts) {
+  return liveAccounts.find((account) => accountIdMatches(expectedAccount.id, account.id));
+}
+
 function getOpenLotThreshold(account, key) {
   const thresholds = riskThresholds();
   const accountSpecific = Number(account[key] || 0);
@@ -2466,9 +2485,10 @@ function calculateAccountRisk(account) {
 
 function riskAccountRows() {
   const expected = expectedAccounts();
-  const liveById = new Map(accounts.map((account) => [String(account.id), account]));
+  const liveAccounts = [...accounts];
+  const usedLiveIds = new Set();
   const rows = expected.map((expectedAccount) => {
-    const liveAccount = liveById.get(expectedAccount.id);
+    const liveAccount = findMatchingLiveAccount(expectedAccount, liveAccounts.filter((account) => !usedLiveIds.has(account.id)));
     if (!liveAccount) {
       return calculateAccountRisk({
         ...expectedAccount,
@@ -2482,7 +2502,7 @@ function riskAccountRows() {
       });
     }
 
-    liveById.delete(expectedAccount.id);
+    usedLiveIds.add(liveAccount.id);
     return calculateAccountRisk({
       ...expectedAccount,
       ...liveAccount,
@@ -2492,7 +2512,9 @@ function riskAccountRows() {
     });
   });
 
-  liveById.forEach((account) => rows.push(calculateAccountRisk({ ...account, unexpected: true })));
+  liveAccounts
+    .filter((account) => !usedLiveIds.has(account.id))
+    .forEach((account) => rows.push(calculateAccountRisk({ ...account, unexpected: true })));
   return rows.sort((a, b) => b.riskScore - a.riskScore || severityRank(b.severity) - severityRank(a.severity));
 }
 
@@ -3569,7 +3591,7 @@ function normalizeLiveAccount(account) {
         .map((bot) => ({ name: String(bot.name || ""), lot: Number(bot.lot || 0) }))
         .filter((bot) => bot.name)
     : [];
-  const configuredBots = configuredBotsByAccount.get(id) || [];
+  const configuredBots = configuredBotsByAccount.get(id) || configuredBotsByAccount.get(maskAccountNumber(id)) || [];
   const hasPlaceholderBots =
     liveBots.length === 0 || liveBots.every((bot) => bot.name === id || bot.name === account.account || bot.lot <= 0);
   const displayBots = !hasPlaceholderBots && liveBots.length ? liveBots : configuredBots;
