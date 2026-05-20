@@ -2188,8 +2188,9 @@ function getStoredLiveDataUrl() {
 
 function setStoredLiveDataUrl(value) {
   try {
-    if (value) {
-      window.localStorage?.setItem(LIVE_DATA_URL_STORAGE_KEY, value);
+    const normalized = normalizeLiveDataUrl(value);
+    if (normalized) {
+      window.localStorage?.setItem(LIVE_DATA_URL_STORAGE_KEY, normalized);
     } else {
       window.localStorage?.removeItem(LIVE_DATA_URL_STORAGE_KEY);
     }
@@ -2198,15 +2199,39 @@ function setStoredLiveDataUrl(value) {
   }
 }
 
+function normalizeLiveDataUrl(value) {
+  const raw = String(value || "").trim().replace(/^["'`]+|["'`]+$/g, "");
+  if (!raw) return "";
+
+  if (/^AKfy[a-zA-Z0-9_-]+$/.test(raw)) {
+    return `https://script.google.com/macros/s/${raw}/exec`;
+  }
+
+  const withProtocol = raw.startsWith("script.google.com/") ? `https://${raw}` : raw;
+  try {
+    const url = new URL(withProtocol);
+    const isAppsScript = url.hostname === "script.google.com" && url.pathname.includes("/macros/s/");
+    return isAppsScript ? url.toString() : "";
+  } catch {
+    return "";
+  }
+}
+
 function getLiveDataUrl(promptIfMissing = false) {
-  const configured = String(window.GOLD_DASHBOARD_CONFIG?.liveDataUrl || "").trim();
+  const configured = normalizeLiveDataUrl(window.GOLD_DASHBOARD_CONFIG?.liveDataUrl);
   if (configured) return configured;
 
-  const stored = getStoredLiveDataUrl();
+  const stored = normalizeLiveDataUrl(getStoredLiveDataUrl());
+  if (stored) {
+    setStoredLiveDataUrl(stored);
+    return stored;
+  }
+
+  if (getStoredLiveDataUrl()) setStoredLiveDataUrl("");
   if (stored || !promptIfMissing) return stored;
 
-  const entered = window.prompt("Enter Google Apps Script Web app URL");
-  const url = String(entered || "").trim();
+  const entered = window.prompt("Enter Google Apps Script Web app URL or deployment ID (AKfy...)");
+  const url = normalizeLiveDataUrl(entered);
   if (url) setStoredLiveDataUrl(url);
   return url;
 }
@@ -2225,7 +2250,10 @@ function buildAuthenticatedLiveUrl(liveDataUrl, promptIfMissing = false) {
   const key = getDashboardAccessKey(promptIfMissing);
   if (!key) return "";
 
-  const url = new URL(liveDataUrl);
+  const normalizedLiveUrl = normalizeLiveDataUrl(liveDataUrl);
+  if (!normalizedLiveUrl) throw new Error("Invalid URL");
+
+  const url = new URL(normalizedLiveUrl);
   url.searchParams.set("read_key", key);
   return url.toString();
 }
