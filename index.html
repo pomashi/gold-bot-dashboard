@@ -2230,6 +2230,16 @@ function buildAuthenticatedLiveUrl(liveDataUrl, promptIfMissing = false) {
   return url.toString();
 }
 
+function liveErrorMessage(error) {
+  const message = String(error?.message || error || "");
+  if (message.includes("Unauthorized")) return "Access key wrong";
+  if (message.includes("Invalid URL")) return "Live URL wrong";
+  if (message.includes("HTTP 401") || message.includes("HTTP 403")) return "Webhook denied";
+  if (message.includes("HTTP")) return message;
+  if (message.includes("Failed to fetch")) return "Fetch blocked";
+  return "Live data failed";
+}
+
 function loadPrivacyHidden() {
   try {
     return window.localStorage?.getItem(PRIVACY_STORAGE_KEY) !== "visible";
@@ -3608,7 +3618,13 @@ async function loadLiveData() {
 
   try {
     document.getElementById("connectionStatus").textContent = "Loading live data";
-    const authenticatedUrl = buildAuthenticatedLiveUrl(liveDataUrl, true);
+    let authenticatedUrl = "";
+    try {
+      authenticatedUrl = buildAuthenticatedLiveUrl(liveDataUrl, true);
+    } catch (error) {
+      setStoredLiveDataUrl("");
+      throw new Error("Invalid URL");
+    }
     if (!authenticatedUrl) {
       document.getElementById("connectionStatus").textContent = "Access key needed";
       return;
@@ -3636,7 +3652,7 @@ async function loadLiveData() {
     }
     document.getElementById("connectionStatus").textContent = `Live ${new Date().toLocaleTimeString("th-TH")}`;
   } catch (error) {
-    document.getElementById("connectionStatus").textContent = "Live data failed";
+    document.getElementById("connectionStatus").textContent = liveErrorMessage(error);
     console.warn("Could not load live MT5 data", error);
   }
 }
