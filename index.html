@@ -781,6 +781,128 @@ h2 {
   opacity: 0.82;
 }
 
+.pnl-priority-grid {
+  margin-bottom: 14px;
+}
+
+.scale-panel {
+  border-color: rgba(31, 122, 76, 0.24);
+}
+
+.scale-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.scale-summary {
+  min-height: 82px;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  padding: 13px;
+  border: 1px solid rgba(31, 122, 76, 0.22);
+  border-left: 5px solid var(--green);
+  border-radius: 8px;
+  background: var(--green-soft);
+}
+
+.scale-summary span,
+.scale-summary small {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.scale-summary strong {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.scale-table {
+  display: grid;
+  gap: 8px;
+}
+
+.scale-head,
+.scale-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 72px 92px 92px;
+  align-items: center;
+  gap: 8px;
+}
+
+.scale-head {
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.scale-head span:not(:first-child) {
+  text-align: right;
+}
+
+.scale-row {
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.scale-row strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.scale-row strong small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.scale-row span,
+.scale-row em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  text-align: right;
+}
+
+.scale-row em {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: end;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.scale-row.yellow em {
+  background: var(--yellow-soft);
+  color: #7c5b1f;
+}
+
+.scale-row.red em {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.scale-row.green em {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
 .goal-panel {
   border-color: rgba(185, 137, 47, 0.32);
 }
@@ -1339,13 +1461,17 @@ h2 {
   }
 
   .metrics-grid {
-    order: 2;
+    order: 3;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
 
-  .danger-panel {
+  .pnl-priority-grid {
     order: 1;
+  }
+
+  .danger-panel {
+    order: 2;
     margin-bottom: 10px;
     padding: 14px;
   }
@@ -1444,6 +1570,42 @@ h2 {
 
   .goal-scenarios {
     min-width: 340px;
+  }
+
+  .scale-list {
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .scale-summary strong {
+    font-size: 23px;
+  }
+
+  .scale-head {
+    display: none;
+  }
+
+  .scale-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .scale-row span,
+  .scale-row em {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .scale-row span:nth-of-type(1)::before {
+    content: "Current ";
+    color: var(--muted);
+    font-weight: 900;
+  }
+
+  .scale-row span:nth-of-type(2)::before {
+    content: "Recommend ";
+    color: var(--muted);
+    font-weight: 900;
   }
 
   .panel {
@@ -1597,6 +1759,30 @@ h2 {
             <button class="primary-button" id="exportBtn">Export CSV</button>
           </div>
         </header>
+
+        <section class="dashboard-grid pnl-priority-grid" id="pnl">
+          <div class="panel span-7">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Daily command center</p>
+                <h2>Balance P/L & DD</h2>
+                <p>Daily, weekly, and monthly realized P/L use balance; DD uses equity gap.</p>
+              </div>
+            </div>
+            <div id="accountPerformance" class="performance-list"></div>
+          </div>
+
+          <div class="panel span-5 scale-panel">
+            <div class="panel-header">
+              <div>
+                <p class="eyebrow">Portfolio pool</p>
+                <h2>Scale Recommendation</h2>
+                <p>Recommended lot size from total balance for the four core bots.</p>
+              </div>
+            </div>
+            <div id="scaleRecommendation" class="scale-list"></div>
+          </div>
+        </section>
 
         <section class="danger-panel" id="danger" aria-label="Danger now">
           <div class="section-title">
@@ -1787,7 +1973,7 @@ h2 {
         </section>
 
         <section class="dashboard-grid" id="bots">
-          <div class="panel span-8">
+          <div class="panel span-12">
             <div class="panel-header">
               <div>
                 <h2>Bot Allocation</h2>
@@ -1795,16 +1981,6 @@ h2 {
               </div>
             </div>
             <div id="botMatrix" class="bot-matrix"></div>
-          </div>
-
-          <div class="panel span-4">
-            <div class="panel-header">
-              <div>
-                <h2>Balance P/L & DD</h2>
-                <p>Daily, weekly, and monthly realized P/L use balance; DD uses equity gap.</p>
-              </div>
-            </div>
-            <div id="accountPerformance" class="performance-list"></div>
           </div>
         </section>
 
@@ -1908,6 +2084,13 @@ window.GOLD_DASHBOARD_CONFIG = {
     marginLevelYellow: 300,
     marginLevelRed: 150,
   },
+  // Portfolio-pool lot scale. Values are USD balance needed for each 0.01 lot.
+  botLotScaleRules: [
+    { name: "Smart Gold", usdPer001Lot: 1000 },
+    { name: "Gold Slayer", usdPer001Lot: 3000 },
+    { name: "Gold Sniper", usdPer001Lot: 1000 },
+    { name: "Gold Devil", usdPer001Lot: 1500 },
+  ],
 };
 
     </script>
@@ -2012,6 +2195,13 @@ const DEFAULT_RISK_THRESHOLDS = {
   marginLevelYellow: 300,
   marginLevelRed: 150,
 };
+
+const DEFAULT_BOT_LOT_SCALE_RULES = [
+  { name: "Smart Gold", usdPer001Lot: 1000 },
+  { name: "Gold Slayer", usdPer001Lot: 3000 },
+  { name: "Gold Sniper", usdPer001Lot: 1000 },
+  { name: "Gold Devil", usdPer001Lot: 1500 },
+];
 
 const moneyFormat = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
@@ -2131,6 +2321,17 @@ function riskThresholds() {
     ...DEFAULT_RISK_THRESHOLDS,
     ...(window.GOLD_DASHBOARD_CONFIG?.riskThresholds || {}),
   };
+}
+
+function botLotScaleRules() {
+  const configured = window.GOLD_DASHBOARD_CONFIG?.botLotScaleRules;
+  const source = Array.isArray(configured) && configured.length ? configured : DEFAULT_BOT_LOT_SCALE_RULES;
+  return source
+    .map((rule) => ({
+      name: String(rule.name || ""),
+      usdPer001Lot: Number(rule.usdPer001Lot || rule.usd_per_001_lot || 0),
+    }))
+    .filter((rule) => rule.name && rule.usdPer001Lot > 0);
 }
 
 function expectedAccounts() {
@@ -2642,6 +2843,40 @@ function accountPerformanceRows() {
       hasMetric: Number.isFinite(account.dailyProfitPct),
     }))
     .sort((a, b) => (b.dailyProfitPct || -999) - (a.dailyProfitPct || -999));
+}
+
+function portfolioBalanceUsd() {
+  const totalBalance = accounts.reduce((sum, account) => sum + accountBalance(account), 0);
+  return totalBalance / USC_PER_USD;
+}
+
+function botScaleRows() {
+  const totals = botTotals();
+  const balanceUsd = portfolioBalanceUsd();
+  return botLotScaleRules().map((rule) => {
+    const currentLot = Number(totals[rule.name] || 0);
+    const recommendedLot = Math.max(0, Math.floor(balanceUsd / rule.usdPer001Lot) / 100);
+    const delta = Number((recommendedLot - currentLot).toFixed(2));
+    let status = "OK";
+    let severity = "green";
+
+    if (delta >= 0.01) {
+      status = `Raise +${lotFormat.format(delta)}`;
+      severity = "yellow";
+    } else if (delta <= -0.01) {
+      status = `Above ${lotFormat.format(Math.abs(delta))}`;
+      severity = "red";
+    }
+
+    return {
+      ...rule,
+      currentLot,
+      recommendedLot,
+      delta,
+      status,
+      severity,
+    };
+  });
 }
 
 function portfolioPerformanceRows() {
@@ -3342,6 +3577,51 @@ function renderAccountPerformance() {
   target.innerHTML = `${periodHtml}<div class="account-performance-mini">${accountHtml}</div>`;
 }
 
+function renderScaleRecommendation() {
+  const target = document.getElementById("scaleRecommendation");
+  if (!target) return;
+
+  if (privacyHidden) {
+    target.innerHTML = '<div class="privacy-note">Scale recommendation is hidden on the public view.</div>';
+    return;
+  }
+
+  const rows = botScaleRows();
+  if (!rows.length) {
+    target.innerHTML = '<div class="empty-state">No scale rules configured</div>';
+    return;
+  }
+
+  const balanceUsd = portfolioBalanceUsd();
+  target.innerHTML = `
+    <div class="scale-summary">
+      <span>Pool balance</span>
+      <strong>${formatUsd(balanceUsd)}</strong>
+      <small>Uses total realized balance, not equity.</small>
+    </div>
+    <div class="scale-table">
+      <div class="scale-head">
+        <span>Bot</span>
+        <span>Current</span>
+        <span>Recommend</span>
+        <span>Status</span>
+      </div>
+      ${rows
+        .map(
+          (row) => `
+            <div class="scale-row ${row.severity}">
+              <strong>${row.name}<small>$${moneyFormat.format(row.usdPer001Lot)} / 0.01</small></strong>
+              <span>${lotFormat.format(row.currentLot)}</span>
+              <span>${lotFormat.format(row.recommendedLot)}</span>
+              <em>${row.status}</em>
+            </div>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
 function renderDangerNow() {
   const target = document.getElementById("dangerNow");
   if (!target) return;
@@ -3698,6 +3978,7 @@ async function refreshDashboard() {
   renderAccounts(document.getElementById("searchInput")?.value || "");
   renderBotMatrix();
   renderAccountPerformance();
+  renderScaleRecommendation();
   renderRiskFocus();
   renderLiveHealth();
   populatePlannerAccounts();
@@ -3712,3 +3993,4 @@ refreshDashboard();
     </script>
   </body>
 </html>
+
