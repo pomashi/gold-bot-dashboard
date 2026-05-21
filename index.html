@@ -1626,9 +1626,9 @@ h2 {
             <small id="largestAccountMeta">-</small>
           </article>
           <article class="metric alert">
-            <span>Watchlist</span>
+            <span>DD Watch</span>
             <strong id="watchlistCount">0</strong>
-            <small>Accounts below 100,000 USC balance</small>
+            <small>Accounts above 15% DD</small>
           </article>
           <article class="metric">
             <span>Equity Gap</span>
@@ -1899,12 +1899,12 @@ window.GOLD_DASHBOARD_CONFIG = {
   riskThresholds: {
     staleYellowMinutes: 5,
     staleRedMinutes: 15,
-    ddYellowPct: 5,
-    ddRedPct: 10,
+    ddYellowPct: 15,
+    ddRedPct: 25,
     equityGapYellowPct: -5,
     equityGapRedPct: -10,
-    openLotsYellow: 0.25,
-    openLotsRed: 0.5,
+    openLotsYellow: 0,
+    openLotsRed: 0,
     marginLevelYellow: 300,
     marginLevelRed: 150,
   },
@@ -2003,12 +2003,12 @@ const DEFAULT_EXPECTED_ACCOUNTS = accounts.map((account) => ({
 const DEFAULT_RISK_THRESHOLDS = {
   staleYellowMinutes: 5,
   staleRedMinutes: 15,
-  ddYellowPct: 5,
-  ddRedPct: 10,
+  ddYellowPct: 15,
+  ddRedPct: 25,
   equityGapYellowPct: -5,
   equityGapRedPct: -10,
-  openLotsYellow: 0.25,
-  openLotsRed: 0.5,
+  openLotsYellow: 0,
+  openLotsRed: 0,
   marginLevelYellow: 300,
   marginLevelRed: 150,
 };
@@ -2021,7 +2021,6 @@ const moneyFormat = new Intl.NumberFormat("en-US", {
 const ACCOUNT_UNIT = "USC";
 const USC_PER_USD = 100;
 const ACCOUNT_VALUE_SCALE = Number(window.GOLD_DASHBOARD_CONFIG?.ACCOUNT_VALUE_SCALE ?? window.GOLD_DASHBOARD_CONFIG?.accountValueScale ?? 1);
-const WATCHLIST_USC = 100000;
 const BOT_PLANNER_STORAGE_KEY = "gold-dashboard-bot-lot-planner-v1";
 const ACCESS_KEY_STORAGE_KEY = "gold-dashboard-access-key-v1";
 const LIVE_DATA_URL_STORAGE_KEY = "gold-dashboard-live-data-url-v1";
@@ -2143,8 +2142,6 @@ function expectedAccounts() {
       broker: String(account.broker || ""),
       note: String(account.note || ""),
       bots: Array.isArray(account.bots) ? account.bots.map((bot) => ({ name: String(bot.name || ""), lot: Number(bot.lot || 0) })) : [],
-      openLotsYellow: Number(account.openLotsYellow || account.open_lots_yellow || 0),
-      openLotsRed: Number(account.openLotsRed || account.open_lots_red || 0),
     }))
     .filter((account) => account.id);
 }
@@ -2408,13 +2405,6 @@ function findMatchingLiveAccount(expectedAccount, liveAccounts) {
   return liveAccounts.find((account) => accountIdMatches(expectedAccount.id, account.id));
 }
 
-function getOpenLotThreshold(account, key) {
-  const thresholds = riskThresholds();
-  const accountSpecific = Number(account[key] || 0);
-  if (accountSpecific > 0) return accountSpecific;
-  return Number(thresholds[key] || 0);
-}
-
 function createRiskReason(type, label, value, severity, score) {
   return { type, label, value, severity, score };
 }
@@ -2451,22 +2441,10 @@ function calculateAccountRisk(account) {
     reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)}`, "yellow", 50));
   }
 
-  const openLotsRed = getOpenLotThreshold(account, "openLotsRed");
-  const openLotsYellow = getOpenLotThreshold(account, "openLotsYellow");
-  if (openLotsRed > 0 && openLots >= openLotsRed) {
-    reasons.push(createRiskReason("open_lots", "High open lots", `open ${lotFormat.format(openLots)}`, "red", 70));
-  } else if (openLotsYellow > 0 && openLots >= openLotsYellow) {
-    reasons.push(createRiskReason("open_lots", "High open lots", `open ${lotFormat.format(openLots)}`, "yellow", 35));
-  }
-
   if (marginLevel > 0 && marginLevel <= thresholds.marginLevelRed) {
     reasons.push(createRiskReason("margin", "Low margin level", `margin ${formatMarginLevel(marginLevel)}`, "red", 90));
   } else if (marginLevel > 0 && marginLevel <= thresholds.marginLevelYellow) {
     reasons.push(createRiskReason("margin", "Low margin level", `margin ${formatMarginLevel(marginLevel)}`, "yellow", 45));
-  }
-
-  if (!account.missing && balance > 0 && balance < WATCHLIST_USC) {
-    reasons.push(createRiskReason("low_balance", "Low balance watchlist", `balance ${formatMoney(balance)}`, "yellow", 20));
   }
 
   const riskScore = reasons.reduce((sum, reason) => sum + reason.score, 0);
@@ -2522,7 +2500,7 @@ function riskAccountRows() {
 }
 
 function dangerSignals() {
-  const dangerTypes = new Set(["missing", "stale", "dd", "equity_gap", "open_lots", "margin"]);
+  const dangerTypes = new Set(["missing", "stale", "dd", "equity_gap", "margin"]);
   return riskAccountRows()
     .flatMap((account) =>
       account.riskReasons
@@ -2829,7 +2807,7 @@ function setMetrics() {
   const totalLots = accounts.reduce((sum, account) => sum + accountLotTotal(account), 0);
   const totalOpenLots = accounts.reduce((sum, account) => sum + account.openLots, 0);
   const largest = [...accounts].sort((a, b) => accountBalance(b) - accountBalance(a))[0];
-  const watchlist = accounts.filter((account) => accountBalance(account) < WATCHLIST_USC).length;
+  const ddWatch = accounts.filter((account) => currentDrawdownPct(account) >= riskThresholds().ddYellowPct).length;
 
   document.getElementById("totalEquity").innerHTML = maskValue(formatMoney(totalBalance));
   document.getElementById("totalLots").innerHTML = maskValue(lotFormat.format(totalLots));
@@ -2837,7 +2815,7 @@ function setMetrics() {
   document.getElementById("largestAccountMeta").innerHTML = maskValue(
     `${largest.broker} - Balance ${formatMoney(accountBalance(largest))}`,
   );
-  document.getElementById("watchlistCount").innerHTML = maskValue(String(watchlist));
+  document.getElementById("watchlistCount").innerHTML = maskValue(String(ddWatch));
   const equityGap = totalEquity - totalBalance;
   document.getElementById("floatingPlTotal").innerHTML = maskValue(`${formatSignedMoney(equityGap)} equity gap`);
   document.getElementById("floatingPlTotal").classList.toggle("negative-text", equityGap < 0);
@@ -3379,7 +3357,7 @@ function renderDangerNow() {
       <div class="danger-card green">
         <span>All clear</span>
         <strong>Expected accounts are fresh</strong>
-        <em>No urgent DD, equity gap, open lot, or margin signal right now.</em>
+        <em>No urgent DD, equity gap, stale data, or margin signal right now.</em>
       </div>
     `;
     return;
