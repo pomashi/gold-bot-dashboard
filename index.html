@@ -827,7 +827,7 @@ h2 {
 .scale-head,
 .scale-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 72px 92px 92px;
+  grid-template-columns: 84px minmax(96px, 1fr) 76px 54px 72px 82px;
   align-items: center;
   gap: 8px;
 }
@@ -1597,12 +1597,18 @@ h2 {
   }
 
   .scale-row span:nth-of-type(1)::before {
-    content: "Current ";
+    content: "Balance ";
     color: var(--muted);
     font-weight: 900;
   }
 
   .scale-row span:nth-of-type(2)::before {
+    content: "Current ";
+    color: var(--muted);
+    font-weight: 900;
+  }
+
+  .scale-row span:nth-of-type(3)::before {
     content: "Recommend ";
     color: var(--muted);
     font-weight: 900;
@@ -1775,9 +1781,9 @@ h2 {
           <div class="panel span-5 scale-panel">
             <div class="panel-header">
               <div>
-                <p class="eyebrow">Portfolio pool</p>
+                <p class="eyebrow">Per-account scale</p>
                 <h2>Scale Recommendation</h2>
-                <p>Recommended lot size from total balance for the four core bots.</p>
+                <p>Recommended lot size from each account balance for bots already running there.</p>
               </div>
             </div>
             <div id="scaleRecommendation" class="scale-list"></div>
@@ -2845,38 +2851,48 @@ function accountPerformanceRows() {
     .sort((a, b) => (b.dailyProfitPct || -999) - (a.dailyProfitPct || -999));
 }
 
-function portfolioBalanceUsd() {
-  const totalBalance = accounts.reduce((sum, account) => sum + accountBalance(account), 0);
-  return totalBalance / USC_PER_USD;
-}
-
 function botScaleRows() {
-  const totals = botTotals();
-  const balanceUsd = portfolioBalanceUsd();
-  return botLotScaleRules().map((rule) => {
-    const currentLot = Number(totals[rule.name] || 0);
-    const recommendedLot = Math.max(0, Math.floor(balanceUsd / rule.usdPer001Lot) / 100);
-    const delta = Number((recommendedLot - currentLot).toFixed(2));
-    let status = "OK";
-    let severity = "green";
+  const rulesByName = new Map(botLotScaleRules().map((rule) => [rule.name.toLowerCase(), rule]));
 
-    if (delta >= 0.01) {
-      status = `Raise +${lotFormat.format(delta)}`;
-      severity = "yellow";
-    } else if (delta <= -0.01) {
-      status = `Above ${lotFormat.format(Math.abs(delta))}`;
-      severity = "red";
-    }
+  return accounts
+    .flatMap((account) => {
+      const balanceUsd = accountBalance(account) / USC_PER_USD;
+      return account.bots
+        .map((bot) => {
+          const rule = rulesByName.get(String(bot.name || "").toLowerCase());
+          if (!rule) return null;
 
-    return {
-      ...rule,
-      currentLot,
-      recommendedLot,
-      delta,
-      status,
-      severity,
-    };
-  });
+          const currentLot = Number(bot.lot || 0);
+          const recommendedLot = Math.max(0, Math.floor(balanceUsd / rule.usdPer001Lot) / 100);
+          const delta = Number((recommendedLot - currentLot).toFixed(2));
+          let status = "OK";
+          let severity = "green";
+
+          if (delta >= 0.01) {
+            status = `Raise +${lotFormat.format(delta)}`;
+            severity = "yellow";
+          } else if (delta <= -0.01) {
+            status = `Above ${lotFormat.format(Math.abs(delta))}`;
+            severity = "red";
+          }
+
+          return {
+            account: account.id,
+            broker: account.broker,
+            botName: bot.name,
+            balance: accountBalance(account),
+            balanceUsd,
+            usdPer001Lot: rule.usdPer001Lot,
+            currentLot,
+            recommendedLot,
+            delta,
+            status,
+            severity,
+          };
+        })
+        .filter(Boolean);
+    })
+    .sort((a, b) => severityRank(b.severity) - severityRank(a.severity) || Math.abs(b.delta) - Math.abs(a.delta));
 }
 
 function portfolioPerformanceRows() {
@@ -3592,16 +3608,17 @@ function renderScaleRecommendation() {
     return;
   }
 
-  const balanceUsd = portfolioBalanceUsd();
   target.innerHTML = `
     <div class="scale-summary">
-      <span>Pool balance</span>
-      <strong>${formatUsd(balanceUsd)}</strong>
-      <small>Uses total realized balance, not equity.</small>
+      <span>Per-account scale</span>
+      <strong>${rows.filter((row) => row.severity !== "green").length} alerts</strong>
+      <small>Uses each account balance and only bots already running on that account.</small>
     </div>
     <div class="scale-table">
       <div class="scale-head">
+        <span>Account</span>
         <span>Bot</span>
+        <span>Balance</span>
         <span>Current</span>
         <span>Recommend</span>
         <span>Status</span>
@@ -3610,7 +3627,9 @@ function renderScaleRecommendation() {
         .map(
           (row) => `
             <div class="scale-row ${row.severity}">
-              <strong>${row.name}<small>$${moneyFormat.format(row.usdPer001Lot)} / 0.01</small></strong>
+              <strong>${maskAccountNumber(row.account)}<small>${row.broker || ""}</small></strong>
+              <strong>${row.botName}<small>$${moneyFormat.format(row.usdPer001Lot)} / 0.01</small></strong>
+              <span>${formatUsd(row.balanceUsd)}</span>
               <span>${lotFormat.format(row.currentLot)}</span>
               <span>${lotFormat.format(row.recommendedLot)}</span>
               <em>${row.status}</em>
@@ -3993,4 +4012,3 @@ refreshDashboard();
     </script>
   </body>
 </html>
-
