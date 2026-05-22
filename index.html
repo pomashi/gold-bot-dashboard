@@ -903,6 +903,183 @@ h2 {
   color: var(--green);
 }
 
+.daily-trend {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.daily-trend-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.daily-trend-head strong {
+  font-size: 13px;
+}
+
+.daily-trend-head span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.daily-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.daily-bar-row {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) 128px;
+  align-items: center;
+  gap: 10px;
+}
+
+.daily-bar-row span,
+.daily-bar-row strong {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.daily-bar-row span {
+  color: var(--muted);
+}
+
+.daily-bar-row strong {
+  text-align: right;
+}
+
+.daily-bar-row div {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.daily-bar-row i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--green);
+}
+
+.daily-bar-row.negative i {
+  background: var(--red);
+}
+
+.rebate-panel {
+  border-color: rgba(41, 92, 135, 0.22);
+}
+
+.rebate-tracker {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.rebate-rule {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid rgba(41, 92, 135, 0.2);
+  border-radius: 8px;
+  background: #edf4f8;
+}
+
+.rebate-rule strong,
+.rebate-rule span {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.rebate-rule span {
+  color: var(--muted);
+  text-align: right;
+}
+
+.rebate-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.rebate-summary-card {
+  display: grid;
+  gap: 4px;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.rebate-summary-card span,
+.rebate-summary-card small,
+.rebate-summary-card em {
+  color: var(--muted);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.rebate-summary-card strong {
+  font-size: 24px;
+}
+
+.rebate-table {
+  display: grid;
+  gap: 8px;
+}
+
+.rebate-head,
+.rebate-row {
+  display: grid;
+  grid-template-columns: 110px minmax(150px, 1fr) 90px 90px 170px;
+  align-items: center;
+  gap: 10px;
+}
+
+.rebate-head {
+  padding: 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.rebate-row {
+  min-height: 50px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.rebate-row strong,
+.rebate-row span,
+.rebate-row em {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.rebate-row strong small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+
 .goal-panel {
   border-color: rgba(185, 137, 47, 0.32);
 }
@@ -1542,12 +1719,16 @@ h2 {
     order: 7;
   }
 
-  #bot-planner {
+  #rebate {
     order: 8;
   }
 
-  .dashboard-grid:last-of-type {
+  #bot-planner {
     order: 9;
+  }
+
+  .dashboard-grid:last-of-type {
+    order: 10;
   }
 
   .goal-layout {
@@ -1612,6 +1793,38 @@ h2 {
     content: "Recommend ";
     color: var(--muted);
     font-weight: 900;
+  }
+
+  .daily-bar-row {
+    grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .daily-bar-row strong {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .rebate-rule,
+  .daily-trend-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .rebate-rule span {
+    text-align: left;
+  }
+
+  .rebate-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rebate-head {
+    display: none;
+  }
+
+  .rebate-row {
+    grid-template-columns: 1fr;
+    align-items: start;
   }
 
   .panel {
@@ -1734,8 +1947,9 @@ h2 {
           <a class="nav-item" href="#danger"><span class="nav-icon">02</span>Danger</a>
           <a class="nav-item" href="#accounts"><span class="nav-icon">03</span>Accounts</a>
           <a class="nav-item" href="#bots"><span class="nav-icon">04</span>Bots</a>
-          <a class="nav-item" href="#bot-planner"><span class="nav-icon">05</span>Bot Planner</a>
-          <a class="nav-item" href="#connector"><span class="nav-icon">06</span>MT5 Connector</a>
+          <a class="nav-item" href="#rebate"><span class="nav-icon">05</span>Rebate</a>
+          <a class="nav-item" href="#bot-planner"><span class="nav-icon">06</span>Bot Planner</a>
+          <a class="nav-item" href="#connector"><span class="nav-icon">07</span>MT5 Connector</a>
         </nav>
 
         <div class="connection-panel">
@@ -1990,6 +2204,18 @@ h2 {
           </div>
         </section>
 
+        <section class="dashboard-grid" id="rebate">
+          <div class="panel span-12 rebate-panel">
+            <div class="panel-header">
+              <div>
+                <h2>Rebate Tracker</h2>
+                <p>Estimated rebate from closed MH Markets volume only. Open lots and non-MH brokers are excluded.</p>
+              </div>
+            </div>
+            <div id="rebateTracker" class="rebate-tracker"></div>
+          </div>
+        </section>
+
         <section class="dashboard-grid" id="bot-planner">
           <div class="panel span-12">
             <div class="panel-header">
@@ -2097,6 +2323,13 @@ window.GOLD_DASHBOARD_CONFIG = {
     { name: "Gold Sniper", usdPer001Lot: 1000 },
     { name: "Gold Devil", usdPer001Lot: 1500 },
   ],
+  rebateTracker: {
+    broker: "MH",
+    rebate_enabled: true,
+    micro_lots_per_standard_lot: 100,
+    rebate_per_standard_lot_usd: 10,
+    usd_thb_rate: 36,
+  },
 };
 
     </script>
@@ -2565,6 +2798,7 @@ let botChart;
 let chartMode = "bar";
 let botPlannerEntries = loadBotPlannerEntries();
 let portfolioPerformance = {};
+let rebateTracker = { periods: {}, rows: [], config: {} };
 let privacyHidden = loadPrivacyHidden();
 const chartColors = ["#1f7a4c", "#bd8b2f", "#275a8d", "#b94d43", "#5b8e7d", "#9c6b2e", "#496f9d", "#7a8a42"];
 
@@ -2917,6 +3151,70 @@ function portfolioPerformanceRows() {
       hasMetric,
     };
   });
+}
+
+function portfolioDailyRows() {
+  const series = Array.isArray(portfolioPerformance.daily_series) ? portfolioPerformance.daily_series : [];
+  return series
+    .map((item) => ({
+      date: item.date || item.periodStart || item.period_start || "",
+      label: item.label || item.date || "",
+      profit: Number(item.profit || 0),
+      profitPct: Number(item.profitPct ?? item.profit_pct ?? 0),
+      drawdownPct: Number(item.drawdownPct ?? item.drawdown_pct ?? 0),
+      accounts: Number(item.accounts || 0),
+      hasMetric: Number.isFinite(Number(item.profitPct ?? item.profit_pct)),
+    }))
+    .slice(-7);
+}
+
+function rebateConfig() {
+  return {
+    broker: "MH",
+    rebate_enabled: true,
+    micro_lots_per_standard_lot: 100,
+    rebate_per_standard_lot_usd: 10,
+    usd_thb_rate: 36,
+    ...(window.GOLD_DASHBOARD_CONFIG?.rebateTracker || {}),
+    ...(rebateTracker.config || {}),
+  };
+}
+
+function normalizeRebatePayload(value) {
+  const payload = value && typeof value === "object" ? value : {};
+  const config = { ...(payload.config || {}) };
+  const normalizeSummary = (item = {}) => ({
+    period: item.period || "",
+    closedMicroLots: Number(item.closed_micro_lots ?? item.closedMicroLots ?? 0),
+    standardLots: Number(item.standard_lots ?? item.standardLots ?? 0),
+    estimatedRebateUsd: Number(item.estimated_rebate_usd ?? item.estimatedRebateUsd ?? 0),
+    estimatedRebateThb: Number(item.estimated_rebate_thb ?? item.estimatedRebateThb ?? 0),
+    dealCount: Number(item.deal_count ?? item.deals ?? 0),
+    rebateEnabled: item.rebate_enabled !== false,
+  });
+
+  return {
+    config,
+    periods: {
+      day: normalizeSummary(payload.periods?.day),
+      week: normalizeSummary(payload.periods?.week),
+      month: normalizeSummary(payload.periods?.month),
+    },
+    rows: Array.isArray(payload.rows)
+      ? payload.rows.map((row) => ({
+          account: String(row.account || ""),
+          broker: String(row.broker || ""),
+          bot: String(row.bot || row.botName || "Unknown"),
+          magic: String(row.magic || ""),
+          date: String(row.date || ""),
+          closedMicroLots: Number(row.closed_micro_lots ?? row.closedMicroLots ?? 0),
+          standardLots: Number(row.standard_lots ?? row.standardLots ?? 0),
+          estimatedRebateUsd: Number(row.estimated_rebate_usd ?? row.estimatedRebateUsd ?? 0),
+          estimatedRebateThb: Number(row.estimated_rebate_thb ?? row.estimatedRebateThb ?? 0),
+          dealCount: Number(row.deal_count ?? row.deals ?? 0),
+        }))
+      : [],
+  };
 }
 
 function portfolioValueUsd(mode = "conservative") {
@@ -3536,6 +3834,7 @@ function openBotConfigDoc() {
 
 function renderAccountPerformance() {
   const periodRows = portfolioPerformanceRows();
+  const dailyRows = portfolioDailyRows();
   const accountRows = accountPerformanceRows();
   const target = document.getElementById("accountPerformance");
 
@@ -3575,6 +3874,33 @@ function renderAccountPerformance() {
     </div>
   `;
 
+  const maxAbsDailyProfit = Math.max(1, ...dailyRows.map((row) => Math.abs(row.profit)));
+  const dailyHtml = dailyRows.length
+    ? `
+      <div class="daily-trend">
+        <div class="daily-trend-head">
+          <strong>7-day Balance P/L</strong>
+          <span>Today + previous market days</span>
+        </div>
+        <div class="daily-bars">
+          ${dailyRows
+            .map((row) => {
+              const width = Math.max(4, Math.round((Math.abs(row.profit) / maxAbsDailyProfit) * 100));
+              const direction = row.profit >= 0 ? "positive" : "negative";
+              return `
+                <div class="daily-bar-row ${direction}">
+                  <span>${row.label}</span>
+                  <div><i style="width:${width}%"></i></div>
+                  <strong>${formatSignedMoney(row.profit)}</strong>
+                </div>
+              `;
+            })
+            .join("")}
+        </div>
+      </div>
+    `
+    : "";
+
   const accountHtml = accountRows
     .map((row) => {
       const isReady = row.hasMetric;
@@ -3590,7 +3916,73 @@ function renderAccountPerformance() {
     })
     .join("");
 
-  target.innerHTML = `${periodHtml}<div class="account-performance-mini">${accountHtml}</div>`;
+  target.innerHTML = `${periodHtml}${dailyHtml}<div class="account-performance-mini">${accountHtml}</div>`;
+}
+
+function renderRebateTracker() {
+  const target = document.getElementById("rebateTracker");
+  if (!target) return;
+
+  if (privacyHidden) {
+    target.innerHTML = '<div class="privacy-note">Rebate tracker is hidden on the public view.</div>';
+    return;
+  }
+
+  const config = rebateConfig();
+  const periods = [
+    ["day", "Today"],
+    ["week", "This Week"],
+    ["month", "This Month"],
+  ];
+
+  const periodHtml = periods
+    .map(([key, label]) => {
+      const row = rebateTracker.periods?.[key] || {};
+      return `
+        <div class="rebate-summary-card">
+          <span>${label}</span>
+          <strong>${formatUsd(row.estimatedRebateUsd || 0)}</strong>
+          <small>${lotFormat.format(row.closedMicroLots || 0)} micro lots / ${lotFormat.format(row.standardLots || 0)} standard lots</small>
+          <em>~${moneyFormat.format(row.estimatedRebateThb || 0)} THB</em>
+        </div>
+      `;
+    })
+    .join("");
+
+  const rows = (rebateTracker.rows || []).slice(0, 12);
+  const rowsHtml = rows.length
+    ? rows
+        .map(
+          (row) => `
+            <div class="rebate-row">
+              <strong>${maskAccountNumber(row.account)}<small>${row.date || "-"}</small></strong>
+              <span>${row.bot}${row.magic ? ` / ${row.magic}` : ""}</span>
+              <span>${lotFormat.format(row.closedMicroLots)} micro</span>
+              <span>${lotFormat.format(row.standardLots)} std</span>
+              <em>${formatUsd(row.estimatedRebateUsd)} / ${moneyFormat.format(row.estimatedRebateThb)} THB</em>
+            </div>
+          `,
+        )
+        .join("")
+    : '<div class="empty-state">No closed MH deals captured yet</div>';
+
+  target.innerHTML = `
+    <div class="rebate-rule">
+      <strong>${config.broker} only</strong>
+      <span>${config.micro_lots_per_standard_lot} micro lots = 1 standard lot - ${formatUsd(config.rebate_per_standard_lot_usd)} / standard lot - USDTHB ${Number(config.usd_thb_rate || 0).toFixed(2)}</span>
+    </div>
+    <div class="rebate-summary-grid">${periodHtml}</div>
+    <div class="rebate-table">
+      <div class="rebate-head">
+        <span>Account</span>
+        <span>Bot / Magic</span>
+        <span>Closed</span>
+        <span>Standard</span>
+        <span>Estimate</span>
+      </div>
+      ${rowsHtml}
+    </div>
+  `;
 }
 
 function renderScaleRecommendation() {
@@ -3874,7 +4266,7 @@ function normalizeLiveAccount(account) {
   const configuredBots = configuredBotsByAccount.get(id) || configuredBotsByAccount.get(maskAccountNumber(id)) || [];
   const hasPlaceholderBots =
     liveBots.length === 0 || liveBots.every((bot) => bot.name === id || bot.name === account.account || bot.lot <= 0);
-  const displayBots = !hasPlaceholderBots && liveBots.length ? liveBots : configuredBots;
+  const displayBots = configuredBots.length ? configuredBots : !hasPlaceholderBots && liveBots.length ? liveBots : [];
 
   return {
     id,
@@ -3914,10 +4306,21 @@ function normalizeLiveAccount(account) {
 
 function normalizePerformancePeriods(value) {
   const performance = value && typeof value === "object" ? value : {};
-  return ["day", "week", "month"].reduce((map, key) => {
+  const periods = ["day", "week", "month"].reduce((map, key) => {
     map[key] = normalizePerformancePeriod(performance[key]);
     return map;
   }, {});
+  periods.daily_series = Array.isArray(performance.daily_series)
+    ? performance.daily_series.map((item) => ({
+        date: item.date || item.periodStart || item.period_start || "",
+        label: item.label || item.date || "",
+        profit: toAccountUnit(item.profit ?? 0),
+        profitPct: Number(item.profitPct ?? item.profit_pct ?? Number.NaN),
+        drawdownPct: Number(item.drawdownPct ?? item.drawdown_pct ?? Number.NaN),
+        accounts: Number(item.accounts || 0),
+      }))
+    : [];
+  return periods;
 }
 
 function normalizePerformancePeriod(item) {
@@ -3973,6 +4376,7 @@ async function loadLiveData() {
     if (!Array.isArray(payload.accounts)) throw new Error("Missing accounts array");
     accounts = payload.accounts.map(normalizeLiveAccount).filter((account) => account.id);
     portfolioPerformance = normalizePerformancePeriods(payload.performance);
+    rebateTracker = normalizeRebatePayload(payload.rebate);
     if (Array.isArray(payload.bot_planner)) {
       botPlannerEntries = mergeBotPlannerEntries(
         payload.bot_planner.map((entry) => ({ ...entry, source: "sheet" })),
@@ -3997,6 +4401,7 @@ async function refreshDashboard() {
   renderAccounts(document.getElementById("searchInput")?.value || "");
   renderBotMatrix();
   renderAccountPerformance();
+  renderRebateTracker();
   renderScaleRecommendation();
   renderRiskFocus();
   renderLiveHealth();
