@@ -524,7 +524,7 @@ h2 {
 
 .accounts-table {
   width: 100%;
-  min-width: 1280px;
+  min-width: 1420px;
   border-collapse: collapse;
 }
 
@@ -627,6 +627,51 @@ h2 {
 .risk-chip.green {
   background: var(--green-soft);
   color: var(--green);
+}
+
+.account-pnl-stack {
+  min-width: 144px;
+  display: grid;
+  gap: 5px;
+}
+
+.pnl-chip {
+  min-height: 24px;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.pnl-chip b {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.pnl-chip em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: normal;
+}
+
+.pnl-chip.positive {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.pnl-chip.negative {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.pnl-chip.pending {
+  color: var(--muted);
 }
 
 .risk-text-red {
@@ -1080,6 +1125,77 @@ h2 {
   font-size: 10px;
 }
 
+.rebate-yield-block {
+  display: grid;
+  gap: 10px;
+}
+
+.rebate-subhead {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.rebate-subhead strong {
+  font-size: 15px;
+}
+
+.rebate-subhead span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rebate-yield-table {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.rebate-yield-head,
+.rebate-yield-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr 1.1fr 0.7fr;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.rebate-yield-head {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  background: var(--surface-2);
+}
+
+.rebate-yield-row:last-child {
+  border-bottom: 0;
+}
+
+.rebate-yield-row.total {
+  background: #fbf7eb;
+}
+
+.rebate-yield-row strong,
+.rebate-yield-row span,
+.rebate-yield-row em {
+  min-width: 0;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.rebate-yield-row small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
 .goal-panel {
   border-color: rgba(185, 137, 47, 0.32);
 }
@@ -1109,6 +1225,7 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface-2);
+  grid-row: 1 / span 2;
 }
 
 .goal-controls label {
@@ -1142,6 +1259,56 @@ h2 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  grid-column: 2;
+}
+
+.goal-actual {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid rgba(31, 122, 79, 0.22);
+  border-radius: 8px;
+  background: var(--green-soft);
+  grid-column: 2;
+}
+
+.actual-pace-head,
+.actual-pace-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+}
+
+.actual-pace-head span,
+.actual-pace-meta span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.actual-pace-head strong {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.actual-pace-meta {
+  align-items: flex-start;
+  line-height: 1.35;
+}
+
+.goal-progress {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(31, 122, 79, 0.13);
+}
+
+.goal-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--gold));
 }
 
 .goal-main,
@@ -1198,6 +1365,8 @@ h2 {
 
 .goal-scenarios-wrap {
   overflow-x: auto;
+  grid-column: 3;
+  grid-row: 1 / span 2;
 }
 
 .goal-scenarios {
@@ -1737,8 +1906,23 @@ h2 {
   }
 
   .goal-controls,
+  .goal-summary,
+  .goal-actual,
+  .goal-scenarios-wrap {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .goal-controls,
   .goal-summary {
     grid-template-columns: 1fr;
+  }
+
+  .actual-pace-head,
+  .actual-pace-meta,
+  .rebate-subhead {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .goal-main {
@@ -1818,6 +2002,15 @@ h2 {
     grid-template-columns: 1fr;
   }
 
+  .rebate-yield-head {
+    display: none;
+  }
+
+  .rebate-yield-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
   .rebate-head {
     display: none;
   }
@@ -1892,6 +2085,16 @@ h2 {
     font-size: 11px;
   }
 
+  .account-pnl-stack {
+    min-width: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .pnl-chip {
+    grid-template-columns: 16px minmax(0, 1fr);
+    padding: 0 7px;
+  }
+
   .bot-row {
     grid-template-columns: minmax(92px, 0.8fr) 1fr 52px;
     gap: 8px;
@@ -1948,8 +2151,7 @@ h2 {
           <a class="nav-item" href="#accounts"><span class="nav-icon">03</span>Accounts</a>
           <a class="nav-item" href="#bots"><span class="nav-icon">04</span>Bots</a>
           <a class="nav-item" href="#rebate"><span class="nav-icon">05</span>Rebate</a>
-          <a class="nav-item" href="#bot-planner"><span class="nav-icon">06</span>Bot Planner</a>
-          <a class="nav-item" href="#connector"><span class="nav-icon">07</span>MT5 Connector</a>
+          <a class="nav-item" href="#connector"><span class="nav-icon">06</span>MT5 Connector</a>
         </nav>
 
         <div class="connection-panel">
@@ -2090,6 +2292,7 @@ h2 {
               </form>
 
               <div class="goal-summary" id="goalSummary"></div>
+              <div class="goal-actual" id="goalActualPace"></div>
 
               <div class="goal-scenarios-wrap">
                 <table class="goal-scenarios">
@@ -2159,6 +2362,7 @@ h2 {
                   <th>Equity</th>
                   <th>Equity Gap</th>
                   <th>DD%</th>
+                  <th>P/L %</th>
                   <th>Open Lots</th>
                   <th>Margin</th>
                   <th>Last Update</th>
@@ -2216,52 +2420,6 @@ h2 {
           </div>
         </section>
 
-        <section class="dashboard-grid" id="bot-planner">
-          <div class="panel span-12">
-            <div class="panel-header">
-              <div>
-                <h2>Bot Lot Planner</h2>
-                <p>Log planned bot lot changes and apply them to dashboard exposure when the time arrives.</p>
-              </div>
-              <div class="panel-actions">
-                <button class="secondary-button" id="openBotDocBtn">Open doc</button>
-                <button class="secondary-button" id="exportPlannerBtn">Export log</button>
-              </div>
-            </div>
-
-            <div class="planner-grid">
-              <form id="botPlannerForm" class="planner-form">
-                <label>
-                  <span>Account</span>
-                  <select id="plannerAccount"></select>
-                </label>
-                <label>
-                  <span>Bot</span>
-                  <select id="plannerBot"></select>
-                </label>
-                <label>
-                  <span>New lot</span>
-                  <input id="plannerLot" type="number" min="0" step="0.01" placeholder="0.03" />
-                </label>
-                <label>
-                  <span>Apply time</span>
-                  <input id="plannerEffectiveAt" type="datetime-local" />
-                </label>
-                <label class="planner-note">
-                  <span>Note</span>
-                  <input id="plannerNote" type="text" placeholder="Example: changed Smart Gold in MT5" />
-                </label>
-                <button class="primary-button" type="submit">Apply lot now</button>
-              </form>
-
-              <div class="planner-list-wrap">
-                <div class="planner-summary" id="plannerSummary"></div>
-                <div id="botPlannerList" class="planner-list"></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section class="dashboard-grid">
           <div class="panel span-4 connector" id="connector">
             <div class="panel-header">
@@ -2309,8 +2467,8 @@ window.GOLD_DASHBOARD_CONFIG = {
     staleRedMinutes: 15,
     ddYellowPct: 15,
     ddRedPct: 25,
-    equityGapYellowPct: -5,
-    equityGapRedPct: -10,
+    equityGapYellowPct: -25,
+    equityGapRedPct: -25,
     openLotsYellow: 0,
     openLotsRed: 0,
     marginLevelYellow: 300,
@@ -2427,8 +2585,8 @@ const DEFAULT_RISK_THRESHOLDS = {
   staleRedMinutes: 15,
   ddYellowPct: 15,
   ddRedPct: 25,
-  equityGapYellowPct: -5,
-  equityGapRedPct: -10,
+  equityGapYellowPct: -25,
+  equityGapRedPct: -25,
   openLotsYellow: 0,
   openLotsRed: 0,
   marginLevelYellow: 300,
@@ -2877,9 +3035,9 @@ function calculateAccountRisk(account) {
   }
 
   if (equityGapPct <= thresholds.equityGapRedPct) {
-    reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)}`, "red", 100));
+    reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)} (${formatPct(Math.abs(equityGapPct))})`, "red", 100));
   } else if (equityGapPct <= thresholds.equityGapYellowPct) {
-    reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)}`, "yellow", 50));
+    reasons.push(createRiskReason("equity_gap", "Large negative equity gap", `gap ${formatSignedMoney(equityGap)} (${formatPct(Math.abs(equityGapPct))})`, "yellow", 50));
   }
 
   if (marginLevel > 0 && marginLevel <= thresholds.marginLevelRed) {
@@ -3085,6 +3243,38 @@ function accountPerformanceRows() {
     .sort((a, b) => (b.dailyProfitPct || -999) - (a.dailyProfitPct || -999));
 }
 
+function accountPeriodPnl(account, periodKey) {
+  const period = account.performance?.[periodKey] || {};
+  const fallbackProfit = periodKey === "day" ? account.dailyProfit : Number.NaN;
+  const fallbackPct = periodKey === "day" ? account.dailyProfitPct : Number.NaN;
+  const profit = Number.isFinite(Number(period.profit)) ? Number(period.profit) : Number(fallbackProfit);
+  const profitPct = Number.isFinite(Number(period.profitPct)) ? Number(period.profitPct) : Number(fallbackPct);
+  return {
+    profit: Number.isFinite(profit) ? profit : Number.NaN,
+    profitPct: Number.isFinite(profitPct) ? profitPct : Number.NaN,
+    hasMetric: Number.isFinite(profitPct),
+  };
+}
+
+function accountPnlChips(account) {
+  const periods = [
+    ["day", "D"],
+    ["week", "W"],
+    ["month", "M"],
+  ];
+
+  return periods
+    .map(([key, label]) => {
+      const row = accountPeriodPnl(account, key);
+      if (!row.hasMetric || account.missing) {
+        return `<span class="pnl-chip pending"><b>${label}</b><em>-</em></span>`;
+      }
+      const className = row.profitPct >= 0 ? "positive" : "negative";
+      return `<span class="pnl-chip ${className}" title="${label} ${formatSignedMoney(row.profit)}"><b>${label}</b><em>${row.profitPct.toFixed(2)}%</em></span>`;
+    })
+    .join("");
+}
+
 function botScaleRows() {
   const rulesByName = new Map(botLotScaleRules().map((rule) => [rule.name.toLowerCase(), rule]));
 
@@ -3192,6 +3382,18 @@ function normalizeRebatePayload(value) {
     dealCount: Number(item.deal_count ?? item.deals ?? 0),
     rebateEnabled: item.rebate_enabled !== false,
   });
+  const normalizeAccountSummary = (item = {}) => ({
+    account: String(item.account || ""),
+    broker: String(item.broker || ""),
+    balanceUsc: Number(item.balance_usc ?? item.balanceUsc ?? 0),
+    balanceUsd: Number(item.balance_usd ?? item.balanceUsd ?? 0),
+    closedMicroLots: Number(item.closed_micro_lots ?? item.closedMicroLots ?? 0),
+    standardLots: Number(item.standard_lots ?? item.standardLots ?? 0),
+    estimatedRebateUsd: Number(item.estimated_rebate_usd ?? item.estimatedRebateUsd ?? 0),
+    estimatedRebateThb: Number(item.estimated_rebate_thb ?? item.estimatedRebateThb ?? 0),
+    rebateYieldPct: Number(item.rebate_yield_pct ?? item.rebateYieldPct ?? 0),
+    dealCount: Number(item.deal_count ?? item.deals ?? 0),
+  });
 
   return {
     config,
@@ -3199,6 +3401,11 @@ function normalizeRebatePayload(value) {
       day: normalizeSummary(payload.periods?.day),
       week: normalizeSummary(payload.periods?.week),
       month: normalizeSummary(payload.periods?.month),
+    },
+    accountPeriods: {
+      day: Array.isArray(payload.account_periods?.day) ? payload.account_periods.day.map(normalizeAccountSummary) : [],
+      week: Array.isArray(payload.account_periods?.week) ? payload.account_periods.week.map(normalizeAccountSummary) : [],
+      month: Array.isArray(payload.account_periods?.month) ? payload.account_periods.month.map(normalizeAccountSummary) : [],
     },
     rows: Array.isArray(payload.rows)
       ? payload.rows.map((row) => ({
@@ -3259,6 +3466,18 @@ function goalProjection(currentValue, targetValue, monthlyRatePct) {
   };
 }
 
+function actualMonthlyGoalProjection(currentValue, targetValue) {
+  const month = portfolioPerformance.month || {};
+  const monthlyProfit = Number(month.profit || 0) / USC_PER_USD;
+  const monthlyPct = Number(month.profitPct || 0);
+  return {
+    monthlyProfit,
+    monthlyPct,
+    accounts: Number(month.accounts || 0),
+    projection: goalProjection(currentValue, targetValue, monthlyPct),
+  };
+}
+
 function formatProjectionDate(date) {
   if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "-";
   return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "2-digit" });
@@ -3272,6 +3491,7 @@ function selectedGoalRate() {
 
 function renderGoalProjection() {
   const summary = document.getElementById("goalSummary");
+  const actualPace = document.getElementById("goalActualPace");
   const scenarioBody = document.getElementById("goalScenarioBody");
   if (!summary || !scenarioBody) return;
 
@@ -3281,6 +3501,7 @@ function renderGoalProjection() {
 
   if (privacyHidden) {
     summary.innerHTML = '<div class="privacy-note">Goal projection is hidden on the public view. Unlock this browser to run scenarios.</div>';
+    if (actualPace) actualPace.innerHTML = "";
     scenarioBody.innerHTML = "";
     return;
   }
@@ -3290,6 +3511,9 @@ function renderGoalProjection() {
   const target = Number(document.getElementById("goalTarget")?.value || 200000);
   const ratePct = selectedGoalRate();
   const projection = goalProjection(current, target, ratePct);
+  const actual = actualMonthlyGoalProjection(current, target);
+  const actualProjection = actual.projection;
+  const progressPct = target > 0 ? Math.max(0, Math.min(100, (current / target) * 100)) : 0;
   const modeLabel = mode === "balance" ? "Balance" : mode === "equity" ? "Equity" : "Conservative Value";
 
   if (projection.status === "invalid") {
@@ -3326,6 +3550,34 @@ function renderGoalProjection() {
       <div class="goal-stat"><span>Remaining</span><strong>${formatUsd(projection.remaining)}</strong></div>
       <div class="goal-stat"><span>Required multiple</span><strong>${projection.multiple.toFixed(2)}x</strong></div>
       <div class="goal-stat"><span>Target date</span><strong>${formatProjectionDate(projection.date)}</strong></div>
+    `;
+  }
+
+  if (actualPace) {
+    let actualText = "Need positive monthly P/L";
+    let actualMeta = "Uses this month's real Balance P/L. Updates whenever live data changes.";
+    if (actualProjection.status === "completed") {
+      actualText = "Mission completed";
+      actualMeta = `Real monthly pace: ${actual.monthlyPct.toFixed(2)}% / ${formatSignedMoney(actual.monthlyProfit * USC_PER_USD)}`;
+    } else if (actualProjection.status === "projected") {
+      actualText = `${Math.ceil(actualProjection.days).toLocaleString("en-US")} days`;
+      actualMeta = `${actualProjection.months.toFixed(1)} months at actual ${actual.monthlyPct.toFixed(2)}% monthly, around ${formatProjectionDate(actualProjection.date)}`;
+    } else if (actual.monthlyPct <= 0 && actual.accounts > 0) {
+      actualMeta = `This month is ${actual.monthlyPct.toFixed(2)}%, so actual pace cannot project a target date yet.`;
+    }
+
+    actualPace.innerHTML = `
+      <div class="actual-pace-head">
+        <span>Actual Monthly Pace</span>
+        <strong>${actualText}</strong>
+      </div>
+      <div class="goal-progress" aria-label="Progress to target">
+        <span style="width: ${progressPct.toFixed(2)}%"></span>
+      </div>
+      <div class="actual-pace-meta">
+        <span>${formatUsd(current)} / ${formatUsd(target)} (${progressPct.toFixed(1)}%)</span>
+        <span>${actualMeta}</span>
+      </div>
     `;
   }
 
@@ -3563,6 +3815,7 @@ function renderAccounts(filter = "") {
       const equityLabel = account.missing ? "-" : formatMoney(account.equity);
       const gapClass = account.equityGap < 0 ? "negative-text" : account.equityGap > 0 ? "positive-text" : "";
       const ddClass = account.ddPct >= riskThresholds().ddRedPct ? "risk-text-red" : account.ddPct >= riskThresholds().ddYellowPct ? "risk-text-yellow" : "";
+      const pnlChips = accountPnlChips(account);
       const lastUpdateSource = bestAccountTimestamp(account);
       const lastUpdateDetail = parseTimestamp(account.updatedAt) ? account.updatedAt : lastUpdateSource;
       const lastUpdateLabel = account.missing
@@ -3584,6 +3837,7 @@ function renderAccounts(filter = "") {
           <td data-label="Equity">${maskPlain(equityLabel)}</td>
           <td data-label="Equity Gap"><strong class="${privacyHidden ? "" : gapClass}">${maskPlain(account.missing ? "-" : formatSignedMoney(account.equityGap))}</strong></td>
           <td data-label="DD%"><strong class="${privacyHidden ? "" : ddClass}">${maskPlain(account.missing ? "-" : formatPct(account.ddPct))}</strong></td>
+          <td data-label="P/L %"><div class="account-pnl-stack">${privacyHidden ? MASK : pnlChips}</div></td>
           <td data-label="Open Lots">${maskPlain(account.missing ? "-" : lotFormat.format(account.openLots))}</td>
           <td data-label="Margin">${maskPlain(formatMarginLevel(account.marginLevel))}</td>
           <td data-label="Last Update">${maskPlain(lastUpdateLabel)}</td>
@@ -3950,6 +4204,53 @@ function renderRebateTracker() {
     .join("");
 
   const rows = (rebateTracker.rows || []).slice(0, 12);
+  const accountYieldRows = (rebateTracker.accountPeriods?.month?.length
+    ? rebateTracker.accountPeriods.month
+    : deriveMonthlyRebateYieldRows())
+    .filter((row) => row.account)
+    .sort((a, b) => b.estimatedRebateUsd - a.estimatedRebateUsd);
+  const totalYield = accountYieldRows.reduce(
+    (sum, row) => {
+      sum.balanceUsd += row.balanceUsd || 0;
+      sum.rebateUsd += row.estimatedRebateUsd || 0;
+      sum.rebateThb += row.estimatedRebateThb || 0;
+      sum.closedMicroLots += row.closedMicroLots || 0;
+      sum.standardLots += row.standardLots || 0;
+      return sum;
+    },
+    { balanceUsd: 0, rebateUsd: 0, rebateThb: 0, closedMicroLots: 0, standardLots: 0 },
+  );
+  totalYield.rebateYieldPct = totalYield.balanceUsd > 0 ? (totalYield.rebateUsd / totalYield.balanceUsd) * 100 : 0;
+  const accountYieldHtml = accountYieldRows.length
+    ? `
+      <div class="rebate-yield-table">
+        <div class="rebate-yield-head">
+          <span>MH Account</span>
+          <span>Balance</span>
+          <span>Monthly Rebate</span>
+          <span>Yield</span>
+        </div>
+        <div class="rebate-yield-row total">
+          <strong>All MH</strong>
+          <span>${formatUsd(totalYield.balanceUsd)}</span>
+          <span>${formatUsd(totalYield.rebateUsd)} <small>${moneyFormat.format(totalYield.rebateThb)} THB</small></span>
+          <em>${totalYield.rebateYieldPct.toFixed(3)}%</em>
+        </div>
+        ${accountYieldRows
+          .map(
+            (row) => `
+              <div class="rebate-yield-row">
+                <strong>${maskAccountNumber(row.account)}</strong>
+                <span>${formatUsd(row.balanceUsd || 0)}</span>
+                <span>${formatUsd(row.estimatedRebateUsd || 0)} <small>${lotFormat.format(row.closedMicroLots || 0)} micro</small></span>
+                <em>${(row.rebateYieldPct || 0).toFixed(3)}%</em>
+              </div>
+            `,
+          )
+          .join("")}
+      </div>
+    `
+    : '<div class="empty-state">No monthly MH rebate yield yet</div>';
   const rowsHtml = rows.length
     ? rows
         .map(
@@ -3972,6 +4273,13 @@ function renderRebateTracker() {
       <span>${config.micro_lots_per_standard_lot} micro lots = 1 standard lot - ${formatUsd(config.rebate_per_standard_lot_usd)} / standard lot - USDTHB ${Number(config.usd_thb_rate || 0).toFixed(2)}</span>
     </div>
     <div class="rebate-summary-grid">${periodHtml}</div>
+    <div class="rebate-yield-block">
+      <div class="rebate-subhead">
+        <strong>Monthly Rebate Yield by MH Account</strong>
+        <span>Rebate USD divided by each account balance in USD.</span>
+      </div>
+      ${accountYieldHtml}
+    </div>
     <div class="rebate-table">
       <div class="rebate-head">
         <span>Account</span>
@@ -3985,6 +4293,44 @@ function renderRebateTracker() {
   `;
 }
 
+function deriveMonthlyRebateYieldRows() {
+  const now = new Date();
+  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const grouped = {};
+
+  (rebateTracker.rows || []).forEach((row) => {
+    if (!String(row.date || "").startsWith(monthKey)) return;
+    const account = String(row.account || "");
+    if (!account) return;
+    if (!grouped[account]) {
+      const liveAccount = accounts.find((item) => String(item.id) === account);
+      const balanceUsc = liveAccount ? accountBalance(liveAccount) : 0;
+      grouped[account] = {
+        account,
+        broker: row.broker || liveAccount?.broker || "",
+        balanceUsc,
+        balanceUsd: balanceUsc / USC_PER_USD,
+        closedMicroLots: 0,
+        standardLots: 0,
+        estimatedRebateUsd: 0,
+        estimatedRebateThb: 0,
+        rebateYieldPct: 0,
+        dealCount: 0,
+      };
+    }
+    grouped[account].closedMicroLots += row.closedMicroLots || 0;
+    grouped[account].standardLots += row.standardLots || 0;
+    grouped[account].estimatedRebateUsd += row.estimatedRebateUsd || 0;
+    grouped[account].estimatedRebateThb += row.estimatedRebateThb || 0;
+    grouped[account].dealCount += row.dealCount || 0;
+  });
+
+  return Object.values(grouped).map((row) => ({
+    ...row,
+    rebateYieldPct: row.balanceUsd > 0 ? (row.estimatedRebateUsd / row.balanceUsd) * 100 : 0,
+  }));
+}
+
 function renderScaleRecommendation() {
   const target = document.getElementById("scaleRecommendation");
   if (!target) return;
@@ -3994,16 +4340,16 @@ function renderScaleRecommendation() {
     return;
   }
 
-  const rows = botScaleRows();
+  const rows = botScaleRows().filter((row) => row.severity !== "green");
   if (!rows.length) {
-    target.innerHTML = '<div class="empty-state">No scale rules configured</div>';
+    target.innerHTML = '<div class="empty-state">No scale adjustment needed</div>';
     return;
   }
 
   target.innerHTML = `
     <div class="scale-summary">
       <span>Per-account scale</span>
-      <strong>${rows.filter((row) => row.severity !== "green").length} alerts</strong>
+      <strong>${rows.length} alerts</strong>
       <small>Uses each account balance and only bots already running on that account.</small>
     </div>
     <div class="scale-table">
@@ -4143,6 +4489,9 @@ function exportCsv() {
     "equity",
     "equity_gap",
     "dd_pct",
+    "daily_pl_pct",
+    "weekly_pl_pct",
+    "monthly_pl_pct",
     "open_lots",
     "margin_level",
     "last_update",
@@ -4159,6 +4508,9 @@ function exportCsv() {
     account.missing ? "" : account.equity,
     account.missing ? "" : account.equityGap,
     account.missing ? "" : account.ddPct,
+    account.missing ? "" : accountPeriodPnl(account, "day").profitPct,
+    account.missing ? "" : accountPeriodPnl(account, "week").profitPct,
+    account.missing ? "" : accountPeriodPnl(account, "month").profitPct,
     account.missing ? "" : account.openLots,
     account.marginLevel || "",
     bestAccountTimestamp(account),
