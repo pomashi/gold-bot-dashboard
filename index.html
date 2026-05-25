@@ -524,7 +524,7 @@ h2 {
 
 .accounts-table {
   width: 100%;
-  min-width: 1420px;
+  min-width: 1320px;
   border-collapse: collapse;
 }
 
@@ -2352,7 +2352,6 @@ h2 {
                   <th>Equity Gap</th>
                   <th>DD%</th>
                   <th>P/L %</th>
-                  <th>Open Lots</th>
                   <th>Margin</th>
                   <th>Last Update</th>
                   <th>Risk Reasons</th>
@@ -3895,7 +3894,6 @@ function renderAccounts(filter = "") {
           <td data-label="Equity Gap"><strong class="${privacyHidden ? "" : gapClass}">${maskPlain(account.missing ? "-" : formatSignedMoney(account.equityGap))}</strong></td>
           <td data-label="DD%"><strong class="${privacyHidden ? "" : ddClass}">${maskPlain(account.missing ? "-" : formatPct(account.ddPct))}</strong></td>
           <td data-label="P/L %"><div class="account-pnl-stack">${privacyHidden ? MASK : pnlChips}</div></td>
-          <td data-label="Open Lots">${maskPlain(account.missing ? "-" : lotFormat.format(account.openLots))}</td>
           <td data-label="Margin">${maskPlain(formatMarginLevel(account.marginLevel))}</td>
           <td data-label="Last Update">${maskPlain(lastUpdateLabel)}</td>
           <td data-label="Risk Reasons"><div class="risk-chip-list">${privacyHidden ? MASK : reasons}</div></td>
