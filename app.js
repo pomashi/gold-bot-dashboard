@@ -492,7 +492,10 @@ async function loadLiveData() {
 
   try {
     document.getElementById("connectionStatus").textContent = "Loading live data";
-    const response = await fetch(liveDataUrl, { cache: "no-store" });
+    const url = new URL(liveDataUrl);
+    url.searchParams.set("mode", "live");
+    url.searchParams.set("_", Date.now().toString());
+    const response = await fetch(url.toString(), { cache: "no-store" });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const payload = await response.json();
     if (!Array.isArray(payload.accounts)) throw new Error("Missing accounts array");
