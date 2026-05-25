@@ -3234,33 +3234,27 @@ function botTotals() {
 
 function accountPerformanceRows() {
   return accounts
-    .map((account) => ({
-      id: account.id,
-      broker: account.broker,
-      balance: accountBalance(account),
-      equity: accountEquity(account),
-      baselineBalance: account.baselineBalance || account.baselineEquity,
-      dailyProfit: account.dailyProfit,
-      dailyProfitPct: account.dailyProfitPct,
-      dailyDrawdownPct: Number.isFinite(account.dailyDrawdownPct)
-        ? account.dailyDrawdownPct
-        : currentDrawdownPct(account),
-      hasMetric: Number.isFinite(account.dailyProfitPct),
-    }))
+    .map((account) => {
+      const day = account.performance?.day || {};
+      const profit = Number(day.profit);
+      const profitPct = Number(day.profitPct);
+      const drawdownPct = Number(day.drawdownPct);
+      return {
+        id: account.id,
+        broker: account.broker,
+        balance: accountBalance(account),
+        equity: accountEquity(account),
+        baselineBalance: day.baselineBalance || account.baselineBalance || account.baselineEquity,
+        dailyProfit: Number.isFinite(profit) ? profit : Number.NaN,
+        dailyProfitPct: Number.isFinite(profitPct) ? profitPct : Number.NaN,
+        dailyDrawdownPct: Number.isFinite(drawdownPct) ? drawdownPct : currentDrawdownPct(account),
+        hasMetric: Number.isFinite(profitPct),
+      };
+    })
     .sort((a, b) => (b.dailyProfitPct || -999) - (a.dailyProfitPct || -999));
 }
 
 function accountPeriodPnl(account, periodKey) {
-  if (periodKey === "day") {
-    const profit = Number(account.dailyProfit);
-    const profitPct = Number(account.dailyProfitPct);
-    return {
-      profit: Number.isFinite(profit) ? profit : Number.NaN,
-      profitPct: Number.isFinite(profitPct) ? profitPct : Number.NaN,
-      hasMetric: Number.isFinite(profitPct),
-    };
-  }
-
   const period = account.performance?.[periodKey] || {};
   const profit = Number(period.profit);
   const profitPct = Number(period.profitPct);
@@ -4888,7 +4882,6 @@ async function loadHistoryData(authenticatedUrl) {
 
     if (Array.isArray(payload.accounts)) mergeHistoryAccounts(payload.accounts);
     portfolioPerformance = normalizePerformancePeriods(payload.performance);
-    applyLiveDailyPortfolioPerformance();
     if (payload.rebate) rebateTracker = normalizeRebatePayload(payload.rebate);
 
     applyBotPlannerEntries();
