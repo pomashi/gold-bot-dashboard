@@ -4240,7 +4240,7 @@ function renderRebateTracker() {
           <span>${label}</span>
           <strong>${formatUsd(row.estimatedRebateUsd || 0)}</strong>
           <small>${lotFormat.format(row.closedMicroLots || 0)} cent lots / ${lotFormat.format(row.standardLots || 0)} std lots</small>
-          <em>~${moneyFormat.format(row.estimatedRebateThb || 0)} THB Â· ${(row.rebateYieldPct || 0).toFixed(3)}% of MH balance</em>
+          <em>~${moneyFormat.format(row.estimatedRebateThb || 0)} THB - ${(row.rebateYieldPct || 0).toFixed(3)}% of MH balance</em>
         </div>
       `;
     })
@@ -4301,7 +4301,7 @@ function renderRebateTracker() {
             <div class="rebate-row">
               <strong>${maskAccountNumber(row.account)}<small>${row.date || "-"}</small></strong>
               <span>${row.bot}${row.magic ? ` / ${row.magic}` : ""}</span>
-              <span>${lotFormat.format(row.closedMicroLots)} micro</span>
+              <span>${lotFormat.format(row.closedMicroLots)} cent lots</span>
               <span>${lotFormat.format(row.standardLots)} std</span>
               <em>${formatUsd(row.estimatedRebateUsd)} / ${moneyFormat.format(row.estimatedRebateThb)} THB</em>
             </div>
