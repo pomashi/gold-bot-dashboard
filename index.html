@@ -3435,10 +3435,13 @@ function normalizeRebatePayload(value) {
   const config = { ...(payload.config || {}) };
   const normalizeSummary = (item = {}) => ({
     period: item.period || "",
+    balanceUsc: Number(item.balance_usc ?? item.balanceUsc ?? 0),
+    balanceUsd: Number(item.balance_usd ?? item.balanceUsd ?? 0),
     closedMicroLots: Number(item.closed_micro_lots ?? item.closedMicroLots ?? 0),
     standardLots: Number(item.standard_lots ?? item.standardLots ?? 0),
     estimatedRebateUsd: Number(item.estimated_rebate_usd ?? item.estimatedRebateUsd ?? 0),
     estimatedRebateThb: Number(item.estimated_rebate_thb ?? item.estimatedRebateThb ?? 0),
+    rebateYieldPct: Number(item.rebate_yield_pct ?? item.rebateYieldPct ?? 0),
     dealCount: Number(item.deal_count ?? item.deals ?? 0),
     rebateEnabled: item.rebate_enabled !== false,
   });
@@ -4236,8 +4239,8 @@ function renderRebateTracker() {
         <div class="rebate-summary-card">
           <span>${label}</span>
           <strong>${formatUsd(row.estimatedRebateUsd || 0)}</strong>
-          <small>${lotFormat.format(row.closedMicroLots || 0)} micro lots / ${lotFormat.format(row.standardLots || 0)} standard lots</small>
-          <em>~${moneyFormat.format(row.estimatedRebateThb || 0)} THB</em>
+          <small>${lotFormat.format(row.closedMicroLots || 0)} cent lots / ${lotFormat.format(row.standardLots || 0)} std lots</small>
+          <em>~${moneyFormat.format(row.estimatedRebateThb || 0)} THB Â· ${(row.rebateYieldPct || 0).toFixed(3)}% of MH balance</em>
         </div>
       `;
     })
@@ -4282,7 +4285,7 @@ function renderRebateTracker() {
               <div class="rebate-yield-row">
                 <strong>${maskAccountNumber(row.account)}</strong>
                 <span>${formatUsd(row.balanceUsd || 0)}</span>
-                <span>${formatUsd(row.estimatedRebateUsd || 0)} <small>${lotFormat.format(row.closedMicroLots || 0)} micro</small></span>
+                <span>${formatUsd(row.estimatedRebateUsd || 0)} <small>${lotFormat.format(row.closedMicroLots || 0)} cent lots</small></span>
                 <em>${(row.rebateYieldPct || 0).toFixed(3)}%</em>
               </div>
             `,
@@ -4310,7 +4313,7 @@ function renderRebateTracker() {
   target.innerHTML = `
     <div class="rebate-rule">
       <strong>${config.broker} only</strong>
-      <span>${config.micro_lots_per_standard_lot} micro lots = 1 standard lot - ${formatUsd(config.rebate_per_standard_lot_usd)} / standard lot - USDTHB ${Number(config.usd_thb_rate || 0).toFixed(2)}</span>
+      <span>${config.micro_lots_per_standard_lot} cent lots = 1 standard lot - ${formatUsd(config.rebate_per_standard_lot_usd)} / standard lot - USDTHB ${Number(config.usd_thb_rate || 0).toFixed(2)}</span>
     </div>
     <div class="rebate-summary-grid">${periodHtml}</div>
     <div class="rebate-yield-block">
@@ -4324,7 +4327,7 @@ function renderRebateTracker() {
       <div class="rebate-head">
         <span>Account</span>
         <span>Bot / Magic</span>
-        <span>Closed</span>
+        <span>Cent Lots</span>
         <span>Standard</span>
         <span>Estimate</span>
       </div>
