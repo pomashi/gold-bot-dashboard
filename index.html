@@ -2223,11 +2223,6 @@ h2 {
             <small>Total realized balance across all accounts</small>
           </article>
           <article class="metric">
-            <span>Total Lots</span>
-            <strong id="totalLots">0.00</strong>
-            <small>Total lot from bot allocation</small>
-          </article>
-          <article class="metric">
             <span>Largest Account</span>
             <strong id="largestAccount">-</strong>
             <small id="largestAccountMeta">-</small>
@@ -2241,11 +2236,6 @@ h2 {
             <span>Equity Gap</span>
             <strong id="floatingPlTotal">0 USC</strong>
             <small>Equity minus balance for floating DD</small>
-          </article>
-          <article class="metric">
-            <span>Open Lots</span>
-            <strong id="openLotsTotal">0.00</strong>
-            <small>Open lots from live positions</small>
           </article>
         </section>
 
@@ -3676,13 +3666,10 @@ function renderGoalProjection() {
 function setMetrics() {
   const totalBalance = accounts.reduce((sum, account) => sum + accountBalance(account), 0);
   const totalEquity = accounts.reduce((sum, account) => sum + accountEquity(account), 0);
-  const totalLots = accounts.reduce((sum, account) => sum + accountLotTotal(account), 0);
-  const totalOpenLots = accounts.reduce((sum, account) => sum + account.openLots, 0);
   const largest = [...accounts].sort((a, b) => accountBalance(b) - accountBalance(a))[0];
   const ddWatch = accounts.filter((account) => currentDrawdownPct(account) >= riskThresholds().ddYellowPct).length;
 
   document.getElementById("totalEquity").innerHTML = maskValue(formatMoney(totalBalance));
-  document.getElementById("totalLots").innerHTML = maskValue(lotFormat.format(totalLots));
   document.getElementById("largestAccount").innerHTML = displayAccountNumber(largest.id);
   document.getElementById("largestAccountMeta").innerHTML = maskValue(
     `${largest.broker} - Balance ${formatMoney(accountBalance(largest))}`,
@@ -3692,7 +3679,6 @@ function setMetrics() {
   document.getElementById("floatingPlTotal").innerHTML = maskValue(`${formatSignedMoney(equityGap)} equity gap`);
   document.getElementById("floatingPlTotal").classList.toggle("negative-text", equityGap < 0);
   document.getElementById("floatingPlTotal").classList.toggle("positive-text", equityGap > 0);
-  document.getElementById("openLotsTotal").innerHTML = maskValue(lotFormat.format(totalOpenLots));
 }
 
 function drawAccountChart() {
