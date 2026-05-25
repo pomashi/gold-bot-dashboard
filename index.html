@@ -4616,6 +4616,10 @@ function normalizeLiveAccount(account) {
   const id = String(account.account || account.id || "");
   const baselineBalance = toAccountUnit(account.baseline_balance || account.baselineBalance || 0);
   const hasBalanceBaseline = Number.isFinite(baselineBalance) && baselineBalance > 0;
+  const liveDailyProfit = toAccountUnit(account.account_day_profit ?? account.accountDayProfit ?? account.daily_profit ?? account.dailyProfit ?? 0);
+  const liveDailyProfitPct = Number(
+    account.account_day_profit_pct ?? account.accountDayProfitPct ?? account.daily_profit_pct ?? account.dailyProfitPct ?? Number.NaN,
+  );
   const liveBotsSource = parseArray(account.bots);
   const botMetricsSource = parseArray(account.bot_metrics || account.botMetrics);
   const liveBots = liveBotsSource.length
@@ -4644,11 +4648,8 @@ function normalizeLiveAccount(account) {
     receivedAt: account.received_at || account.receivedAt || account.updated_at || account.updatedAt || "",
     baselineBalance,
     baselineEquity: toAccountUnit(account.baseline_equity || account.baselineEquity || 0),
-    dailyProfit: hasBalanceBaseline ? toAccountUnit(account.daily_profit || account.dailyProfit || 0) : Number.NaN,
-    dailyProfitPct:
-      !hasBalanceBaseline || account.daily_profit_pct === "" || account.dailyProfitPct === ""
-        ? Number.NaN
-        : Number(account.daily_profit_pct ?? account.dailyProfitPct ?? Number.NaN),
+    dailyProfit: Number.isFinite(liveDailyProfit) ? liveDailyProfit : Number.NaN,
+    dailyProfitPct: Number.isFinite(liveDailyProfitPct) ? liveDailyProfitPct : Number.NaN,
     dailyDrawdownPct:
       account.daily_drawdown_pct === "" || account.dailyDrawdownPct === ""
         ? Number.NaN
@@ -4728,8 +4729,33 @@ function mergeHistoryAccounts(historyAccounts) {
 
   accounts = accounts.map((account) => {
     const stats = byAccount.get(String(account.id));
-    return stats ? { ...account, ...stats } : account;
+    if (!stats) return account;
+    return {
+      ...account,
+      ...stats,
+      dailyProfit: Number.isFinite(account.dailyProfit) ? account.dailyProfit : stats.dailyProfit,
+      dailyProfitPct: Number.isFinite(account.dailyProfitPct) ? account.dailyProfitPct : stats.dailyProfitPct,
+    };
   });
+}
+
+function applyLiveDailyPortfolioPerformance() {
+  const rows = accounts.filter((account) => Number.isFinite(account.dailyProfit));
+  if (!rows.length) return;
+
+  const latestBalance = rows.reduce((sum, account) => sum + accountBalance(account), 0);
+  const profit = rows.reduce((sum, account) => sum + Number(account.dailyProfit || 0), 0);
+  const baselineBalance = latestBalance - profit;
+  const existing = portfolioPerformance.day || {};
+
+  portfolioPerformance.day = {
+    ...existing,
+    baselineBalance,
+    latestBalance,
+    profit,
+    profitPct: baselineBalance > 0 ? (profit / baselineBalance) * 100 : 0,
+    accounts: rows.length,
+  };
 }
 
 async function loadLiveData() {
@@ -4793,6 +4819,7 @@ async function loadHistoryData(authenticatedUrl) {
 
     if (Array.isArray(payload.accounts)) mergeHistoryAccounts(payload.accounts);
     portfolioPerformance = normalizePerformancePeriods(payload.performance);
+    applyLiveDailyPortfolioPerformance();
     if (payload.rebate) rebateTracker = normalizeRebatePayload(payload.rebate);
 
     applyBotPlannerEntries();
