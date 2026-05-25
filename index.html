@@ -3380,7 +3380,7 @@ function portfolioSeriesRows(seriesKey, currentKey, limit) {
     const now = new Date();
     const currentDate =
       currentKey === "month"
-        ? new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+        ? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-01`
         : now.toISOString().slice(0, 10);
     const keyDate = String(current.date || current.periodStart || current.period_start || currentDate).slice(0, 10);
     const compareKey = currentKey === "month" ? keyDate.slice(0, 7) : keyDate;
