@@ -4886,6 +4886,7 @@ async function loadHistoryData(authenticatedUrl) {
     applyBotPlannerEntries();
     renderGoalProjection();
     renderAccountPerformance();
+    renderAccounts(document.getElementById("searchInput")?.value || "");
     renderRebateTracker();
     renderScaleRecommendation();
     populatePlannerAccounts();
