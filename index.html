@@ -2855,6 +2855,13 @@ function buildAuthenticatedLiveUrl(liveDataUrl, promptIfMissing = false) {
   return url.toString();
 }
 
+function dashboardModeUrl(authenticatedUrl, mode) {
+  const url = new URL(authenticatedUrl);
+  url.searchParams.set("mode", mode);
+  url.searchParams.set("_", Date.now().toString());
+  return url.toString();
+}
+
 function liveErrorMessage(error) {
   const message = String(error?.message || error || "");
   if (message.includes("Unauthorized")) return "Access key wrong";
@@ -2958,6 +2965,7 @@ let botPlannerEntries = loadBotPlannerEntries();
 let portfolioPerformance = {};
 let rebateTracker = { periods: {}, rows: [], config: {} };
 let privacyHidden = loadPrivacyHidden();
+let historyLoadSeq = 0;
 const chartColors = ["#1f7a4c", "#bd8b2f", "#275a8d", "#b94d43", "#5b8e7d", "#9c6b2e", "#496f9d", "#7a8a42"];
 
 function accountLotTotal(account) {
@@ -4692,6 +4700,38 @@ function normalizePerformancePeriod(item) {
   };
 }
 
+function normalizeHistoryAccountStats(account) {
+  const baselineBalance = toAccountUnit(account.baseline_balance ?? account.baselineBalance ?? 0);
+  const hasBalanceBaseline = Number.isFinite(baselineBalance) && baselineBalance > 0;
+  return {
+    baselineBalance,
+    baselineEquity: toAccountUnit(account.baseline_equity ?? account.baselineEquity ?? 0),
+    dailyProfit: hasBalanceBaseline ? toAccountUnit(account.daily_profit ?? account.dailyProfit ?? 0) : Number.NaN,
+    dailyProfitPct:
+      !hasBalanceBaseline || account.daily_profit_pct === "" || account.dailyProfitPct === ""
+        ? Number.NaN
+        : Number(account.daily_profit_pct ?? account.dailyProfitPct ?? Number.NaN),
+    dailyDrawdownPct:
+      account.daily_drawdown_pct === "" || account.dailyDrawdownPct === ""
+        ? Number.NaN
+        : Number(account.daily_drawdown_pct ?? account.dailyDrawdownPct ?? Number.NaN),
+    performance: normalizePerformancePeriods(account.performance),
+  };
+}
+
+function mergeHistoryAccounts(historyAccounts) {
+  const byAccount = new Map(
+    historyAccounts
+      .map((account) => [String(account.account || account.id || ""), normalizeHistoryAccountStats(account)])
+      .filter(([account]) => account),
+  );
+
+  accounts = accounts.map((account) => {
+    const stats = byAccount.get(String(account.id));
+    return stats ? { ...account, ...stats } : account;
+  });
+}
+
 async function loadLiveData() {
   const liveDataUrl = getLiveDataUrl(false);
   if (!liveDataUrl) return;
@@ -4727,8 +4767,6 @@ async function loadLiveData() {
     }
     if (!Array.isArray(payload.accounts)) throw new Error("Missing accounts array");
     accounts = payload.accounts.map(normalizeLiveAccount).filter((account) => account.id);
-    portfolioPerformance = normalizePerformancePeriods(payload.performance);
-    rebateTracker = normalizeRebatePayload(payload.rebate);
     if (Array.isArray(payload.bot_planner)) {
       botPlannerEntries = mergeBotPlannerEntries(
         payload.bot_planner.map((entry) => ({ ...entry, source: "sheet" })),
@@ -4737,9 +4775,35 @@ async function loadLiveData() {
       saveBotPlannerEntries();
     }
     document.getElementById("connectionStatus").textContent = `Live ${new Date().toLocaleTimeString("th-TH")}`;
+    loadHistoryData(authenticatedUrl);
   } catch (error) {
     document.getElementById("connectionStatus").textContent = liveErrorMessage(error);
     console.warn("Could not load live MT5 data", error);
+  }
+}
+
+async function loadHistoryData(authenticatedUrl) {
+  const seq = ++historyLoadSeq;
+  try {
+    const response = await fetch(dashboardModeUrl(authenticatedUrl, "history"), { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = await response.json();
+    if (seq !== historyLoadSeq) return;
+    if (payload && payload.error === "unauthorized") throw new Error("Unauthorized access key");
+
+    if (Array.isArray(payload.accounts)) mergeHistoryAccounts(payload.accounts);
+    portfolioPerformance = normalizePerformancePeriods(payload.performance);
+    if (payload.rebate) rebateTracker = normalizeRebatePayload(payload.rebate);
+
+    applyBotPlannerEntries();
+    renderGoalProjection();
+    renderAccountPerformance();
+    renderRebateTracker();
+    renderScaleRecommendation();
+    populatePlannerAccounts();
+    renderBotPlanner();
+  } catch (error) {
+    console.warn("Could not load dashboard history", error);
   }
 }
 
