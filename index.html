@@ -3377,12 +3377,20 @@ function portfolioSeriesRows(seriesKey, currentKey, limit) {
 
   const current = portfolioPerformance[currentKey] || {};
   if (Number.isFinite(Number(current.profitPct))) {
-    const currentDate = new Date().toISOString().slice(0, 10);
+    const now = new Date();
+    const currentDate =
+      currentKey === "month"
+        ? new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
+        : now.toISOString().slice(0, 10);
     const keyDate = String(current.date || current.periodStart || current.period_start || currentDate).slice(0, 10);
-    const existingIndex = rows.findIndex((item) => String(item.date || "").slice(0, 10) === keyDate);
+    const compareKey = currentKey === "month" ? keyDate.slice(0, 7) : keyDate;
+    const existingIndex = rows.findIndex((item) => {
+      const itemDate = String(item.date || "").slice(0, 10);
+      return currentKey === "month" ? itemDate.slice(0, 7) === compareKey : itemDate === compareKey;
+    });
     const currentRow = {
       date: keyDate,
-      label: current.label || keyDate.slice(5),
+      label: current.label || (currentKey === "month" ? keyDate.slice(0, 7) : keyDate.slice(5)),
       profit: Number(current.profit || 0),
       profitPct: Number(current.profitPct || 0),
       drawdownPct: Number(current.drawdownPct || 0),
