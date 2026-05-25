@@ -4802,8 +4802,8 @@ function mergeHistoryAccounts(historyAccounts) {
     return {
       ...account,
       ...stats,
-      dailyProfit: Number.isFinite(account.dailyProfit) ? account.dailyProfit : stats.dailyProfit,
-      dailyProfitPct: Number.isFinite(account.dailyProfitPct) ? account.dailyProfitPct : stats.dailyProfitPct,
+      dailyProfit: Number.isFinite(stats.dailyProfit) ? stats.dailyProfit : account.dailyProfit,
+      dailyProfitPct: Number.isFinite(stats.dailyProfitPct) ? stats.dailyProfitPct : account.dailyProfitPct,
     };
   });
 }
