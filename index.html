@@ -3252,11 +3252,19 @@ function accountPerformanceRows() {
 }
 
 function accountPeriodPnl(account, periodKey) {
+  if (periodKey === "day") {
+    const profit = Number(account.dailyProfit);
+    const profitPct = Number(account.dailyProfitPct);
+    return {
+      profit: Number.isFinite(profit) ? profit : Number.NaN,
+      profitPct: Number.isFinite(profitPct) ? profitPct : Number.NaN,
+      hasMetric: Number.isFinite(profitPct),
+    };
+  }
+
   const period = account.performance?.[periodKey] || {};
-  const fallbackProfit = periodKey === "day" ? account.dailyProfit : Number.NaN;
-  const fallbackPct = periodKey === "day" ? account.dailyProfitPct : Number.NaN;
-  const profit = Number.isFinite(Number(period.profit)) ? Number(period.profit) : Number(fallbackProfit);
-  const profitPct = Number.isFinite(Number(period.profitPct)) ? Number(period.profitPct) : Number(fallbackPct);
+  const profit = Number(period.profit);
+  const profitPct = Number(period.profitPct);
   return {
     profit: Number.isFinite(profit) ? profit : Number.NaN,
     profitPct: Number.isFinite(profitPct) ? profitPct : Number.NaN,
