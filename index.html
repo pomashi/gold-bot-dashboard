@@ -958,6 +958,12 @@ h2 {
   background: var(--surface-2);
 }
 
+.period-trend-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .daily-trend-head {
   display: flex;
   align-items: baseline;
@@ -1981,6 +1987,10 @@ h2 {
 
   .daily-bar-row {
     grid-template-columns: 58px minmax(0, 1fr);
+  }
+
+  .period-trend-grid {
+    grid-template-columns: 1fr;
   }
 
   .daily-bar-row strong {
@@ -3349,8 +3359,12 @@ function portfolioPerformanceRows() {
 }
 
 function portfolioDailyRows() {
-  const series = Array.isArray(portfolioPerformance.daily_series) ? portfolioPerformance.daily_series : [];
-  return series
+  return portfolioSeriesRows("daily_series", "day", 7);
+}
+
+function portfolioSeriesRows(seriesKey, currentKey, limit) {
+  const series = Array.isArray(portfolioPerformance[seriesKey]) ? portfolioPerformance[seriesKey] : [];
+  const rows = series
     .map((item) => ({
       date: item.date || item.periodStart || item.period_start || "",
       label: item.label || item.date || "",
@@ -3359,8 +3373,58 @@ function portfolioDailyRows() {
       drawdownPct: Number(item.drawdownPct ?? item.drawdown_pct ?? 0),
       accounts: Number(item.accounts || 0),
       hasMetric: Number.isFinite(Number(item.profitPct ?? item.profit_pct)),
-    }))
-    .slice(-7);
+    }));
+
+  const current = portfolioPerformance[currentKey] || {};
+  if (Number.isFinite(Number(current.profitPct))) {
+    const currentDate = new Date().toISOString().slice(0, 10);
+    const keyDate = String(current.date || current.periodStart || current.period_start || currentDate).slice(0, 10);
+    const existingIndex = rows.findIndex((item) => String(item.date || "").slice(0, 10) === keyDate);
+    const currentRow = {
+      date: keyDate,
+      label: current.label || keyDate.slice(5),
+      profit: Number(current.profit || 0),
+      profitPct: Number(current.profitPct || 0),
+      drawdownPct: Number(current.drawdownPct || 0),
+      accounts: Number(current.accounts || 0),
+      hasMetric: true,
+    };
+    if (existingIndex >= 0) rows[existingIndex] = { ...rows[existingIndex], ...currentRow };
+    else rows.push(currentRow);
+  }
+
+  return rows
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+    .slice(-limit);
+}
+
+function trendPanelHtml(title, subtitle, rows) {
+  if (!rows.length) return "";
+
+  const maxAbsProfit = Math.max(1, ...rows.map((row) => Math.abs(row.profit)));
+  return `
+    <div class="daily-trend">
+      <div class="daily-trend-head">
+        <strong>${title}</strong>
+        <span>${subtitle}</span>
+      </div>
+      <div class="daily-bars">
+        ${rows
+          .map((row) => {
+            const width = Math.max(4, Math.round((Math.abs(row.profit) / maxAbsProfit) * 100));
+            const direction = row.profit >= 0 ? "positive" : "negative";
+            return `
+              <div class="daily-bar-row ${direction}">
+                <span>${row.label}</span>
+                <div><i style="width:${width}%"></i></div>
+                <strong>${formatSignedMoney(row.profit)}</strong>
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    </div>
+  `;
 }
 
 function rebateConfig() {
@@ -4094,6 +4158,8 @@ function openBotConfigDoc() {
 function renderAccountPerformance() {
   const periodRows = portfolioPerformanceRows();
   const dailyRows = portfolioDailyRows();
+  const weeklyRows = portfolioSeriesRows("weekly_series", "week", 4);
+  const monthlyRows = portfolioSeriesRows("monthly_series", "month", 6);
   const accountRows = accountPerformanceRows();
   const target = document.getElementById("accountPerformance");
 
@@ -4133,29 +4199,12 @@ function renderAccountPerformance() {
     </div>
   `;
 
-  const maxAbsDailyProfit = Math.max(1, ...dailyRows.map((row) => Math.abs(row.profit)));
-  const dailyHtml = dailyRows.length
+  const trendHtml = dailyRows.length || weeklyRows.length || monthlyRows.length
     ? `
-      <div class="daily-trend">
-        <div class="daily-trend-head">
-          <strong>7-day Balance P/L</strong>
-          <span>Today + previous market days</span>
-        </div>
-        <div class="daily-bars">
-          ${dailyRows
-            .map((row) => {
-              const width = Math.max(4, Math.round((Math.abs(row.profit) / maxAbsDailyProfit) * 100));
-              const direction = row.profit >= 0 ? "positive" : "negative";
-              return `
-                <div class="daily-bar-row ${direction}">
-                  <span>${row.label}</span>
-                  <div><i style="width:${width}%"></i></div>
-                  <strong>${formatSignedMoney(row.profit)}</strong>
-                </div>
-              `;
-            })
-            .join("")}
-        </div>
+      <div class="period-trend-grid">
+        ${trendPanelHtml("Daily P/L", "Last 7 market days", dailyRows)}
+        ${trendPanelHtml("Weekly P/L", "Last 4 trading weeks", weeklyRows)}
+        ${trendPanelHtml("Monthly P/L", "Last 6 months", monthlyRows)}
       </div>
     `
     : "";
@@ -4175,7 +4224,7 @@ function renderAccountPerformance() {
     })
     .join("");
 
-  target.innerHTML = `${periodHtml}${dailyHtml}<div class="account-performance-mini">${accountHtml}</div>`;
+  target.innerHTML = `${periodHtml}${trendHtml}<div class="account-performance-mini">${accountHtml}</div>`;
 }
 
 function renderRebateTracker() {
@@ -4678,7 +4727,22 @@ function normalizePerformancePeriods(value) {
         accounts: Number(item.accounts || 0),
       }))
     : [];
+  periods.weekly_series = normalizePerformanceSeries(performance.weekly_series);
+  periods.monthly_series = normalizePerformanceSeries(performance.monthly_series);
   return periods;
+}
+
+function normalizePerformanceSeries(series) {
+  return Array.isArray(series)
+    ? series.map((item) => ({
+        date: item.date || item.periodStart || item.period_start || "",
+        label: item.label || item.date || "",
+        profit: toAccountUnit(item.profit ?? 0),
+        profitPct: Number(item.profitPct ?? item.profit_pct ?? Number.NaN),
+        drawdownPct: Number(item.drawdownPct ?? item.drawdown_pct ?? Number.NaN),
+        accounts: Number(item.accounts || 0),
+      }))
+    : [];
 }
 
 function normalizePerformancePeriod(item) {
