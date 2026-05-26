@@ -836,9 +836,9 @@
     </div>
 
     <script>
-      const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbz9T90SGrGyRGb8aKpdEatDRSVj9xsr8ev4KuRDNs97N9f5JlE6bwkNRmgyLBI-JN8/exec";
+      const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzxANvMEXaDZBxfJ4F3YFkzs1_B3M6gJgOzGDWuRCwP-1MZlsypmfjdfqMwuWBSfQMR/exec";
       const STORAGE = {
-        url: "gold-v2-live-url",
+        url: "gold-v2-live-url-current",
         key: "gold-v2-read-key",
       };
 
@@ -1072,8 +1072,18 @@
         await loadAll();
       }
 
-      async function fetchJson(url) {
-        const response = await fetch(url, { cache: "no-store" });
+      async function fetchJson(url, timeoutMs = 25000) {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), timeoutMs);
+        let response;
+        try {
+          response = await fetch(url, { cache: "no-store", signal: controller.signal });
+        } catch (error) {
+          if (error.name === "AbortError") throw new Error("Request timed out");
+          throw error;
+        } finally {
+          clearTimeout(timer);
+        }
         if (!response.ok) throw new Error("HTTP " + response.status);
         const payload = await response.json();
         if (payload && payload.error === "unauthorized") throw new Error("Unauthorized read key");
@@ -1086,7 +1096,7 @@
         state.liveOk = false;
         state.historyOk = false;
         try {
-          const live = await fetchJson(authedUrl(cfg.url, cfg.key));
+          const live = await fetchJson(authedUrl(cfg.url, cfg.key), 18000);
           state.liveOk = true;
           state.liveAt = new Date();
           state.meta = live.meta || {};
@@ -1094,7 +1104,7 @@
           log("Live loaded: " + state.accounts.length + " accounts", "live");
 
           try {
-            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"));
+            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 30000);
             state.historyOk = true;
             state.historyAt = new Date();
             state.performance = history.performance || {};
