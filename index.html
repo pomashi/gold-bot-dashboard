@@ -1489,7 +1489,28 @@
 
       function renderMeta() {
         const hour = state.meta.market_day_start_hour;
-        $("marketInfo").textContent = hour === undefined ? "History meta not loaded yet." : "Market day reset: " + String(hour).padStart(2, "0") + ":00 Bangkok. Week starts Monday market open.";
+        if (hour === undefined) {
+          $("marketInfo").textContent = "History meta not loaded yet.";
+          return;
+        }
+
+        const zone = state.meta.market_time_zone || "MT5 server time";
+        const latest = state.accounts.reduce((best, account) => {
+          if (!best) return account;
+          return minutesAgo(account.lastAt) < minutesAgo(best.lastAt) ? account : best;
+        }, null);
+        const mt5Time = latest?.raw?.updated_at || "-";
+        const receivedAt = latest?.raw?.received_at ? new Date(latest.raw.received_at).toLocaleString("th-TH", { hour12: false }) : "-";
+        $("marketInfo").textContent =
+          "Market day reset: " +
+          String(hour).padStart(2, "0") +
+          ":00 " +
+          zone +
+          ". Latest MT5: " +
+          mt5Time +
+          ". Bangkok receive: " +
+          receivedAt +
+          ".";
       }
 
       function healthStatusClass(status) {
