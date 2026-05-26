@@ -6,24 +6,26 @@
     <title>MT5 Gold Bot Dashboard V2</title>
     <style>
       :root {
-        --bg: #eef3ee;
+        --bg: #eaf0ec;
         --panel: #ffffff;
-        --panel-2: #f7faf6;
-        --ink: #101816;
-        --muted: #65736b;
-        --line: #d5ded4;
-        --green: #1f7a4c;
-        --green-strong: #125f38;
-        --green-soft: #e3f4e8;
-        --gold: #b5832e;
-        --gold-soft: #fff2d3;
-        --red: #c4473d;
-        --red-soft: #fde7e3;
-        --blue: #2466a4;
-        --blue-soft: #e4f0fb;
-        --purple: #6d4bc2;
-        --purple-soft: #eee8ff;
-        --shadow: 0 14px 34px rgba(22, 36, 29, 0.1);
+        --panel-2: #f4f7f1;
+        --ink: #121815;
+        --muted: #66746d;
+        --line: #d8dfd7;
+        --green: #16754a;
+        --green-strong: #0f5d39;
+        --green-soft: #def3e6;
+        --gold: #b8842d;
+        --gold-soft: #fff0cf;
+        --red: #c43f36;
+        --red-soft: #fde5df;
+        --blue: #225f9e;
+        --blue-soft: #e2effb;
+        --teal: #167276;
+        --teal-soft: #ddf2f1;
+        --purple: #6a50b7;
+        --purple-soft: #eee9ff;
+        --shadow: 0 16px 42px rgba(22, 35, 29, 0.12);
       }
 
       * {
@@ -37,8 +39,9 @@
       body {
         margin: 0;
         background:
-          linear-gradient(135deg, rgba(31, 122, 76, 0.12), transparent 28%),
-          linear-gradient(225deg, rgba(181, 131, 46, 0.14), transparent 24%),
+          radial-gradient(circle at 18% -10%, rgba(22, 117, 74, 0.18), transparent 34%),
+          radial-gradient(circle at 84% 4%, rgba(184, 132, 45, 0.18), transparent 28%),
+          linear-gradient(180deg, #f7faf7 0, var(--bg) 310px),
           var(--bg);
         color: var(--ink);
         font-family: Arial, "Helvetica Neue", Tahoma, sans-serif;
@@ -63,8 +66,9 @@
         top: 0;
         z-index: 20;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: linear-gradient(90deg, #0d1712, #173623 58%, #5c471e);
+        background: linear-gradient(90deg, #0b1510, #153622 54%, #6a511e);
         color: #fff;
+        box-shadow: 0 12px 34px rgba(8, 18, 13, 0.22);
       }
 
       .topbar-inner {
@@ -243,7 +247,7 @@
         justify-content: space-between;
         gap: 16px;
         margin: 8px 0 14px;
-        padding: 8px 0 2px;
+        padding: 10px 0 4px;
       }
 
       h1,
@@ -311,10 +315,11 @@
         border-radius: 8px;
         background: rgba(255, 255, 255, 0.92);
         box-shadow: var(--shadow);
+        overflow: hidden;
       }
 
       .panel.pad {
-        padding: 14px;
+        padding: 16px;
       }
 
       .span-12 {
@@ -362,10 +367,10 @@
         display: grid;
         align-content: space-between;
         gap: 10px;
-        padding: 13px;
+        padding: 14px;
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: linear-gradient(180deg, #ffffff, #f8fbf8);
+        background: linear-gradient(180deg, #ffffff, #f8fbf7);
       }
 
       .kpi:nth-child(1) {
@@ -401,6 +406,19 @@
         color: var(--muted);
         font-size: 12px;
         font-weight: 800;
+      }
+
+      .kpi-thb {
+        display: block;
+        margin-top: 4px;
+        color: #8a641f;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .kpi-note {
+        display: block;
+        margin-top: 4px;
       }
 
       .danger-list {
@@ -448,11 +466,54 @@
         gap: 10px;
       }
 
+      .audit-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
       .period-card {
-        padding: 13px;
+        min-height: 124px;
+        display: grid;
+        align-content: space-between;
+        padding: 14px;
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: linear-gradient(160deg, var(--panel-2), #fffdf6);
+        background: linear-gradient(160deg, #ffffff, #fff8e7);
+      }
+
+      .audit-card {
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .audit-card.good {
+        background: var(--green-soft);
+      }
+
+      .audit-card.warn {
+        background: var(--gold-soft);
+      }
+
+      .audit-card.bad {
+        background: var(--red-soft);
+      }
+
+      .audit-card strong {
+        display: block;
+        margin-top: 6px;
+        font-size: 15px;
+      }
+
+      .audit-card small {
+        display: block;
+        margin-top: 5px;
+        color: var(--muted);
+        font-weight: 800;
+        line-height: 1.35;
       }
 
       .goal-layout {
@@ -465,7 +526,7 @@
         min-height: 220px;
         padding: 16px;
         border-radius: 8px;
-        background: linear-gradient(135deg, #153a28, #2f7a51 56%, #b5832e);
+        background: linear-gradient(135deg, #103324, #167276 52%, #b8842d);
         color: #fff;
       }
 
@@ -579,6 +640,23 @@
         font-weight: 800;
       }
 
+      .period-thb {
+        display: block;
+        margin-top: 5px;
+        color: #8a641f;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .period-meta {
+        display: block;
+        margin-top: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1.35;
+      }
+
       .series {
         display: grid;
         gap: 8px;
@@ -596,7 +674,7 @@
 
       .bar-track {
         position: relative;
-        height: 12px;
+        height: 13px;
         border-radius: 999px;
         background: #dfe7e0;
         overflow: hidden;
@@ -633,17 +711,18 @@
 
       .account-list {
         display: grid;
-        gap: 10px;
+        gap: 12px;
       }
 
       .account-card {
         display: grid;
-        grid-template-columns: 190px minmax(0, 1fr);
-        gap: 12px;
-        padding: 12px;
+        grid-template-columns: 210px minmax(0, 1fr);
+        gap: 14px;
+        padding: 14px;
         border: 1px solid var(--line);
         border-radius: 8px;
-        background: linear-gradient(180deg, #ffffff, #fbfcfb);
+        background: linear-gradient(180deg, #ffffff, #fbfdfb);
+        box-shadow: 0 8px 22px rgba(22, 35, 29, 0.07);
       }
 
       .account-card.danger-red {
@@ -662,7 +741,7 @@
 
       .account-title strong {
         display: block;
-        font-size: 18px;
+        font-size: 20px;
       }
 
       .account-title span {
@@ -712,14 +791,19 @@
       }
 
       .mini {
-        padding: 9px;
+        min-height: 78px;
+        padding: 10px;
         border: 1px solid var(--line);
         border-radius: 8px;
         background: #fbfcfb;
       }
 
       .mini.pl-stack {
-        grid-column: span 2;
+        grid-column: 1 / -1;
+        min-height: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
       }
 
       .mini:nth-child(1),
@@ -735,6 +819,15 @@
       .mini:nth-child(5),
       .mini:nth-child(6) {
         background: var(--green-soft);
+      }
+
+      .mini:nth-child(7) {
+        background: var(--teal-soft);
+      }
+
+      .mini.pl-stack {
+        border: 0;
+        background: transparent;
       }
 
       .mini span {
@@ -754,21 +847,52 @@
 
       .pl-row {
         display: grid;
-        grid-template-columns: 22px minmax(0, 1fr) 58px;
-        align-items: baseline;
-        gap: 8px;
-        padding: 2px 0;
-        white-space: nowrap;
+        gap: 5px;
+        min-height: 78px;
+        padding: 10px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
       }
 
       .pl-row b {
         color: var(--muted);
         font-size: 11px;
+        text-transform: uppercase;
+      }
+
+      .pl-row span {
+        display: block;
+        font-size: 17px;
+        font-weight: 900;
+        line-height: 1.1;
       }
 
       .pl-row em {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
         font-style: normal;
-        text-align: right;
+      }
+
+      .pl-row.positive {
+        border-color: #b9e6c8;
+        background: linear-gradient(180deg, #f6fff8, var(--green-soft));
+      }
+
+      .pl-row.negative {
+        border-color: #f3b9b0;
+        background: linear-gradient(180deg, #fff9f8, var(--red-soft));
+      }
+
+      .pl-row.neutral {
+        background: linear-gradient(180deg, #ffffff, var(--panel-2));
+      }
+
+      .pl-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
       }
 
       .table {
@@ -841,6 +965,7 @@
         .kpi-grid,
         .danger-list,
         .period-grid,
+        .audit-grid,
         .goal-layout,
         .health-grid {
           grid-template-columns: 1fr;
@@ -852,6 +977,10 @@
 
         .account-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .pl-grid {
+          grid-template-columns: 1fr;
         }
 
         .goal-controls {
@@ -925,10 +1054,10 @@
           </div>
 
           <nav class="nav" aria-label="Dashboard sections">
-            <a href="#danger">Danger</a>
             <a href="#pnl">P/L</a>
-            <a href="#goal">Goal</a>
+            <a href="#danger">Danger</a>
             <a href="#accounts">Accounts</a>
+            <a href="#goal">Goal</a>
             <a href="#health">Health</a>
           </nav>
         </div>
@@ -938,13 +1067,7 @@
         <section class="hero">
           <div>
             <p class="eyebrow">Live trading control room</p>
-            <h1>Detect danger fast.</h1>
-            <p class="subtitle">Clean rebuild. No privacy mask, no hidden unlock state, no guessing. Balance P/L comes from balance baselines. DD comes from equity gap.</p>
-            <div class="hero-strip">
-              <span class="hero-chip">Live risk first</span>
-              <span class="hero-chip">5 min history</span>
-              <span class="hero-chip">200K USD goal</span>
-            </div>
+            <h1>MT5 Portfolio</h1>
           </div>
           <div class="toolbar">
             <button class="btn secondary" id="refreshBtn">Refresh</button>
@@ -958,46 +1081,6 @@
           </div>
         </section>
 
-        <section class="grid" id="goal" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Goal tracking</p>
-                <h2>200K USD Target</h2>
-                <p>Goal math converts cent-account USC balance to USD only for this projection.</p>
-              </div>
-            </div>
-            <div class="goal-layout">
-              <div class="goal-hero" id="goalHero"></div>
-              <div class="goal-controls">
-                <div class="goal-card">
-                  <span class="card-label">Target USD</span>
-                  <input class="goal-input" id="goalTargetInput" type="number" min="1" step="1000" />
-                </div>
-                <div class="goal-card">
-                  <span class="card-label">Standard / month</span>
-                  <input class="goal-input" id="goalMonthlyInput" type="number" min="0" step="0.1" />
-                </div>
-                <div class="goal-card"><span class="card-label">Standard ETA</span><strong id="goalEta">-</strong></div>
-                <div class="goal-card"><span class="card-label">6M avg pace</span><strong id="goalActualEta">-</strong></div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="grid" id="danger" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Risk first</p>
-                <h2>Danger Now</h2>
-                <p>Missing data, stale MT5 updates, DD, equity gap, and margin level.</p>
-              </div>
-            </div>
-            <div class="danger-list" id="dangerList"></div>
-          </div>
-        </section>
-
         <section class="grid" id="pnl" style="margin-top: 12px">
           <div class="panel pad span-8">
             <div class="section-head">
@@ -1008,6 +1091,7 @@
               </div>
             </div>
             <div class="period-grid" id="periodCards"></div>
+            <div class="audit-grid" id="baselineAudit"></div>
           </div>
           <div class="panel pad span-4">
             <div class="section-head">
@@ -1033,6 +1117,17 @@
           </div>
         </section>
 
+        <section class="grid" id="danger" style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <h2>Danger Now</h2>
+              </div>
+            </div>
+            <div class="danger-list" id="dangerList"></div>
+          </div>
+        </section>
+
         <section class="grid" id="accounts" style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
@@ -1047,6 +1142,32 @@
               <button class="btn secondary" id="sortDangerBtn">Sort danger</button>
             </div>
             <div class="account-list" id="accountList"></div>
+          </div>
+        </section>
+
+        <section class="grid" id="goal" style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Goal tracking</p>
+                <h2>200K USD Target</h2>
+              </div>
+            </div>
+            <div class="goal-layout">
+              <div class="goal-hero" id="goalHero"></div>
+              <div class="goal-controls">
+                <div class="goal-card">
+                  <span class="card-label">Target USD</span>
+                  <input class="goal-input" id="goalTargetInput" type="number" min="1" step="1000" />
+                </div>
+                <div class="goal-card">
+                  <span class="card-label">Standard / month</span>
+                  <input class="goal-input" id="goalMonthlyInput" type="number" min="0" step="0.1" />
+                </div>
+                <div class="goal-card"><span class="card-label">Standard ETA</span><strong id="goalEta">-</strong></div>
+                <div class="goal-card"><span class="card-label">6M avg pace</span><strong id="goalActualEta">-</strong></div>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -1077,6 +1198,7 @@
       };
       const DEFAULT_GOAL_TARGET_USD = 200000;
       const DEFAULT_GOAL_MONTHLY_PCT = 5;
+      const USDTHB_RATE = 32.5;
 
       const EXPECTED = [
         { id: "201101469", broker: "MH", bots: ["Gold Sniper 0.10", "Smart Gold 0.10", "Gold Slayer 0.03", "Gold Devil 0.02"] },
@@ -1197,6 +1319,18 @@
         return "$" + money.format(n(value));
       }
 
+      function uscToThb(value) {
+        return (n(value) / 100) * USDTHB_RATE;
+      }
+
+      function fmtThb(value) {
+        return "≈ ฿" + money.format(n(value));
+      }
+
+      function fmtUscThb(value) {
+        return fmtThb(uscToThb(value));
+      }
+
       function fmtDays(days) {
         if (!Number.isFinite(days) || days < 0) return "-";
         if (days < 31) return Math.ceil(days) + " days";
@@ -1256,6 +1390,19 @@
         return Math.max(0, (Date.now() - date.getTime()) / 60000);
       }
 
+      function fmtTime(value) {
+        const date = new Date(value);
+        if (!value || Number.isNaN(date.getTime())) return "-";
+        return date.toLocaleString("th-TH", { hour12: false });
+      }
+
+      function fmtAge(minutes) {
+        if (!Number.isFinite(minutes)) return "no timestamp";
+        if (minutes < 1) return "just now";
+        if (minutes < 60) return Math.round(minutes) + "m ago";
+        return pct.format(minutes / 60) + "h ago";
+      }
+
       function normalizeAccount(row) {
         const id = String(row.account || row.id || "");
         const expected = EXPECTED.find((item) => item.id === id) || {};
@@ -1286,6 +1433,11 @@
           dayPct: n(perf.day?.profitPct ?? row.account_day_profit_pct),
           weekPct: n(perf.week?.profitPct ?? row.account_week_profit_pct),
           monthPct: n(perf.month?.profitPct ?? row.account_month_profit_pct),
+          periodMeta: {
+            day: perf.day || null,
+            week: perf.week || null,
+            month: perf.month || null,
+          },
           lastAt: lastTime(row),
           bots: bots.length ? bots : expected.bots || [],
           raw: row,
@@ -1305,7 +1457,32 @@
           current.dayPct = n(perf.day?.profitPct ?? item.daily_profit_pct ?? current.dayPct);
           current.weekPct = n(perf.week?.profitPct ?? current.weekPct);
           current.monthPct = n(perf.month?.profitPct ?? current.monthPct);
+          current.periodMeta = {
+            day: perf.day || current.periodMeta?.day || null,
+            week: perf.week || current.periodMeta?.week || null,
+            month: perf.month || current.periodMeta?.month || null,
+          };
         });
+      }
+
+      function baselineConfidence(meta) {
+        if (!meta || !Number.isFinite(Number(meta.baselineBalance))) return { kind: "bad", label: "No baseline", detail: "history missing" };
+        const source = String(meta.baselineSource || "unknown");
+        const offset = Math.abs(n(meta.baselineOffsetMinutes, 0));
+        if (source === "manual") return { kind: "good", label: "Manual baseline", detail: "locked override" };
+        if (source === "late_start") return { kind: "bad", label: "Late baseline", detail: "missing start snapshot" };
+        if (offset > 30) return { kind: "bad", label: "Baseline far", detail: Math.round(offset) + "m from reset" };
+        if (source === "near_start" || offset > 5) return { kind: "warn", label: "Baseline near", detail: Math.round(offset) + "m from reset" };
+        return { kind: "good", label: "Baseline OK", detail: source };
+      }
+
+      function portfolioConfidence(period) {
+        const metas = state.accounts.map((account) => account.periodMeta?.[period]).filter(Boolean);
+        if (!metas.length) return { kind: "bad", label: "No audit", detail: "history not loaded" };
+        const scores = { good: 1, warn: 2, bad: 3 };
+        return metas
+          .map((meta) => baselineConfidence(meta))
+          .sort((a, b) => scores[b.kind] - scores[a.kind])[0];
       }
 
       function dangerFor(account) {
@@ -1409,9 +1586,9 @@
         const stale = state.accounts.filter((account) => minutesAgo(account.lastAt) > 5).length;
         const day = state.performance.day || {};
         $("kpiGrid").innerHTML = [
-          kpi("Total Balance", fmtMoney(totalBalance), state.accounts.length + "/8 accounts"),
+          kpi("Total Balance", fmtMoney(totalBalance), `<span class="kpi-thb">${fmtUscThb(totalBalance)}</span><span class="kpi-note">at 32.5 THB/USD</span>`),
           kpi("Equity Gap", `<span class="${clsNum(equityGap)}">${fmtSigned(equityGap)}</span>`, "equity - balance"),
-          kpi("Today P/L", `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? pct.format(day.profitPct || 0) + "% from baseline" : "waiting history"),
+          kpi("Today P/L", `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%" : "waiting history"),
           kpi("Danger Count", String(ddWatch + stale), ddWatch + " DD watch, " + stale + " stale"),
         ].join("");
       }
@@ -1462,7 +1639,7 @@
               return `<div class="danger-card ${top.severity}">
                 <span class="card-label">${maskAccount(account.id)} ${account.broker}</span>
                 <strong>${top.text}</strong>
-                <em>${fmtMoney(account.balance)} / ${fmtSigned(account.equityGap)}</em>
+                <em>${fmtMoney(account.balance)} / ${fmtSigned(account.equityGap)} / last ${fmtAge(minutesAgo(account.lastAt))}</em>
               </div>`;
             }).join("")
           : `<div class="empty">No live accounts loaded yet.</div>`;
@@ -1473,10 +1650,36 @@
         $("periodCards").innerHTML = labels.map(([key, label]) => {
           const item = state.performance[key] || {};
           const has = Number.isFinite(Number(item.profit));
+          const confidence = portfolioConfidence(key);
           return `<div class="period-card">
             <span class="card-label">${label}</span>
             <strong class="${clsNum(item.profit)}">${has ? fmtSigned(item.profit) : "Need history"}</strong>
-            <small>${has ? pct.format(item.profitPct || 0) + "% / DD " + pct.format(item.drawdownPct || 0) + "%" : "history endpoint not ready"}</small>
+            ${has ? `<span class="period-thb">${fmtUscThb(item.profit || 0)}</span><small class="period-meta">${pct.format(item.profitPct || 0)}% / DD ${pct.format(item.drawdownPct || 0)}% / ${confidence.label}</small>` : `<small class="period-meta">history endpoint not ready</small>`}
+          </div>`;
+        }).join("");
+        renderBaselineAudit();
+      }
+
+      function renderBaselineAudit() {
+        const scores = { good: 1, warn: 2, bad: 3 };
+        const rows = state.accounts
+          .map((account) => ({ account, meta: account.periodMeta?.day, confidence: baselineConfidence(account.periodMeta?.day) }))
+          .filter((row) => row.meta)
+          .sort((a, b) => scores[b.confidence.kind] - scores[a.confidence.kind] || Math.abs(n(b.meta.baselineOffsetMinutes)) - Math.abs(n(a.meta.baselineOffsetMinutes)))
+          .slice(0, 4);
+
+        if (!rows.length) {
+          $("baselineAudit").innerHTML = `<div class="audit-card bad"><span class="card-label">P/L confidence</span><strong>No baseline audit</strong><small>History endpoint has not returned period metadata yet.</small></div>`;
+          return;
+        }
+
+        $("baselineAudit").innerHTML = rows.map(({ account, meta, confidence }) => {
+          const offset = n(meta.baselineOffsetMinutes, 0);
+          const offsetText = offset === 0 ? "at reset" : (offset > 0 ? "+" : "") + Math.round(offset) + "m from reset";
+          return `<div class="audit-card ${confidence.kind}">
+            <span class="card-label">${maskAccount(account.id)} day baseline</span>
+            <strong>${confidence.label}</strong>
+            <small>${fmtMoney(meta.baselineBalance)} / ${fmtTime(meta.baselineAt)} / ${offsetText}</small>
           </div>`;
         }).join("");
       }
@@ -1531,24 +1734,25 @@
             ${mini("Equity", fmtMoney(account.equity))}
             ${mini("Gap", `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>`)}
             ${mini("DD", `<span class="${top.severity === "red" ? "negative" : ""}">${pct.format(account.ddPct)}%</span>`)}
-            ${mini("D / W / M P/L", plStack(account), "pl-stack")}
             ${mini("Margin", account.marginLevel ? pct.format(account.marginLevel) + "%" : "-")}
             ${mini("Last", ageLabel)}
+            ${mini("D / W / M P/L", plStack(account), "pl-stack")}
           </div>
         </article>`;
       }
 
       function plStack(account) {
-        return [
+        return `<div class="pl-grid">` + [
           plRow("D", account.dayProfit, account.dayPct),
           plRow("W", account.weekProfit, account.weekPct),
           plRow("M", account.monthProfit, account.monthPct),
-        ].join("");
+        ].join("") + `</div>`;
       }
 
       function plRow(label, profit, profitPct) {
-        const cls = clsNum(profit);
-        return `<span class="pl-row ${cls}"><b>${label}</b><span>${fmtSigned(profit)}</span><em>${pct.format(profitPct)}%</em></span>`;
+        const cls = clsNum(profit) || "neutral";
+        const labelMap = { D: "Day", W: "Week", M: "Month" };
+        return `<span class="pl-row ${cls}"><b>${labelMap[label] || label}</b><span>${fmtSigned(profit)}</span><em>${pct.format(profitPct)}%</em></span>`;
       }
 
       function mini(label, value, className = "") {
@@ -1590,7 +1794,12 @@
         const sheet = health.history_sheet || {};
         const usage = n(sheet.usage_pct);
         const status = sheet.status || "unknown";
+        const freshest = state.accounts.reduce((best, account) => Math.min(best, minutesAgo(account.lastAt)), Infinity);
+        const staleAccounts = state.accounts.filter((account) => minutesAgo(account.lastAt) > 5).length;
+        const freshnessKind = !state.accounts.length ? "warn" : staleAccounts ? "warn" : "ok";
+        const freshnessNote = !state.accounts.length ? "waiting live accounts" : staleAccounts ? staleAccounts + " stale accounts" : "live values look fresh";
         $("dataHealthGrid").innerHTML = [
+          healthCard("Last Good Data", fmtAge(freshest), freshnessNote, freshnessKind),
           healthCard("History Rows", `${money.format(n(sheet.used_rows))} / ${money.format(n(sheet.max_rows))}`, `${pct.format(usage)}% used`, healthStatusClass(status)),
           healthCard("Free Rows", money.format(n(sheet.free_rows)), `warn at ${pct.format(n(sheet.warn_usage_pct, 80))}%`, n(sheet.free_rows) < 1000 ? "warn" : "ok"),
           healthCard("Append", health.last_history_append_error ? "Error" : "OK", health.last_history_append_at || "waiting", health.last_history_append_error ? "bad" : "ok"),
