@@ -972,7 +972,7 @@
       }
 
       function lastTime(account) {
-        return account.updated_at || account.received_at || account.server_time || account.timestamp || account.time || "";
+        return account.received_at || account.updated_at || account.server_time || account.timestamp || account.time || "";
       }
 
       function minutesAgo(value) {
