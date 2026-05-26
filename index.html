@@ -718,6 +718,10 @@
         background: #fbfcfb;
       }
 
+      .mini.pl-stack {
+        grid-column: span 2;
+      }
+
       .mini:nth-child(1),
       .mini:nth-child(2) {
         background: var(--blue-soft);
@@ -746,6 +750,25 @@
         margin-top: 5px;
         font-size: 14px;
         line-height: 1.2;
+      }
+
+      .pl-row {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) 58px;
+        align-items: baseline;
+        gap: 8px;
+        padding: 2px 0;
+        white-space: nowrap;
+      }
+
+      .pl-row b {
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .pl-row em {
+        font-style: normal;
+        text-align: right;
       }
 
       .table {
@@ -1508,16 +1531,28 @@
             ${mini("Equity", fmtMoney(account.equity))}
             ${mini("Gap", `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>`)}
             ${mini("DD", `<span class="${top.severity === "red" ? "negative" : ""}">${pct.format(account.ddPct)}%</span>`)}
-            ${mini("D P/L", `<span class="${clsNum(account.dayProfit)}">${fmtSigned(account.dayProfit)}</span><br><span class="${clsNum(account.dayProfit)}">${pct.format(account.dayPct)}%</span>`)}
-            ${mini("W / M P/L", `<span class="${clsNum(account.weekProfit)}">${fmtSigned(account.weekProfit)}</span><br><span class="${clsNum(account.monthProfit)}">${fmtSigned(account.monthProfit)}</span>`)}
+            ${mini("D / W / M P/L", plStack(account), "pl-stack")}
             ${mini("Margin", account.marginLevel ? pct.format(account.marginLevel) + "%" : "-")}
             ${mini("Last", ageLabel)}
           </div>
         </article>`;
       }
 
-      function mini(label, value) {
-        return `<div class="mini"><span>${label}</span><strong>${value}</strong></div>`;
+      function plStack(account) {
+        return [
+          plRow("D", account.dayProfit, account.dayPct),
+          plRow("W", account.weekProfit, account.weekPct),
+          plRow("M", account.monthProfit, account.monthPct),
+        ].join("");
+      }
+
+      function plRow(label, profit, profitPct) {
+        const cls = clsNum(profit);
+        return `<span class="pl-row ${cls}"><b>${label}</b><span>${fmtSigned(profit)}</span><em>${pct.format(profitPct)}%</em></span>`;
+      }
+
+      function mini(label, value, className = "") {
+        return `<div class="mini ${className}"><span>${label}</span><strong>${value}</strong></div>`;
       }
 
       function renderMeta() {
