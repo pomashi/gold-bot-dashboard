@@ -1581,8 +1581,10 @@
 
       function init() {
         applyUrlParams();
-        state.goalTargetUsd = n(localStorage.getItem(STORAGE.goalTargetUsd), DEFAULT_GOAL_TARGET_USD);
-        state.goalMonthlyPct = n(localStorage.getItem(STORAGE.goalMonthlyPct), DEFAULT_GOAL_MONTHLY_PCT);
+        const savedTarget = localStorage.getItem(STORAGE.goalTargetUsd);
+        const savedMonthly = localStorage.getItem(STORAGE.goalMonthlyPct);
+        state.goalTargetUsd = savedTarget === null ? DEFAULT_GOAL_TARGET_USD : Math.max(1, n(savedTarget, DEFAULT_GOAL_TARGET_USD));
+        state.goalMonthlyPct = savedMonthly === null ? DEFAULT_GOAL_MONTHLY_PCT : Math.max(0, n(savedMonthly, DEFAULT_GOAL_MONTHLY_PCT));
         $("endpointInput").value = localStorage.getItem(STORAGE.url) || DEFAULT_ENDPOINT;
         $("readKeyInput").value = localStorage.getItem(STORAGE.key) || "";
         $("goalTargetInput").value = state.goalTargetUsd;
