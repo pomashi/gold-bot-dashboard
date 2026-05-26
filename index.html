@@ -395,8 +395,7 @@
         font-weight: 800;
       }
 
-      .period-grid,
-      .rebate-grid {
+      .period-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 10px;
@@ -631,8 +630,7 @@
 
         .kpi-grid,
         .danger-list,
-        .period-grid,
-        .rebate-grid {
+        .period-grid {
           grid-template-columns: 1fr;
         }
 
@@ -930,10 +928,6 @@
 
       function fmtMoney(value) {
         return money.format(n(value)) + " USC";
-      }
-
-      function fmtUsd(value) {
-        return "$" + money.format(n(value));
       }
 
       function fmtSigned(value, suffix = " USC") {
