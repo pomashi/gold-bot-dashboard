@@ -714,7 +714,6 @@
             <a href="#danger">Danger</a>
             <a href="#pnl">P/L</a>
             <a href="#accounts">Accounts</a>
-            <a href="#rebate">Rebate</a>
             <a href="#health">Health</a>
           </nav>
         </div>
@@ -804,22 +803,6 @@
           </div>
         </section>
 
-        <section class="grid" id="rebate" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">MH only</p>
-                <h2>Rebate Tracker</h2>
-                <p>Closed MH volume only. 100 cent lots = 1 standard lot = $10 rebate.</p>
-              </div>
-            </div>
-            <div class="rebate-grid" id="rebateCards"></div>
-            <div style="overflow-x: auto; margin-top: 12px">
-              <table class="table" id="rebateTable"></table>
-            </div>
-          </div>
-        </section>
-
         <section class="grid" id="health" style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
@@ -861,7 +844,6 @@
         historyAt: null,
         accounts: [],
         performance: {},
-        rebate: null,
         meta: {},
         logs: [],
         sortDanger: true,
@@ -1108,13 +1090,11 @@
             state.historyOk = true;
             state.historyAt = new Date();
             state.performance = history.performance || {};
-            state.rebate = history.rebate || null;
             state.meta = { ...state.meta, ...(history.meta || {}) };
             mergeHistoryAccounts(history.accounts || []);
             log("History loaded", "live");
           } catch (historyError) {
             state.performance = {};
-            state.rebate = null;
             log("History failed: " + historyError.message, "bad");
           }
 
@@ -1122,7 +1102,6 @@
         } catch (error) {
           state.accounts = [];
           state.performance = {};
-          state.rebate = null;
           setConnection(error.message.includes("Unauthorized") ? "Key wrong" : "Offline", "bad");
           log("Live failed: " + error.message, "bad");
         }
@@ -1238,32 +1217,6 @@
         return `<div class="mini"><span>${label}</span><strong>${value}</strong></div>`;
       }
 
-      function renderRebate() {
-        const rebate = state.rebate || {};
-        const periods = rebate.periods || {};
-        const cards = [["day", "Today"], ["week", "This Week"], ["month", "This Month"]];
-        $("rebateCards").innerHTML = cards.map(([key, label]) => {
-          const row = periods[key] || {};
-          return `<div class="period-card">
-            <span class="card-label">${label}</span>
-            <strong>${fmtUsd(row.estimated_rebate_usd || 0)}</strong>
-            <small>${lots.format(n(row.closed_micro_lots))} cent lots / ${lots.format(n(row.standard_lots))} std lots / ${pct.format(n(row.rebate_yield_pct))}%</small>
-          </div>`;
-        }).join("");
-
-        const accountRows = rebate.account_periods?.month || [];
-        $("rebateTable").innerHTML = accountRows.length
-          ? `<thead><tr><th>MH Account</th><th>Balance</th><th>Cent Lots</th><th>Rebate</th><th>Yield</th></tr></thead><tbody>${accountRows.map((row) => `
-              <tr>
-                <td>${maskAccount(row.account)}</td>
-                <td>${fmtUsd(row.balance_usd || 0)}</td>
-                <td>${lots.format(n(row.closed_micro_lots))}</td>
-                <td>${fmtUsd(row.estimated_rebate_usd || 0)} / ${money.format(n(row.estimated_rebate_thb))} THB</td>
-                <td>${pct.format(n(row.rebate_yield_pct))}%</td>
-              </tr>`).join("")}</tbody>`
-          : `<tbody><tr><td><div class="empty">No MH rebate history loaded yet.</div></td></tr></tbody>`;
-      }
-
       function renderMeta() {
         const hour = state.meta.market_day_start_hour;
         $("marketInfo").textContent = hour === undefined ? "History meta not loaded yet." : "Market day reset: " + String(hour).padStart(2, "0") + ":00 Bangkok. Week starts Monday market open.";
@@ -1288,7 +1241,6 @@
         renderSeries("weeklySeries", state.performance.weekly_series);
         renderSeries("monthlySeries", state.performance.monthly_series);
         renderAccounts();
-        renderRebate();
         renderMeta();
         renderLogs();
       }
@@ -1313,7 +1265,6 @@
         $("endpointInput").value = DEFAULT_ENDPOINT;
         state.accounts = [];
         state.performance = {};
-        state.rebate = null;
         state.liveOk = false;
         state.historyOk = false;
         setConnection("Cleared", "warn");
