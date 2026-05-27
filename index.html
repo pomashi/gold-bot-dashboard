@@ -128,6 +128,26 @@
         white-space: nowrap;
       }
 
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .settings-toggle {
+        min-height: 38px;
+        padding: 0 11px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .settings-toggle:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+
       .dot {
         width: 10px;
         height: 10px;
@@ -148,6 +168,10 @@
         grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) auto auto;
         gap: 8px;
         margin-top: 12px;
+      }
+
+      .connect-panel.collapsed {
+        display: none;
       }
 
       .field {
@@ -997,13 +1021,24 @@
 
         .brand-row {
           align-items: flex-start;
+          gap: 8px;
         }
 
         .status-pill {
-          max-width: 128px;
+          max-width: 112px;
           justify-content: center;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+
+        .topbar-actions {
+          gap: 6px;
+        }
+
+        .settings-toggle {
+          min-height: 36px;
+          padding: 0 9px;
+          font-size: 11px;
         }
 
         .toolbar {
@@ -1037,10 +1072,13 @@
                 <strong>Gold Bot Dashboard V2</strong>
               </div>
             </div>
-            <div class="status-pill" id="connectionBadge"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
+            <div class="topbar-actions">
+              <div class="status-pill" id="connectionBadge"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
+              <button class="settings-toggle" id="settingsToggle" type="button" aria-expanded="true">Settings</button>
+            </div>
           </div>
 
-          <div class="connect-panel">
+          <div class="connect-panel" id="connectPanel">
             <div class="field">
               <label for="endpointInput">Apps Script URL</label>
               <input id="endpointInput" autocomplete="off" spellcheck="false" />
@@ -1293,6 +1331,19 @@
         localStorage.setItem(STORAGE.key, key);
       }
 
+      function setSettingsOpen(open) {
+        const panel = $("connectPanel");
+        const toggle = $("settingsToggle");
+        if (!panel || !toggle) return;
+        panel.classList.toggle("collapsed", !open);
+        toggle.setAttribute("aria-expanded", open ? "true" : "false");
+        toggle.textContent = open ? "Hide" : "Settings";
+      }
+
+      function toggleSettings() {
+        setSettingsOpen($("connectPanel").classList.contains("collapsed"));
+      }
+
       function log(message, kind = "info") {
         const at = new Date().toLocaleTimeString("th-TH", { hour12: false });
         state.logs.unshift({ at, message, kind });
@@ -1509,11 +1560,13 @@
       async function connect() {
         const cfg = settings();
         if (!cfg.url) {
+          setSettingsOpen(true);
           setConnection("URL missing", "bad");
           log("Apps Script URL is missing", "bad");
           return;
         }
         if (!cfg.key) {
+          setSettingsOpen(true);
           setConnection("Read key missing", "bad");
           log("Read key is missing", "bad");
           return;
@@ -1569,10 +1622,12 @@
           }
 
           setConnection("Live " + new Date().toLocaleTimeString("th-TH", { hour12: false }), "live");
+          setSettingsOpen(false);
         } catch (error) {
           state.accounts = [];
           state.performance = {};
           setConnection(error.message.includes("Unauthorized") ? "Key wrong" : "Offline", "bad");
+          setSettingsOpen(true);
           log("Live failed: " + error.message, "bad");
         }
         render();
@@ -1865,6 +1920,7 @@
         state.liveOk = false;
         state.historyOk = false;
         setConnection("Cleared", "warn");
+        setSettingsOpen(true);
         log("Saved URL and key cleared");
         render();
       }
@@ -1885,9 +1941,11 @@
         state.goalMonthlyPct = savedMonthly === null ? DEFAULT_GOAL_MONTHLY_PCT : Math.max(0, n(savedMonthly, DEFAULT_GOAL_MONTHLY_PCT));
         $("endpointInput").value = localStorage.getItem(STORAGE.url) || DEFAULT_ENDPOINT;
         $("readKeyInput").value = localStorage.getItem(STORAGE.key) || "";
+        setSettingsOpen(!$("readKeyInput").value);
         $("goalTargetInput").value = state.goalTargetUsd;
         $("goalMonthlyInput").value = state.goalMonthlyPct;
         $("connectBtn").addEventListener("click", connect);
+        $("settingsToggle").addEventListener("click", toggleSettings);
         $("refreshBtn").addEventListener("click", connect);
         $("clearBtn").addEventListener("click", clearSettings);
         $("exportBtn").addEventListener("click", exportCsv);
