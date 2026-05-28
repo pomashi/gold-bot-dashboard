@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MT5 Gold Bot Dashboard V2</title>
+    <title>Bot Portfolio Dashboard</title>
     <style>
       :root {
         --bg: #eaf0ec;
@@ -832,6 +832,39 @@
         color: var(--green);
       }
 
+      .platform-pill {
+        background: #e8eef8;
+        color: var(--blue);
+      }
+
+      .account-group {
+        display: grid;
+        gap: 10px;
+      }
+
+      .account-group + .account-group {
+        margin-top: 16px;
+      }
+
+      .account-group-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 0 2px;
+      }
+
+      .account-group-head h3 {
+        font-size: 18px;
+      }
+
+      .account-group-head span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
       .account-metrics {
         display: grid;
         grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1092,8 +1125,8 @@
             <div class="brand">
               <div class="logo">AU</div>
               <div>
-                <small>MT5 Portfolio</small>
-                <strong>Gold Bot Dashboard V2</strong>
+                <small>MT4 / MT5</small>
+                <strong>Bot Portfolio</strong>
               </div>
             </div>
             <div class="topbar-actions">
@@ -1129,7 +1162,7 @@
         <section class="hero">
           <div>
             <p class="eyebrow">Live trading control room</p>
-            <h1>MT5 Portfolio</h1>
+            <h1>Bot Portfolio</h1>
           </div>
           <div class="toolbar">
             <button class="btn secondary" id="refreshBtn">Refresh</button>
@@ -1481,6 +1514,8 @@
       function normalizeAccount(row) {
         const id = String(row.account || row.id || "");
         const expected = EXPECTED.find((item) => item.id === id) || {};
+        const note = String(row.note || "");
+        const platform = String(row.platform || (note.toUpperCase().includes("MT4") || id.startsWith("601") ? "MT4" : "MT5")).toUpperCase();
         const balance = n(row.balance);
         const equity = n(row.equity);
         const equityGap = equity - balance;
@@ -1493,9 +1528,10 @@
         const perf = row.performance || {};
         return {
           id,
+          platform,
           broker: String(row.broker || expected.broker || ""),
           server: String(row.server || ""),
-          note: String(row.note || ""),
+          note,
           balance,
           equity,
           equityGap,
@@ -1629,7 +1665,7 @@
           state.liveOk = true;
           state.liveAt = new Date();
           state.meta = live.meta || {};
-          state.accounts = (live.accounts || []).map(normalizeAccount).filter((account) => account.id);
+          state.accounts = (live.accounts || []).map(normalizeAccount).filter((account) => account.id && !account.id.toUpperCase().includes("TEST"));
           log("Live loaded: " + state.accounts.length + " accounts", "live");
 
           try {
@@ -1792,10 +1828,21 @@
         const query = $("searchInput").value.trim().toLowerCase();
         let rows = [...state.accounts];
         if (query) {
-          rows = rows.filter((account) => [account.id, account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
+          rows = rows.filter((account) => [account.id, account.platform, account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
         }
         if (state.sortDanger) rows.sort((a, b) => severityScore(b) - severityScore(a) || a.id.localeCompare(b.id));
-        $("accountList").innerHTML = rows.length ? rows.map(accountCard).join("") : `<div class="empty">${state.accounts.length ? "No accounts match." : "No live accounts loaded yet."}</div>`;
+        $("accountList").innerHTML = rows.length ? groupedAccountCards(rows) : `<div class="empty">${state.accounts.length ? "No accounts match." : "No live accounts loaded yet."}</div>`;
+      }
+
+      function groupedAccountCards(rows) {
+        return ["MT5", "MT4"].map((platform) => {
+          const groupRows = rows.filter((account) => account.platform === platform);
+          if (!groupRows.length) return "";
+          return `<div class="account-group">
+            <div class="account-group-head"><h3>${platform}</h3><span>${groupRows.length} accounts</span></div>
+            ${groupRows.map(accountCard).join("")}
+          </div>`;
+        }).join("");
       }
 
       function accountCard(account) {
@@ -1808,6 +1855,7 @@
             <strong>${maskAccount(account.id)}</strong>
             <span>${account.broker || "-"} ${account.server ? "/ " + account.server : ""}</span>
             <div class="pill-row">
+              <span class="pill platform-pill">${account.platform}</span>
               ${reasons.map((item) => `<span class="pill ${item.severity}">${item.text}</span>`).join("")}
             </div>
             <div class="pill-row">
@@ -1907,7 +1955,7 @@
         $("healthLog").innerHTML = [
           `<div><strong>Live:</strong> ${state.liveOk ? "OK" : "not loaded"} ${state.liveAt ? state.liveAt.toLocaleTimeString("th-TH", { hour12: false }) : ""}</div>`,
           `<div><strong>History:</strong> ${state.historyOk ? "OK" : "not loaded"} ${state.historyAt ? state.historyAt.toLocaleTimeString("th-TH", { hour12: false }) : ""}</div>`,
-          `<div><strong>Accounts:</strong> ${state.accounts.length}/8</div>`,
+          `<div><strong>Accounts:</strong> ${state.accounts.length}</div>`,
           `<div><strong>Auto cleanup:</strong> ${state.meta.data_health ? "active" : "waiting"} ${state.meta.data_health ? "(raw retention " + state.meta.data_health.raw_retention_days + " days)" : ""}</div>`,
           rows,
         ].join("");
@@ -1928,8 +1976,8 @@
       }
 
       function exportCsv() {
-        const rows = [["account", "broker", "balance", "equity", "equity_gap", "dd_pct", "day_pl", "week_pl", "month_pl", "last_update"]];
-        state.accounts.forEach((account) => rows.push([account.id, account.broker, account.balance, account.equity, account.equityGap, account.ddPct, account.dayProfit, account.weekProfit, account.monthProfit, account.lastAt]));
+        const rows = [["account", "platform", "broker", "balance", "equity", "equity_gap", "dd_pct", "day_pl", "week_pl", "month_pl", "last_update"]];
+        state.accounts.forEach((account) => rows.push([account.id, account.platform, account.broker, account.balance, account.equity, account.equityGap, account.ddPct, account.dayProfit, account.weekProfit, account.monthProfit, account.lastAt]));
         const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
         const blob = new Blob([csv], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
