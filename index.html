@@ -413,7 +413,7 @@
         border-top: 4px solid var(--red);
       }
 
-      .kpi span,
+      .kpi > span,
       .card-label {
         color: var(--muted);
         font-size: 12px;
@@ -426,6 +426,13 @@
         line-height: 1.05;
         letter-spacing: 0;
         white-space: nowrap;
+      }
+
+      .kpi strong span {
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+        text-transform: none;
       }
 
       .kpi small {
