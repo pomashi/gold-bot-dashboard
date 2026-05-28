@@ -1551,6 +1551,8 @@
           dayPct: n(perf.day?.profitPct ?? row.account_day_profit_pct),
           weekPct: n(perf.week?.profitPct ?? row.account_week_profit_pct),
           monthPct: n(perf.month?.profitPct ?? row.account_month_profit_pct),
+          monthMaxDdPct: n(perf.month?.maxDdPct),
+          monthMaxDdAt: perf.month?.maxDdAt || "",
           periodMeta: {
             day: perf.day || null,
             week: perf.week || null,
@@ -1575,6 +1577,8 @@
           current.dayPct = n(perf.day?.profitPct ?? item.daily_profit_pct ?? current.dayPct);
           current.weekPct = n(perf.week?.profitPct ?? current.weekPct);
           current.monthPct = n(perf.month?.profitPct ?? current.monthPct);
+          current.monthMaxDdPct = n(perf.month?.maxDdPct ?? current.monthMaxDdPct);
+          current.monthMaxDdAt = perf.month?.maxDdAt || current.monthMaxDdAt || "";
           current.periodMeta = {
             day: perf.day || current.periodMeta?.day || null,
             week: perf.week || current.periodMeta?.week || null,
@@ -1874,6 +1878,7 @@
             ${mini("Equity", fmtMoney(account.equity))}
             ${mini("Gap", `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>`)}
             ${mini("DD", `<span class="${top.severity === "red" ? "negative" : ""}">${pct.format(account.ddPct)}%</span>`)}
+            ${mini("Month Max DD", maxDdLabel(account))}
             ${mini("Margin", account.marginLevel ? pct.format(account.marginLevel) + "%" : "-")}
             ${mini("Last", ageLabel)}
             ${mini("D / W / M P/L", plStack(account), "pl-stack")}
@@ -1887,6 +1892,12 @@
           plRow("W", account.weekProfit, account.weekPct),
           plRow("M", account.monthProfit, account.monthPct),
         ].join("") + `</div>`;
+      }
+
+      function maxDdLabel(account) {
+        const value = n(account.monthMaxDdPct);
+        if (!value) return "-";
+        return `<span class="negative">${pct.format(value)}%</span><small>${fmtTime(account.monthMaxDdAt)}</small>`;
       }
 
       function plRow(label, profit, profitPct) {
