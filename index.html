@@ -1125,7 +1125,7 @@
             <div class="brand">
               <div class="logo">AU</div>
               <div>
-                <small>MT4 / MT5</small>
+                <small>Live Accounts</small>
                 <strong>Bot Portfolio</strong>
               </div>
             </div>
@@ -1492,6 +1492,13 @@
         return account.received_at || account.updated_at || account.server_time || account.timestamp || account.time || "";
       }
 
+      function isVisibleAccount(account) {
+        if (!account || !account.id) return false;
+        const id = String(account.id).toUpperCase();
+        if (id.includes("TEST")) return false;
+        return account.platform === "MT5";
+      }
+
       function minutesAgo(value) {
         const date = new Date(value);
         if (!value || Number.isNaN(date.getTime())) return Infinity;
@@ -1583,7 +1590,7 @@
         if (source === "manual") return { kind: "good", label: "Manual baseline", detail: "locked override" };
         if (source === "late_start") return { kind: "bad", label: "Late baseline", detail: "missing start snapshot" };
         if (offset > 30) return { kind: "bad", label: "Baseline far", detail: Math.round(offset) + "m from reset" };
-        if (source === "near_start" || offset > 5) return { kind: "warn", label: "Baseline near", detail: Math.round(offset) + "m from reset" };
+        if (source === "near_start" || offset > 15) return { kind: "warn", label: "Baseline near", detail: Math.round(offset) + "m from reset" };
         return { kind: "good", label: "Baseline OK", detail: source };
       }
 
@@ -1665,7 +1672,7 @@
           state.liveOk = true;
           state.liveAt = new Date();
           state.meta = live.meta || {};
-          state.accounts = (live.accounts || []).map(normalizeAccount).filter((account) => account.id && !account.id.toUpperCase().includes("TEST"));
+          state.accounts = (live.accounts || []).map(normalizeAccount).filter(isVisibleAccount);
           log("Live loaded: " + state.accounts.length + " accounts", "live");
 
           try {
@@ -1835,7 +1842,7 @@
       }
 
       function groupedAccountCards(rows) {
-        return ["MT5", "MT4"].map((platform) => {
+        return ["MT5"].map((platform) => {
           const groupRows = rows.filter((account) => account.platform === platform);
           if (!groupRows.length) return "";
           return `<div class="account-group">
