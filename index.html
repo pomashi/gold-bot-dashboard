@@ -422,14 +422,31 @@
       }
 
       .kpi strong {
-        font-size: 25px;
+        font-size: 28px;
         line-height: 1.05;
+        letter-spacing: 0;
+        white-space: nowrap;
       }
 
       .kpi small {
         color: var(--muted);
         font-size: 12px;
         font-weight: 800;
+      }
+
+      .kpi.tone-positive {
+        border-top-color: var(--green);
+        background: linear-gradient(180deg, #ffffff, #f0fbf4);
+      }
+
+      .kpi.tone-negative {
+        border-top-color: var(--red);
+        background: linear-gradient(180deg, #ffffff, #fff2ef);
+      }
+
+      .kpi.tone-watch {
+        border-top-color: var(--gold);
+        background: linear-gradient(180deg, #ffffff, #fff9ea);
       }
 
       .kpi-thb {
@@ -1640,16 +1657,22 @@
         const ddWatch = state.accounts.filter((account) => account.ddPct <= -15).length;
         const stale = state.accounts.filter((account) => minutesAgo(account.lastAt) > 5).length;
         const day = state.performance.day || {};
+        const dangerCount = ddWatch + stale;
         $("kpiGrid").innerHTML = [
           kpi("Total Balance", fmtMoney(totalBalance), `<span class="kpi-thb">${fmtUscThb(totalBalance)}</span><span class="kpi-note">at 32.5 THB/USD</span>`),
-          kpi("Equity Gap", `<span class="${clsNum(equityGap)}">${fmtSigned(equityGap)}</span>`, "equity - balance"),
-          kpi("Today P/L", `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%" : "waiting history"),
-          kpi("Danger Count", String(ddWatch + stale), ddWatch + " DD watch, " + stale + " stale"),
+          kpi("Equity Gap", `<span class="${clsNum(equityGap)}">${fmtSigned(equityGap)}</span>`, "equity - balance", toneClass(equityGap)),
+          kpi("Today P/L", `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%" : "waiting history", toneClass(day.profit || 0)),
+          kpi("Danger Count", String(dangerCount), ddWatch + " DD watch, " + stale + " stale", dangerCount ? "tone-negative" : "tone-positive"),
         ].join("");
       }
 
-      function kpi(label, value, note) {
-        return `<div class="kpi"><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`;
+      function kpi(label, value, note, tone = "") {
+        return `<div class="kpi ${tone}"><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`;
+      }
+
+      function toneClass(value) {
+        const num = n(value);
+        return num < 0 ? "tone-negative" : num > 0 ? "tone-positive" : "tone-watch";
       }
 
       function renderGoal() {
