@@ -798,6 +798,15 @@
         font-weight: 900;
       }
 
+      .account-title .account-last {
+        display: block;
+        margin-top: 4px;
+        color: var(--teal);
+        font-size: 11px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
       .pill-row {
         display: flex;
         flex-wrap: wrap;
@@ -862,7 +871,7 @@
 
       .account-metrics {
         display: grid;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
         gap: 8px;
       }
 
@@ -882,6 +891,30 @@
         background: transparent;
       }
 
+      .mini.dd-stack strong {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .dd-cell {
+        display: grid;
+        gap: 4px;
+      }
+
+      .dd-cell b {
+        color: var(--muted);
+        font-size: 10px;
+        text-transform: uppercase;
+      }
+
+      .dd-cell em {
+        color: var(--muted);
+        font-size: 11px;
+        font-style: normal;
+        font-weight: 900;
+      }
+
       .mini:nth-child(1),
       .mini:nth-child(2) {
         background: var(--blue-soft);
@@ -892,13 +925,8 @@
         background: var(--gold-soft);
       }
 
-      .mini:nth-child(5),
-      .mini:nth-child(6) {
+      .mini:nth-child(5) {
         background: var(--green-soft);
-      }
-
-      .mini:nth-child(7) {
-        background: var(--teal-soft);
       }
 
       .mini.pl-stack {
@@ -1849,6 +1877,7 @@
           <div class="account-title">
             <strong>${maskAccount(account.id)}</strong>
             <span>${account.broker || "-"} ${account.server ? "/ " + account.server : ""}</span>
+            <small class="account-last">Last ${ageLabel}</small>
             <div class="pill-row">
               ${reasons.map((item) => `<span class="pill ${item.severity}">${item.text}</span>`).join("")}
             </div>
@@ -1860,10 +1889,8 @@
             ${mini("Balance", fmtMoney(account.balance))}
             ${mini("Equity", fmtMoney(account.equity))}
             ${mini("Gap", `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>`)}
-            ${mini("DD", `<span class="${top.severity === "red" ? "negative" : ""}">${pct.format(account.ddPct)}%</span>`)}
-            ${mini("Month Max DD", maxDdLabel(account))}
+            ${mini("DD / Month Max DD", ddStack(account, top), "dd-stack")}
             ${mini("Margin", account.marginLevel ? pct.format(account.marginLevel) + "%" : "-")}
-            ${mini("Last", ageLabel)}
             ${mini("D / W / M P/L", plStack(account), "pl-stack")}
           </div>
         </article>`;
@@ -1881,6 +1908,11 @@
         const value = n(account.monthMaxDdPct);
         if (!value) return "-";
         return `<span class="negative">${pct.format(value)}%</span><small>${fmtTime(account.monthMaxDdAt)}</small>`;
+      }
+
+      function ddStack(account, top) {
+        return `<span class="dd-cell"><b>Current</b><span class="${top.severity === "red" ? "negative" : ""}">${pct.format(account.ddPct)}%</span></span>
+          <span class="dd-cell"><b>Month Max</b>${maxDdLabel(account)}</span>`;
       }
 
       function plRow(label, profit, profitPct) {
