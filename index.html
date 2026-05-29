@@ -832,11 +832,6 @@
         color: var(--green);
       }
 
-      .platform-pill {
-        background: #e8eef8;
-        color: var(--blue);
-      }
-
       .account-group {
         display: grid;
         gap: 10px;
@@ -1496,7 +1491,7 @@
         if (!account || !account.id) return false;
         const id = String(account.id).toUpperCase();
         if (id.includes("TEST")) return false;
-        return account.platform === "MT5";
+        return !account.isMt4;
       }
 
       function minutesAgo(value) {
@@ -1522,7 +1517,7 @@
         const id = String(row.account || row.id || "");
         const expected = EXPECTED.find((item) => item.id === id) || {};
         const note = String(row.note || "");
-        const platform = String(row.platform || (note.toUpperCase().includes("MT4") || id.startsWith("601") ? "MT4" : "MT5")).toUpperCase();
+        const isMt4 = String(row.platform || "").toUpperCase() === "MT4" || note.toUpperCase().includes("MT4") || id.startsWith("601");
         const balance = n(row.balance);
         const equity = n(row.equity);
         const equityGap = equity - balance;
@@ -1535,7 +1530,7 @@
         const perf = row.performance || {};
         return {
           id,
-          platform,
+          isMt4,
           broker: String(row.broker || expected.broker || ""),
           server: String(row.server || ""),
           note,
@@ -1839,21 +1834,10 @@
         const query = $("searchInput").value.trim().toLowerCase();
         let rows = [...state.accounts];
         if (query) {
-          rows = rows.filter((account) => [account.id, account.platform, account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
+          rows = rows.filter((account) => [account.id, account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
         }
         if (state.sortDanger) rows.sort((a, b) => severityScore(b) - severityScore(a) || a.id.localeCompare(b.id));
-        $("accountList").innerHTML = rows.length ? groupedAccountCards(rows) : `<div class="empty">${state.accounts.length ? "No accounts match." : "No live accounts loaded yet."}</div>`;
-      }
-
-      function groupedAccountCards(rows) {
-        return ["MT5"].map((platform) => {
-          const groupRows = rows.filter((account) => account.platform === platform);
-          if (!groupRows.length) return "";
-          return `<div class="account-group">
-            <div class="account-group-head"><h3>${platform}</h3><span>${groupRows.length} accounts</span></div>
-            ${groupRows.map(accountCard).join("")}
-          </div>`;
-        }).join("");
+        $("accountList").innerHTML = rows.length ? rows.map(accountCard).join("") : `<div class="empty">${state.accounts.length ? "No accounts match." : "No live accounts loaded yet."}</div>`;
       }
 
       function accountCard(account) {
@@ -1866,7 +1850,6 @@
             <strong>${maskAccount(account.id)}</strong>
             <span>${account.broker || "-"} ${account.server ? "/ " + account.server : ""}</span>
             <div class="pill-row">
-              <span class="pill platform-pill">${account.platform}</span>
               ${reasons.map((item) => `<span class="pill ${item.severity}">${item.text}</span>`).join("")}
             </div>
             <div class="pill-row">
@@ -1994,8 +1977,8 @@
       }
 
       function exportCsv() {
-        const rows = [["account", "platform", "broker", "balance", "equity", "equity_gap", "dd_pct", "day_pl", "week_pl", "month_pl", "last_update"]];
-        state.accounts.forEach((account) => rows.push([account.id, account.platform, account.broker, account.balance, account.equity, account.equityGap, account.ddPct, account.dayProfit, account.weekProfit, account.monthProfit, account.lastAt]));
+        const rows = [["account", "broker", "balance", "equity", "equity_gap", "dd_pct", "day_pl", "week_pl", "month_pl", "last_update"]];
+        state.accounts.forEach((account) => rows.push([account.id, account.broker, account.balance, account.equity, account.equityGap, account.ddPct, account.dayProfit, account.weekProfit, account.monthProfit, account.lastAt]));
         const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
         const blob = new Blob([csv], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
