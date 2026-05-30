@@ -1519,7 +1519,7 @@
         if (!account || !account.id) return false;
         const id = String(account.id).toUpperCase();
         if (id.includes("TEST")) return false;
-        return !account.isMt4;
+        return !account.isBlockedLegacyAccount;
       }
 
       function minutesAgo(value) {
@@ -1545,7 +1545,7 @@
         const id = String(row.account || row.id || "");
         const expected = EXPECTED.find((item) => item.id === id) || {};
         const note = String(row.note || "");
-        const isMt4 = String(row.platform || "").toUpperCase() === "MT4" || note.toUpperCase().includes("MT4") || id.startsWith("601");
+        const isBlockedLegacyAccount = id.startsWith("601");
         const balance = n(row.balance);
         const equity = n(row.equity);
         const equityGap = equity - balance;
@@ -1558,7 +1558,7 @@
         const perf = row.performance || {};
         return {
           id,
-          isMt4,
+          isBlockedLegacyAccount,
           broker: String(row.broker || expected.broker || ""),
           server: String(row.server || ""),
           note,
