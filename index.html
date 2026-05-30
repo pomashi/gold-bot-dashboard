@@ -1733,12 +1733,13 @@
         const equityGap = totalEquity - totalBalance;
         const ddWatch = state.accounts.filter((account) => account.ddPct <= -15).length;
         const stale = state.accounts.filter((account) => minutesAgo(account.lastAt) > 5).length;
-        const day = state.performance.day || {};
+        const dayDisplay = currentDayDisplay();
+        const day = dayDisplay.item || {};
         const dangerCount = ddWatch + stale;
         $("kpiGrid").innerHTML = [
           kpi("Total Balance", fmtMoney(totalBalance), `<span class="kpi-thb">${fmtUscThb(totalBalance)}</span><span class="kpi-note">at 32.5 THB/USD</span>`),
           kpi("Equity Gap", `<span class="${clsNum(equityGap)}">${fmtSigned(equityGap)}</span>`, "equity - balance", toneClass(equityGap)),
-          kpi("Today P/L", `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%" : "waiting history", toneClass(day.profit || 0)),
+          kpi(dayDisplay.label, `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%" : "waiting history", toneClass(day.profit || 0)),
           kpi("Danger Count", String(dangerCount), ddWatch + " DD watch, " + stale + " stale", dangerCount ? "tone-negative" : "tone-positive"),
         ].join("");
       }
@@ -1750,6 +1751,23 @@
       function toneClass(value) {
         const num = n(value);
         return num < 0 ? "tone-negative" : num > 0 ? "tone-positive" : "tone-watch";
+      }
+
+      function currentDayDisplay() {
+        const latestSeries = latestSeriesItem(state.performance.daily_series);
+        const weekend = isBangkokWeekend(new Date());
+        if (weekend && latestSeries) return { label: "Last Market Day P/L", item: latestSeries };
+        return { label: "Today P/L", item: state.performance.day || latestSeries || {} };
+      }
+
+      function latestSeriesItem(rows) {
+        const series = Array.isArray(rows) ? rows.filter((item) => Number.isFinite(Number(item?.profit))) : [];
+        return series.length ? series[series.length - 1] : null;
+      }
+
+      function isBangkokWeekend(date) {
+        const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Bangkok", weekday: "short" }).format(date);
+        return parts === "Sat" || parts === "Sun";
       }
 
       function renderGoal() {
@@ -1801,9 +1819,10 @@
       }
 
       function renderPeriods() {
-        const labels = [["day", "Today"], ["week", "This Week"], ["month", "This Month"]];
-        $("periodCards").innerHTML = labels.map(([key, label]) => {
-          const item = state.performance[key] || {};
+        const dayDisplay = currentDayDisplay();
+        const labels = [["day", dayDisplay.label.replace(" P/L", ""), dayDisplay.item], ["week", "This Week"], ["month", "This Month"]];
+        $("periodCards").innerHTML = labels.map(([key, label, dayOverride]) => {
+          const item = key === "day" && dayOverride ? dayOverride : state.performance[key] || {};
           const has = Number.isFinite(Number(item.profit));
           const confidence = portfolioConfidence(key);
           return `<div class="period-card">
