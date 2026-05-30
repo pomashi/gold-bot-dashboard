@@ -1607,7 +1607,35 @@
             week: perf.week || current.periodMeta?.week || null,
             month: perf.month || current.periodMeta?.month || null,
           };
+          applyLiveBalancePeriodProfit(current, "day");
+          applyLiveBalancePeriodProfit(current, "week");
+          applyLiveBalancePeriodProfit(current, "month");
         });
+      }
+
+      function applyLiveBalancePeriodProfit(account, period) {
+        const meta = account.periodMeta?.[period];
+        const baseline = n(meta?.baselineBalance);
+        const balance = n(account.balance);
+        if (!meta || !Number.isFinite(baseline) || baseline <= 0 || !Number.isFinite(balance)) return;
+
+        const profit = balance - baseline;
+        const profitPct = baseline > 0 ? (profit / baseline) * 100 : 0;
+        meta.latestBalance = balance;
+        meta.rawProfit = profit;
+        meta.profit = profit;
+        meta.profitPct = profitPct;
+
+        if (period === "day") {
+          account.dayProfit = profit;
+          account.dayPct = profitPct;
+        } else if (period === "week") {
+          account.weekProfit = profit;
+          account.weekPct = profitPct;
+        } else if (period === "month") {
+          account.monthProfit = profit;
+          account.monthPct = profitPct;
+        }
       }
 
       function baselineConfidence(meta) {
@@ -1755,9 +1783,32 @@
 
       function currentDayDisplay() {
         const latestSeries = latestSeriesItem(state.performance.daily_series);
+        const liveDay = livePeriodItem("day", latestSeries);
         const weekend = isBangkokWeekend(new Date());
-        if (weekend && latestSeries) return { label: "Last Market Day P/L", item: latestSeries };
-        return { label: "Today P/L", item: state.performance.day || latestSeries || {} };
+        if (weekend) return { label: "Last Market Day P/L", item: liveDay || latestSeries || state.performance.day || {} };
+        return { label: "Today P/L", item: liveDay || state.performance.day || latestSeries || {} };
+      }
+
+      function livePeriodItem(period, fallback = {}) {
+        const rows = state.accounts
+          .map((account) => ({ account, meta: account.periodMeta?.[period] }))
+          .filter((row) => row.meta && Number.isFinite(n(row.meta.baselineBalance)) && n(row.meta.baselineBalance) > 0);
+        if (!rows.length) return null;
+
+        const baselineBalance = rows.reduce((sum, row) => sum + n(row.meta.baselineBalance), 0);
+        const latestBalance = rows.reduce((sum, row) => sum + n(row.account.balance), 0);
+        const profit = latestBalance - baselineBalance;
+        return {
+          ...(fallback || {}),
+          label: fallback?.label || state.performance[period]?.label || period,
+          baselineBalance,
+          latestBalance,
+          rawProfit: profit,
+          profit,
+          profitPct: baselineBalance > 0 ? (profit / baselineBalance) * 100 : 0,
+          drawdownPct: n(state.performance[period]?.drawdownPct ?? fallback?.drawdownPct),
+          accounts: rows.length,
+        };
       }
 
       function latestSeriesItem(rows) {
@@ -1820,9 +1871,13 @@
 
       function renderPeriods() {
         const dayDisplay = currentDayDisplay();
-        const labels = [["day", dayDisplay.label.replace(" P/L", ""), dayDisplay.item], ["week", "This Week"], ["month", "This Month"]];
-        $("periodCards").innerHTML = labels.map(([key, label, dayOverride]) => {
-          const item = key === "day" && dayOverride ? dayOverride : state.performance[key] || {};
+        const labels = [
+          ["day", dayDisplay.label.replace(" P/L", ""), dayDisplay.item],
+          ["week", "This Week", livePeriodItem("week")],
+          ["month", "This Month", livePeriodItem("month")],
+        ];
+        $("periodCards").innerHTML = labels.map(([key, label, liveOverride]) => {
+          const item = liveOverride || state.performance[key] || {};
           const has = Number.isFinite(Number(item.profit));
           const confidence = portfolioConfidence(key);
           return `<div class="period-card">
@@ -1875,6 +1930,17 @@
             <strong class="${clsNum(profit)}">${fmtSigned(profit)}</strong>
           </div>`;
         }).join("");
+      }
+
+      function seriesWithLivePeriod(rows, period) {
+        const series = Array.isArray(rows) ? [...rows] : [];
+        const fallback = period === "day" ? latestSeriesItem(series) : series[series.length - 1];
+        const live = livePeriodItem(period, fallback);
+        if (!live) return series;
+        if (!series.length) return [live];
+        const key = String(live.date || fallback?.date || "");
+        if (!key) return series.slice(0, -1).concat(live);
+        return series.filter((item) => String(item.date || "") !== key).concat(live);
       }
 
       function renderAccounts() {
@@ -2018,9 +2084,9 @@
         renderGoal();
         renderDanger();
         renderPeriods();
-        renderSeries("dailySeries", state.performance.daily_series);
-        renderSeries("weeklySeries", state.performance.weekly_series);
-        renderSeries("monthlySeries", state.performance.monthly_series);
+        renderSeries("dailySeries", seriesWithLivePeriod(state.performance.daily_series, "day"));
+        renderSeries("weeklySeries", seriesWithLivePeriod(state.performance.weekly_series, "week"));
+        renderSeries("monthlySeries", seriesWithLivePeriod(state.performance.monthly_series, "month"));
         renderAccounts();
         renderMeta();
         renderDataHealth();
