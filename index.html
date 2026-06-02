@@ -475,6 +475,116 @@
         gap: 10px;
       }
 
+      .ranking-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .rank-tab {
+        min-height: 36px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .rank-tab.active {
+        border-color: #137b4e;
+        background: var(--green);
+        color: #fff;
+      }
+
+      .ranking-list {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .rank-card {
+        min-height: 150px;
+        display: grid;
+        align-content: space-between;
+        gap: 10px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, #ffffff, #f7fbf8);
+      }
+
+      .rank-card.top {
+        border-color: #b9d9c2;
+        background: linear-gradient(145deg, #f8fff9, #e4f5e9);
+      }
+
+      .rank-card.negative {
+        border-color: #f3b9b0;
+        background: linear-gradient(145deg, #ffffff, #fff3f0);
+      }
+
+      .rank-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .rank-no {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #10251d;
+        color: #fff;
+        font-weight: 900;
+      }
+
+      .rank-title strong,
+      .rank-value strong {
+        display: block;
+        font-size: 18px;
+      }
+
+      .rank-title span,
+      .rank-value span,
+      .rank-risk {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .rank-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .rank-stat {
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .rank-stat b {
+        display: block;
+        color: var(--muted);
+        font-size: 10px;
+        text-transform: uppercase;
+      }
+
+      .rank-stat span {
+        display: block;
+        margin-top: 3px;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
       .danger-card {
         min-height: 106px;
         display: grid;
@@ -1068,6 +1178,7 @@
 
         .kpi-grid,
         .danger-list,
+        .ranking-list,
         .period-grid,
         .audit-grid,
         .goal-layout,
@@ -1174,6 +1285,7 @@
           <nav class="nav" aria-label="Dashboard sections">
             <a href="#pnl">P/L</a>
             <a href="#danger">Danger</a>
+            <a href="#ranking">Ranking</a>
             <a href="#accounts">Accounts</a>
             <a href="#goal">Goal</a>
             <a href="#health">Health</a>
@@ -1243,6 +1355,25 @@
               </div>
             </div>
             <div class="danger-list" id="dangerList"></div>
+          </div>
+        </section>
+
+        <section class="grid" id="ranking" style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Performance</p>
+                <h2>Account Ranking</h2>
+                <p>Ranks ports by balance P/L %, with risk mode penalizing DD and month max DD.</p>
+              </div>
+              <div class="ranking-tabs" id="rankingTabs">
+                <button class="rank-tab active" data-rank-mode="day">Day</button>
+                <button class="rank-tab" data-rank-mode="week">Week</button>
+                <button class="rank-tab" data-rank-mode="month">Month</button>
+                <button class="rank-tab" data-rank-mode="risk">Risk</button>
+              </div>
+            </div>
+            <div class="ranking-list" id="rankingList"></div>
           </div>
         </section>
 
@@ -1338,6 +1469,7 @@
         accounts: [],
         performance: {},
         meta: {},
+        rankMode: "day",
         logs: [],
         sortDanger: true,
         goalTargetUsd: DEFAULT_GOAL_TARGET_USD,
@@ -1869,6 +2001,65 @@
           : `<div class="empty">No live accounts loaded yet.</div>`;
       }
 
+      function renderRanking() {
+        const mode = state.rankMode || "day";
+        $("rankingTabs").querySelectorAll("[data-rank-mode]").forEach((button) => {
+          button.classList.toggle("active", button.dataset.rankMode === mode);
+        });
+
+        const rows = state.accounts
+          .map((account) => rankingRow(account, mode))
+          .filter((row) => Number.isFinite(row.score))
+          .sort((a, b) => b.score - a.score || b.profit - a.profit || a.account.id.localeCompare(b.account.id))
+          .slice(0, 8);
+
+        $("rankingList").innerHTML = rows.length
+          ? rows.map((row, index) => rankCard(row, index + 1)).join("")
+          : `<div class="empty">No ranking data yet.</div>`;
+      }
+
+      function rankingRow(account, mode) {
+        const map = {
+          day: [account.dayProfit, account.dayPct, "Day"],
+          week: [account.weekProfit, account.weekPct, "Week"],
+          month: [account.monthProfit, account.monthPct, "Month"],
+        };
+        const base = map[mode] || map.day;
+        const profit = n(base[0]);
+        const profitPct = n(base[1]);
+        const ddAbs = Math.abs(Math.min(0, n(account.ddPct)));
+        const monthMaxDd = n(account.monthMaxDdPct);
+        const score = mode === "risk" ? profitPct - ddAbs * 0.5 - monthMaxDd * 0.2 : profitPct;
+        return { account, mode, label: mode === "risk" ? "Risk Score" : base[2], profit, profitPct, ddAbs, monthMaxDd, score };
+      }
+
+      function rankCard(row, rank) {
+        const account = row.account;
+        const negative = row.mode === "risk" ? row.score < 0 : row.profit < 0;
+        const top = rank <= 3 && !negative;
+        const mainValue = row.mode === "risk" ? pct.format(row.score) : pct.format(row.profitPct) + "%";
+        const mainNote = row.mode === "risk" ? `${fmtSigned(row.profit)} / ${pct.format(row.profitPct)}% P/L` : fmtSigned(row.profit);
+        return `<article class="rank-card ${top ? "top" : ""} ${negative ? "negative" : ""}">
+          <div class="rank-head">
+            <div class="rank-title">
+              <span class="rank-no">#${rank}</span>
+              <strong>${maskAccount(account.id)}</strong>
+              <span>${account.broker || "-"} ${account.server ? "/ " + account.server : ""}</span>
+            </div>
+            <div class="rank-value">
+              <strong class="${row.mode === "risk" ? clsNum(row.score) : clsNum(row.profit)}">${mainValue}</strong>
+              <span>${mainNote}</span>
+            </div>
+          </div>
+          <div class="rank-stats">
+            <div class="rank-stat"><b>DD</b><span>${pct.format(row.ddAbs)}%</span></div>
+            <div class="rank-stat"><b>Month Max DD</b><span>${pct.format(row.monthMaxDd)}%</span></div>
+            <div class="rank-stat"><b>Balance</b><span>${fmtMoney(account.balance)}</span></div>
+            <div class="rank-stat"><b>Gap</b><span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span></div>
+          </div>
+        </article>`;
+      }
+
       function renderPeriods() {
         const dayDisplay = currentDayDisplay();
         const labels = [
@@ -2083,6 +2274,7 @@
         renderKpis();
         renderGoal();
         renderDanger();
+        renderRanking();
         renderPeriods();
         renderSeries("dailySeries", seriesWithLivePeriod(state.performance.daily_series, "day"));
         renderSeries("weeklySeries", seriesWithLivePeriod(state.performance.weekly_series, "week"));
@@ -2147,6 +2339,12 @@
         $("exportBtn").addEventListener("click", exportCsv);
         $("goalTargetInput").addEventListener("input", saveGoalSettings);
         $("goalMonthlyInput").addEventListener("input", saveGoalSettings);
+        $("rankingTabs").addEventListener("click", (event) => {
+          const button = event.target.closest("[data-rank-mode]");
+          if (!button) return;
+          state.rankMode = button.dataset.rankMode || "day";
+          renderRanking();
+        });
         $("searchInput").addEventListener("input", renderAccounts);
         $("sortDangerBtn").addEventListener("click", () => {
           state.sortDanger = !state.sortDanger;
