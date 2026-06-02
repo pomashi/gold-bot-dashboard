@@ -2002,8 +2002,12 @@
       }
 
       function renderRanking() {
+        const tabs = $("rankingTabs");
+        const list = $("rankingList");
+        if (!tabs || !list) return;
+
         const mode = state.rankMode || "day";
-        $("rankingTabs").querySelectorAll("[data-rank-mode]").forEach((button) => {
+        tabs.querySelectorAll("[data-rank-mode]").forEach((button) => {
           button.classList.toggle("active", button.dataset.rankMode === mode);
         });
 
@@ -2013,9 +2017,19 @@
           .sort((a, b) => b.score - a.score || b.profit - a.profit || a.account.id.localeCompare(b.account.id))
           .slice(0, 8);
 
-        $("rankingList").innerHTML = rows.length
+        list.innerHTML = rows.length
           ? rows.map((row, index) => rankCard(row, index + 1)).join("")
           : `<div class="empty">No ranking data yet.</div>`;
+      }
+
+      function renderRankingSafe() {
+        try {
+          renderRanking();
+        } catch (error) {
+          log("Ranking failed: " + error.message, "bad");
+          const list = $("rankingList");
+          if (list) list.innerHTML = `<div class="empty">Ranking temporarily unavailable.</div>`;
+        }
       }
 
       function rankingRow(account, mode) {
@@ -2274,12 +2288,12 @@
         renderKpis();
         renderGoal();
         renderDanger();
-        renderRanking();
         renderPeriods();
         renderSeries("dailySeries", seriesWithLivePeriod(state.performance.daily_series, "day"));
         renderSeries("weeklySeries", seriesWithLivePeriod(state.performance.weekly_series, "week"));
         renderSeries("monthlySeries", seriesWithLivePeriod(state.performance.monthly_series, "month"));
         renderAccounts();
+        renderRankingSafe();
         renderMeta();
         renderDataHealth();
         renderLogs();
@@ -2343,7 +2357,7 @@
           const button = event.target.closest("[data-rank-mode]");
           if (!button) return;
           state.rankMode = button.dataset.rankMode || "day";
-          renderRanking();
+          renderRankingSafe();
         });
         $("searchInput").addEventListener("input", renderAccounts);
         $("sortDangerBtn").addEventListener("click", () => {
