@@ -322,6 +322,78 @@
         font-weight: 900;
       }
 
+      .discipline-banner {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 12px;
+        padding: 12px 14px;
+        border: 1px solid #d4b15f;
+        border-left: 5px solid var(--gold);
+        border-radius: 8px;
+        background: linear-gradient(135deg, #fffaf0, #edf7ef);
+      }
+
+      .discipline-banner strong {
+        font-size: 18px;
+        letter-spacing: 0;
+      }
+
+      .discipline-banner span {
+        display: block;
+        margin-top: 3px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .discipline-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 60;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+        background: rgba(8, 18, 14, 0.72);
+      }
+
+      .discipline-modal.open {
+        display: flex;
+      }
+
+      .discipline-dialog {
+        width: min(720px, 100%);
+        max-height: min(760px, 92vh);
+        overflow: auto;
+        padding: 22px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        border-radius: 8px;
+        background: linear-gradient(145deg, #101c16, #173726);
+        color: #f7fbf8;
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+      }
+
+      .discipline-dialog h2 {
+        font-size: clamp(24px, 4vw, 42px);
+        line-height: 1.05;
+      }
+
+      .discipline-note {
+        margin-top: 18px;
+        white-space: pre-line;
+        color: #e9f0ea;
+        font-size: clamp(18px, 2.8vw, 26px);
+        font-weight: 900;
+        line-height: 1.35;
+      }
+
+      .discipline-close {
+        margin-top: 18px;
+      }
+
       .toolbar {
         display: flex;
         gap: 8px;
@@ -1292,6 +1364,11 @@
           grid-template-columns: 1fr 1fr;
         }
 
+        .discipline-banner {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
         .btn {
           width: 100%;
         }
@@ -1357,6 +1434,13 @@
           <div class="toolbar">
             <button class="btn secondary" id="refreshBtn">Refresh</button>
             <button class="btn secondary" id="exportBtn">Export CSV</button>
+          </div>
+          <div class="discipline-banner">
+            <div>
+              <strong>THE BOT MAKES MONEY. YOUR JOB IS NOT TO INTERFERE.</strong>
+              <span>Read before sizing up, manual trading, liquidating, or forcing anything.</span>
+            </div>
+            <button class="btn secondary" id="disciplineOpenBtn" type="button">Read discipline note</button>
           </div>
         </section>
 
@@ -1490,6 +1574,29 @@
       </main>
     </div>
 
+    <div class="discipline-modal" id="disciplineModal" aria-hidden="true">
+      <div class="discipline-dialog" role="dialog" aria-modal="true" aria-labelledby="disciplineTitle">
+        <h2 id="disciplineTitle">YOUR BIGGEST RISK IS NOT THE MARKET. IT'S YOU.</h2>
+        <div class="discipline-note">Don't touch.
+Don't force.
+Don't liquidate.
+
+The system has a plan.
+
+Follow it.
+
+6 years of discipline
+is worth more than
+6 hours of brilliance.
+
+Just keep stacking days.
+
+มึงผ่านจุดนั้นมาแล้ว อย่ากลับไปจุดนั้นอีก
+รวยได้แล้ว อย่ากลับไปจน</div>
+        <button class="btn primary discipline-close" id="disciplineCloseBtn" type="button">Close</button>
+      </div>
+    </div>
+
     <script>
       const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzxANvMEXaDZBxfJ4F3YFkzs1_B3M6gJgOzGDWuRCwP-1MZlsypmfjdfqMwuWBSfQMR/exec";
       const STORAGE = {
@@ -1608,6 +1715,13 @@
 
       function toggleSettings() {
         setSettingsOpen($("connectPanel").classList.contains("collapsed"));
+      }
+
+      function setDisciplineOpen(open) {
+        const modal = $("disciplineModal");
+        if (!modal) return;
+        modal.classList.toggle("open", Boolean(open));
+        modal.setAttribute("aria-hidden", open ? "false" : "true");
       }
 
       function log(message, kind = "info") {
@@ -2441,6 +2555,14 @@
         $("refreshBtn").addEventListener("click", connect);
         $("clearBtn").addEventListener("click", clearSettings);
         $("exportBtn").addEventListener("click", exportCsv);
+        $("disciplineOpenBtn").addEventListener("click", () => setDisciplineOpen(true));
+        $("disciplineCloseBtn").addEventListener("click", () => setDisciplineOpen(false));
+        $("disciplineModal").addEventListener("click", (event) => {
+          if (event.target.id === "disciplineModal") setDisciplineOpen(false);
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") setDisciplineOpen(false);
+        });
         $("goalMonthlyInput").addEventListener("input", saveGoalSettings);
         $("rankingTabs").addEventListener("click", (event) => {
           const button = event.target.closest("[data-rank-mode]");
