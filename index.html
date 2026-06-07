@@ -676,7 +676,7 @@
 
       .goal-layout {
         display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
         gap: 12px;
       }
 
@@ -727,6 +727,61 @@
 
       .goal-controls {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .goal-ladder {
+        display: grid;
+        gap: 10px;
+      }
+
+      .goal-target-card {
+        display: grid;
+        gap: 10px;
+        padding: 13px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(145deg, #ffffff, #f8fbf7);
+      }
+
+      .goal-target-card.hit {
+        border-color: #b9e6c8;
+        background: linear-gradient(145deg, #f7fff8, var(--green-soft));
+      }
+
+      .goal-target-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .goal-target-head strong {
+        display: block;
+        font-size: 22px;
+      }
+
+      .goal-target-head span,
+      .goal-eta-row span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .goal-eta-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .goal-eta-row {
+        padding: 9px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.72);
+      }
+
+      .goal-eta-row b {
+        display: block;
+        margin-top: 3px;
+        font-size: 13px;
       }
 
       .goal-card,
@@ -1399,23 +1454,21 @@
             <div class="section-head">
               <div>
                 <p class="eyebrow">Goal tracking</p>
-                <h2>200K USD Target</h2>
+                <h2>Freedom Target Ladder</h2>
               </div>
             </div>
             <div class="goal-layout">
               <div class="goal-hero" id="goalHero"></div>
-              <div class="goal-controls">
-                <div class="goal-card">
-                  <span class="card-label">Target USD</span>
-                  <input class="goal-input" id="goalTargetInput" type="number" min="1" step="1000" />
-                </div>
+              <div class="goal-ladder" id="goalLadder"></div>
+            </div>
+            <div class="goal-controls" style="margin-top: 10px">
                 <div class="goal-card">
                   <span class="card-label">Standard / month</span>
                   <input class="goal-input" id="goalMonthlyInput" type="number" min="0" step="0.1" />
                 </div>
                 <div class="goal-card"><span class="card-label">Standard ETA</span><strong id="goalEta">-</strong></div>
                 <div class="goal-card"><span class="card-label">6M avg pace</span><strong id="goalActualEta">-</strong></div>
-              </div>
+                <div class="goal-card"><span class="card-label">Ultimate Target</span><strong>600K USD</strong></div>
             </div>
           </div>
         </section>
@@ -1448,6 +1501,7 @@
       const DEFAULT_GOAL_TARGET_USD = 200000;
       const DEFAULT_GOAL_MONTHLY_PCT = 5;
       const USDTHB_RATE = 32.5;
+      const GOAL_TARGETS_USD = [200000, 300000, 600000];
 
       const EXPECTED = [
         { id: "201101469", broker: "MH", bots: ["Gold Sniper 0.10", "Smart Gold 0.10", "Gold Slayer 0.03", "Gold Devil 0.02"] },
@@ -1605,6 +1659,13 @@
       function fmtDayCount(days) {
         if (!Number.isFinite(days) || days < 0) return "-";
         return money.format(Math.ceil(days)) + " days";
+      }
+
+      function fmtEtaDate(days) {
+        if (!Number.isFinite(days) || days < 0) return "-";
+        if (days === 0) return "Hit";
+        const date = new Date(Date.now() + Math.ceil(days) * 24 * 60 * 60 * 1000);
+        return date.toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
       }
 
       function etaDays(current, target, monthlyPct) {
@@ -1863,7 +1924,7 @@
           log("Live loaded: " + state.accounts.length + " accounts", "live");
 
           try {
-            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 30000);
+            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 75000);
             state.historyOk = true;
             state.historyAt = new Date();
             state.performance = history.performance || {};
@@ -1871,7 +1932,6 @@
             mergeHistoryAccounts(history.accounts || []);
             log("History loaded", "live");
           } catch (historyError) {
-            state.performance = {};
             log("History failed: " + historyError.message, "bad");
           }
 
@@ -1956,7 +2016,7 @@
       function renderGoal() {
         const totalBalanceUsc = state.accounts.reduce((sum, account) => sum + account.balance, 0);
         const currentUsd = totalBalanceUsc / 100;
-        const targetUsd = Math.max(1, n(state.goalTargetUsd, DEFAULT_GOAL_TARGET_USD));
+        const targetUsd = GOAL_TARGETS_USD[GOAL_TARGETS_USD.length - 1];
         const standardPct = Math.max(0, n(state.goalMonthlyPct, DEFAULT_GOAL_MONTHLY_PCT));
         const avgPace = averageMonthlyPace();
         const actualPct = avgPace.pct;
@@ -1966,16 +2026,20 @@
         const actualDays = etaDays(currentUsd, targetUsd, actualPct);
 
         $("goalHero").innerHTML = `
-          <span class="card-label">Portfolio goal progress</span>
+          <span class="card-label">Ultimate goal progress</span>
           <div class="goal-big">${pct.format(progress)}%</div>
           <div class="goal-sub">${fmtUsd(currentUsd)} / ${fmtUsd(targetUsd)} target</div>
           <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
           <div class="goal-sub">${fmtUsd(remaining)} remaining. Balance source: ${fmtMoney(totalBalanceUsc)} cent-account balance.</div>
+          <div class="goal-sub">Cashflow idea: 600K USD at 5%/month is about 30K USD/month before withdrawals and risk.</div>
         `;
+        $("goalLadder").innerHTML = GOAL_TARGETS_USD.map((goal) => goalTargetCard(goal, currentUsd, standardPct, actualPct, avgPace)).join("");
         $("goalEta").textContent = standardDays === 0 ? "Goal hit" : fmtDayCount(standardDays);
         $("goalActualEta").textContent =
           actualPct > 0
             ? fmtDayCount(actualDays) +
+              " / " +
+              fmtEtaDate(actualDays) +
               " at " +
               pct.format(actualPct) +
               "%/mo avg (" +
@@ -1984,6 +2048,37 @@
               (avgPace.usedCurrentMonth ? ", current" : "") +
               ")"
             : "Need positive 6M avg";
+      }
+
+      function goalTargetCard(targetUsd, currentUsd, standardPct, actualPct, avgPace) {
+        const progress = targetUsd > 0 ? Math.min(100, Math.max(0, (currentUsd / targetUsd) * 100)) : 0;
+        const remaining = Math.max(0, targetUsd - currentUsd);
+        const standardDays = etaDays(currentUsd, targetUsd, standardPct);
+        const actualDays = etaDays(currentUsd, targetUsd, actualPct);
+        const hit = remaining <= 0;
+        const monthlyCashflow = targetUsd * (standardPct / 100);
+
+        return `<article class="goal-target-card ${hit ? "hit" : ""}">
+          <div class="goal-target-head">
+            <div>
+              <span class="card-label">Target</span>
+              <strong>${fmtUsd(targetUsd)}</strong>
+            </div>
+            <div>
+              <span class="card-label">Progress</span>
+              <strong>${pct.format(progress)}%</strong>
+            </div>
+          </div>
+          <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
+          <div class="goal-target-head">
+            <span>${fmtUsd(remaining)} remaining</span>
+            <span>${fmtUsd(monthlyCashflow)}/mo at ${pct.format(standardPct)}%</span>
+          </div>
+          <div class="goal-eta-grid">
+            <div class="goal-eta-row"><span>Standard ETA</span><b>${hit ? "Hit" : fmtDayCount(standardDays)} / ${fmtEtaDate(standardDays)}</b></div>
+            <div class="goal-eta-row"><span>6M Avg ETA</span><b>${actualPct > 0 ? fmtDayCount(actualDays) + " / " + fmtEtaDate(actualDays) : "Need positive avg"}</b></div>
+          </div>
+        </article>`;
       }
 
       function renderDanger() {
@@ -2328,30 +2423,24 @@
       }
 
       function saveGoalSettings() {
-        state.goalTargetUsd = Math.max(1, n($("goalTargetInput").value, DEFAULT_GOAL_TARGET_USD));
         state.goalMonthlyPct = Math.max(0, n($("goalMonthlyInput").value, DEFAULT_GOAL_MONTHLY_PCT));
-        localStorage.setItem(STORAGE.goalTargetUsd, String(state.goalTargetUsd));
         localStorage.setItem(STORAGE.goalMonthlyPct, String(state.goalMonthlyPct));
         renderGoal();
       }
 
       function init() {
         applyUrlParams();
-        const savedTarget = localStorage.getItem(STORAGE.goalTargetUsd);
         const savedMonthly = localStorage.getItem(STORAGE.goalMonthlyPct);
-        state.goalTargetUsd = savedTarget === null ? DEFAULT_GOAL_TARGET_USD : Math.max(1, n(savedTarget, DEFAULT_GOAL_TARGET_USD));
         state.goalMonthlyPct = savedMonthly === null ? DEFAULT_GOAL_MONTHLY_PCT : Math.max(0, n(savedMonthly, DEFAULT_GOAL_MONTHLY_PCT));
         $("endpointInput").value = localStorage.getItem(STORAGE.url) || DEFAULT_ENDPOINT;
         $("readKeyInput").value = localStorage.getItem(STORAGE.key) || "";
         setSettingsOpen(!$("readKeyInput").value);
-        $("goalTargetInput").value = state.goalTargetUsd;
         $("goalMonthlyInput").value = state.goalMonthlyPct;
         $("connectBtn").addEventListener("click", connect);
         $("settingsToggle").addEventListener("click", toggleSettings);
         $("refreshBtn").addEventListener("click", connect);
         $("clearBtn").addEventListener("click", clearSettings);
         $("exportBtn").addEventListener("click", exportCsv);
-        $("goalTargetInput").addEventListener("input", saveGoalSettings);
         $("goalMonthlyInput").addEventListener("input", saveGoalSettings);
         $("rankingTabs").addEventListener("click", (event) => {
           const button = event.target.closest("[data-rank-mode]");
