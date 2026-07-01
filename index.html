@@ -1970,8 +1970,8 @@ Just keep stacking days.
         const age = minutesAgo(account.lastAt);
         if (!account.id) reasons.push({ severity: "red", text: "Missing account id" });
         if (age === Infinity) reasons.push({ severity: "red", text: "No timestamp" });
-        else if (age > 15) reasons.push({ severity: "red", text: "Stale " + Math.round(age) + "m" });
-        else if (age > 5) reasons.push({ severity: "yellow", text: "Slow " + Math.round(age) + "m" });
+        else if (age > 25) reasons.push({ severity: "red", text: "Stale " + Math.round(age) + "m" });
+        else if (age > 12) reasons.push({ severity: "yellow", text: "Slow " + Math.round(age) + "m" });
         if (account.ddPct <= -25) reasons.push({ severity: "red", text: "DD " + pct.format(account.ddPct) + "%" });
         else if (account.ddPct <= -15) reasons.push({ severity: "yellow", text: "DD " + pct.format(account.ddPct) + "%" });
         if (account.equityGap < -account.balance * 0.25) reasons.push({ severity: "red", text: "Big equity gap" });
@@ -2066,7 +2066,7 @@ Just keep stacking days.
         const totalEquity = state.accounts.reduce((sum, account) => sum + account.equity, 0);
         const equityGap = totalEquity - totalBalance;
         const ddWatch = state.accounts.filter((account) => account.ddPct <= -15).length;
-        const stale = state.accounts.filter((account) => minutesAgo(account.lastAt) > 5).length;
+        const stale = state.accounts.filter((account) => minutesAgo(account.lastAt) > 25).length;
         const dayDisplay = currentDayDisplay();
         const day = dayDisplay.item || {};
         const dangerCount = ddWatch + stale;
@@ -2460,7 +2460,7 @@ Just keep stacking days.
         const usage = n(sheet.usage_pct);
         const status = sheet.status || "unknown";
         const freshest = state.accounts.reduce((best, account) => Math.min(best, minutesAgo(account.lastAt)), Infinity);
-        const staleAccounts = state.accounts.filter((account) => minutesAgo(account.lastAt) > 5).length;
+        const staleAccounts = state.accounts.filter((account) => minutesAgo(account.lastAt) > 25).length;
         const freshnessKind = !state.accounts.length ? "warn" : staleAccounts ? "warn" : "ok";
         const freshnessNote = !state.accounts.length ? "waiting live accounts" : staleAccounts ? staleAccounts + " stale accounts" : "live values look fresh";
         $("dataHealthGrid").innerHTML = [
