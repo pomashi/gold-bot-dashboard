@@ -1236,6 +1236,44 @@
         gap: 8px;
       }
 
+      .formula-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .formula-card {
+        display: grid;
+        gap: 8px;
+        min-height: 132px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: linear-gradient(180deg, #ffffff, #f7fbf8);
+      }
+
+      .formula-card strong {
+        font-size: 20px;
+        line-height: 1.1;
+      }
+
+      .formula-card b {
+        color: var(--green);
+        font-size: 22px;
+      }
+
+      .formula-card span,
+      .formula-footnote {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        line-height: 1.35;
+      }
+
+      .formula-footnote {
+        margin-top: 10px;
+      }
+
       .table {
         width: 100%;
         border-collapse: collapse;
@@ -1306,6 +1344,7 @@
         .kpi-grid,
         .danger-list,
         .ranking-list,
+        .formula-grid,
         .period-grid,
         .audit-grid,
         .goal-layout,
@@ -1418,6 +1457,7 @@
             <a href="#pnl">P/L</a>
             <a href="#danger">Danger</a>
             <a href="#ranking">Ranking</a>
+            <a href="#formula">Formula</a>
             <a href="#accounts">Accounts</a>
             <a href="#goal">Goal</a>
             <a href="#health">Health</a>
@@ -1516,6 +1556,48 @@
           </div>
         </section>
 
+        <section class="grid" id="formula" style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Bot formula notes</p>
+                <h2>June 2026 Combo Profit / 3,000 USD</h2>
+                <p>Quick reference only. Live danger still comes from DD, equity gap, margin, and stale data.</p>
+              </div>
+            </div>
+            <div class="formula-grid">
+              <div class="formula-card">
+                <strong>3-2-1-1</strong>
+                <b>4.64%</b>
+                <span>Smart 0.03 / Sniper 0.02 / Devil 0.01 / Slayer 0.01</span>
+              </div>
+              <div class="formula-card">
+                <strong>3-2-1.5-1</strong>
+                <b>4.94%</b>
+                <span>Smart 0.03 / Sniper 0.02 / Devil 0.015 / Slayer 0.01</span>
+              </div>
+              <div class="formula-card">
+                <strong>3-2-2-1</strong>
+                <b>5.24%</b>
+                <span>Smart 0.03 / Sniper 0.02 / Devil 0.02 / Slayer 0.01</span>
+              </div>
+              <div class="formula-card">
+                <strong>6-2-1-1</strong>
+                <b>5.30%</b>
+                <span>Sniper 0.06 / Smart 0.02 / Devil 0.01 / Slayer 0.01</span>
+              </div>
+              <div class="formula-card">
+                <strong>3-3-2-1-1</strong>
+                <b>5.82%</b>
+                <span>Grandma 0.03 / Smart 0.03 / Sniper 0.02 / Devil 0.01 / Slayer 0.01</span>
+              </div>
+            </div>
+            <div class="formula-footnote">
+              Gold group can run together. John Wick can run with gold. Prince of Persia is oil and should be treated separately. ETH is excluded. Grandma is upside-grid style, so read profit with DD context.
+            </div>
+          </div>
+        </section>
+
         <section class="grid" id="accounts" style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
@@ -1611,11 +1693,11 @@ Just keep stacking days.
       const GOAL_TARGETS_USD = [200000, 300000, 600000];
 
       const EXPECTED = [
-        { id: "201101469", broker: "MH", bots: ["Gold Sniper 0.04", "Smart Gold 0.06", "Gold Slayer 0.02", "Gold Devil 0.02"] },
-        { id: "201101470", broker: "MH", bots: ["Smart Gold 0.10", "Gold Devil 0.03", "Gold Slayer 0.03", "Gold Sniper 0.06"] },
-        { id: "24892586", broker: "VT", bots: ["Grandma Gold 0.06", "Gold Sniper 0.01", "Gold Devil 0.01", "Gold Slayer 0.01", "Smart Gold 0.01"] },
-        { id: "201100915", broker: "MH", bots: ["Smart Gold 0.12", "Gold Slayer 0.04", "Gold Sniper 0.08", "Gold Devil 0.04"] },
-        { id: "201100978", broker: "MH Wave", bots: ["Smart Gold 0.05", "Gold Sniper 0.01"] },
+        { id: "201101469", broker: "MH", bots: ["Smart Gold 0.06", "Gold Sniper 0.04", "Gold Devil 0.02", "Gold Slayer 0.02"] },
+        { id: "201101470", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
+        { id: "24892586", broker: "VT", bots: ["Grandma Gold 0.06", "Gold Sniper 0.05", "Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
+        { id: "201100915", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
+        { id: "201100978", broker: "MH Wave", bots: ["Smart Gold 0.06", "Gold Sniper 0.01"] },
         { id: "201101468", broker: "MH", bots: ["Prince of Persia 0.02"] },
         { id: "201100977", broker: "MH", bots: ["John Wick 0.10", "Gold Slayer 0.02"] },
         { id: "7012808", broker: "MH", bots: ["Smart Gold 0.01", "Gold Sniper 0.01"] },
