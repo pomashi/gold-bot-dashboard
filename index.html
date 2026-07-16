@@ -3,6 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#153622" />
+    <meta name="description" content="Risk-first MT5 gold bot portfolio dashboard." />
     <title>Bot Portfolio Dashboard</title>
     <style>
       :root {
@@ -25,7 +27,7 @@
         --teal-soft: #ddf2f1;
         --purple: #6a50b7;
         --purple-soft: #eee9ff;
-        --shadow: 0 16px 42px rgba(22, 35, 29, 0.12);
+        --shadow: 0 10px 30px rgba(22, 35, 29, 0.09);
       }
 
       * {
@@ -44,7 +46,12 @@
           linear-gradient(180deg, #f7faf7 0, var(--bg) 310px),
           var(--bg);
         color: var(--ink);
-        font-family: Arial, "Helvetica Neue", Tahoma, sans-serif;
+        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+        font-variant-numeric: tabular-nums;
+      }
+
+      body.modal-open {
+        overflow: hidden;
       }
 
       button,
@@ -55,6 +62,20 @@
       button {
         border: 0;
         cursor: pointer;
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.62;
+      }
+
+      :where(button, input, a):focus-visible {
+        outline: 3px solid #f1c15c;
+        outline-offset: 3px;
+      }
+
+      section[id] {
+        scroll-margin-top: 132px;
       }
 
       .app {
@@ -204,7 +225,7 @@
       .btn {
         min-height: 42px;
         padding: 0 14px;
-        border-radius: 8px;
+        border-radius: 10px;
         font-weight: 900;
       }
 
@@ -274,6 +295,14 @@
         padding: 10px 0 4px;
       }
 
+      .hero > div:first-child {
+        flex: 0 0 270px;
+      }
+
+      .hero > .toolbar {
+        flex-wrap: nowrap;
+      }
+
       h1,
       h2,
       h3,
@@ -324,15 +353,17 @@
 
       .discipline-banner {
         grid-column: 1 / -1;
+        flex: 1 1 0;
+        min-width: 0;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        margin-top: 12px;
+        margin-top: 0;
         padding: 12px 14px;
         border: 1px solid #d4b15f;
         border-left: 5px solid var(--gold);
-        border-radius: 8px;
+        border-radius: 12px;
         background: linear-gradient(135deg, #fffaf0, #edf7ef);
       }
 
@@ -370,7 +401,7 @@
         overflow: auto;
         padding: 22px;
         border: 1px solid rgba(255, 255, 255, 0.22);
-        border-radius: 8px;
+        border-radius: 16px;
         background: linear-gradient(145deg, #101c16, #173726);
         color: #f7fbf8;
         box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
@@ -408,7 +439,7 @@
 
       .panel {
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: 14px;
         background: rgba(255, 255, 255, 0.92);
         box-shadow: var(--shadow);
         overflow: hidden;
@@ -465,24 +496,12 @@
         gap: 10px;
         padding: 14px;
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: 12px;
         background: linear-gradient(180deg, #ffffff, #f8fbf7);
       }
 
-      .kpi:nth-child(1) {
+      .kpi {
         border-top: 4px solid var(--blue);
-      }
-
-      .kpi:nth-child(2) {
-        border-top: 4px solid var(--gold);
-      }
-
-      .kpi:nth-child(3) {
-        border-top: 4px solid var(--green);
-      }
-
-      .kpi:nth-child(4) {
-        border-top: 4px solid var(--red);
       }
 
       .kpi > span,
@@ -528,6 +547,10 @@
         background: linear-gradient(180deg, #ffffff, #fff9ea);
       }
 
+      .kpi.tone-neutral {
+        border-top-color: var(--blue);
+      }
+
       .kpi-thb {
         display: block;
         margin-top: 4px;
@@ -554,10 +577,10 @@
       }
 
       .rank-tab {
-        min-height: 36px;
+        min-height: 44px;
         padding: 0 12px;
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: 10px;
         background: #fff;
         color: var(--muted);
         font-weight: 900;
@@ -584,7 +607,7 @@
         gap: 10px;
         padding: 12px;
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: 12px;
         background: linear-gradient(180deg, #ffffff, #f7fbf8);
       }
 
@@ -665,7 +688,7 @@
         padding: 12px;
         border: 1px solid var(--line);
         border-left: 5px solid var(--green);
-        border-radius: 8px;
+        border-radius: 12px;
         background: linear-gradient(180deg, #ffffff, #f7fbf8);
       }
 
@@ -681,6 +704,13 @@
 
       .danger-card strong {
         font-size: 16px;
+      }
+
+      .danger-reasons {
+        color: #48574f;
+        font-size: 11px;
+        font-weight: 800;
+        line-height: 1.35;
       }
 
       .danger-card em {
@@ -1005,7 +1035,7 @@
         gap: 14px;
         padding: 14px;
         border: 1px solid var(--line);
-        border-radius: 8px;
+        border-radius: 12px;
         background: linear-gradient(180deg, #ffffff, #fbfdfb);
         box-shadow: 0 8px 22px rgba(22, 35, 29, 0.07);
       }
@@ -1331,7 +1361,15 @@
           display: block;
         }
 
+        .hero > div:first-child {
+          flex: none;
+        }
+
         .toolbar {
+          margin-top: 12px;
+        }
+
+        .discipline-banner {
           margin-top: 12px;
         }
 
@@ -1341,8 +1379,6 @@
           grid-column: span 12;
         }
 
-        .kpi-grid,
-        .danger-list,
         .ranking-list,
         .formula-grid,
         .period-grid,
@@ -1350,6 +1386,11 @@
         .goal-layout,
         .health-grid {
           grid-template-columns: 1fr;
+        }
+
+        .kpi-grid,
+        .danger-list {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .account-card {
@@ -1393,9 +1434,27 @@
         }
 
         .settings-toggle {
-          min-height: 36px;
+          min-height: 40px;
           padding: 0 9px;
           font-size: 11px;
+        }
+
+        .nav a {
+          min-height: 40px;
+          padding: 0 11px;
+        }
+
+        main {
+          padding-top: 10px;
+        }
+
+        .hero {
+          margin: 2px 0 10px;
+          padding-top: 4px;
+        }
+
+        h1 {
+          font-size: 30px;
         }
 
         .toolbar {
@@ -1406,10 +1465,62 @@
         .discipline-banner {
           align-items: stretch;
           flex-direction: column;
+          gap: 9px;
+          margin-top: 9px;
+          padding: 10px 11px;
+        }
+
+        .discipline-banner strong {
+          font-size: 14px;
+          line-height: 1.25;
+        }
+
+        .discipline-banner span {
+          font-size: 11px;
+          line-height: 1.35;
         }
 
         .btn {
           width: 100%;
+        }
+
+        .panel.pad {
+          padding: 12px;
+        }
+
+        .kpi {
+          min-height: 102px;
+          gap: 7px;
+          padding: 10px;
+        }
+
+        .kpi strong {
+          font-size: clamp(18px, 5.2vw, 22px);
+          white-space: normal;
+        }
+
+        .kpi > span,
+        .card-label {
+          font-size: 10px;
+        }
+
+        .kpi small,
+        .kpi-thb {
+          font-size: 11px;
+        }
+
+        .danger-card {
+          min-height: 118px;
+          padding: 10px;
+        }
+
+        .danger-card strong {
+          font-size: 14px;
+        }
+
+        .danger-card em {
+          font-size: 11px;
+          line-height: 1.35;
         }
 
         .bar-row {
@@ -1420,10 +1531,16 @@
           grid-column: 1 / -1;
         }
       }
+
+      @media (max-width: 360px) {
+        .danger-list {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
-    <div class="app">
+    <div class="app" id="appRoot">
       <header class="topbar">
         <div class="topbar-inner">
           <div class="brand-row">
@@ -1435,7 +1552,7 @@
               </div>
             </div>
             <div class="topbar-actions">
-              <div class="status-pill" id="connectionBadge"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
+              <div class="status-pill" id="connectionBadge" role="status" aria-live="polite"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
               <button class="settings-toggle" id="settingsToggle" type="button" aria-expanded="true">Settings</button>
             </div>
           </div>
@@ -1443,14 +1560,14 @@
           <div class="connect-panel" id="connectPanel">
             <div class="field">
               <label for="endpointInput">Apps Script URL</label>
-              <input id="endpointInput" autocomplete="off" spellcheck="false" />
+              <input id="endpointInput" type="url" autocomplete="off" spellcheck="false" />
             </div>
             <div class="field">
               <label for="readKeyInput">Read key</label>
               <input id="readKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Paste read key" />
             </div>
-            <button class="btn primary" id="connectBtn">Connect</button>
-            <button class="btn light" id="clearBtn">Clear</button>
+            <button class="btn primary" id="connectBtn" type="button">Connect</button>
+            <button class="btn light" id="clearBtn" type="button">Clear</button>
           </div>
 
           <nav class="nav" aria-label="Dashboard sections">
@@ -1472,8 +1589,8 @@
             <h1>Bot Portfolio</h1>
           </div>
           <div class="toolbar">
-            <button class="btn secondary" id="refreshBtn">Refresh</button>
-            <button class="btn secondary" id="exportBtn">Export CSV</button>
+            <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
+            <button class="btn secondary" id="exportBtn" type="button">Export CSV</button>
           </div>
           <div class="discipline-banner">
             <div>
@@ -1487,6 +1604,19 @@
         <section class="grid" id="overview">
           <div class="panel pad span-12">
             <div class="kpi-grid" id="kpiGrid"></div>
+          </div>
+        </section>
+
+        <section class="grid" id="danger" style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Risk first</p>
+                <h2>Danger Now</h2>
+                <p>Only accounts that need attention. Red always outranks yellow.</p>
+              </div>
+            </div>
+            <div class="danger-list" id="dangerList"></div>
           </div>
         </section>
 
@@ -1526,17 +1656,6 @@
           </div>
         </section>
 
-        <section class="grid" id="danger" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <h2>Danger Now</h2>
-              </div>
-            </div>
-            <div class="danger-list" id="dangerList"></div>
-          </div>
-        </section>
-
         <section class="grid" id="ranking" style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
@@ -1545,11 +1664,11 @@
                 <h2>Account Ranking</h2>
                 <p>Ranks ports by balance P/L %, with risk mode penalizing DD and month max DD.</p>
               </div>
-              <div class="ranking-tabs" id="rankingTabs">
-                <button class="rank-tab active" data-rank-mode="day">Day</button>
-                <button class="rank-tab" data-rank-mode="week">Week</button>
-                <button class="rank-tab" data-rank-mode="month">Month</button>
-                <button class="rank-tab" data-rank-mode="risk">Risk</button>
+              <div class="ranking-tabs" id="rankingTabs" role="group" aria-label="Ranking period">
+                <button class="rank-tab active" type="button" data-rank-mode="day" aria-pressed="true">Day</button>
+                <button class="rank-tab" type="button" data-rank-mode="week" aria-pressed="false">Week</button>
+                <button class="rank-tab" type="button" data-rank-mode="month" aria-pressed="false">Month</button>
+                <button class="rank-tab" type="button" data-rank-mode="risk" aria-pressed="false">Risk</button>
               </div>
             </div>
             <div class="ranking-list" id="rankingList"></div>
@@ -1608,8 +1727,8 @@
               </div>
             </div>
             <div class="accounts-tools">
-              <input class="search" id="searchInput" placeholder="Search account, broker, bot..." />
-              <button class="btn secondary" id="sortDangerBtn">Sort danger</button>
+              <input class="search" id="searchInput" type="search" aria-label="Search account, broker, or bot" placeholder="Search account, broker, bot..." />
+              <button class="btn secondary" id="sortDangerBtn" type="button" aria-pressed="true">Sort danger</button>
             </div>
             <div class="account-list" id="accountList"></div>
           </div>
@@ -1629,7 +1748,7 @@
             </div>
             <div class="goal-controls" style="margin-top: 10px">
                 <div class="goal-card">
-                  <span class="card-label">Standard / month</span>
+                  <label class="card-label" for="goalMonthlyInput">Standard / month</label>
                   <input class="goal-input" id="goalMonthlyInput" type="number" min="0" step="0.1" />
                 </div>
                 <div class="goal-card"><span class="card-label">Standard ETA</span><strong id="goalEta">-</strong></div>
@@ -1684,23 +1803,31 @@ Just keep stacking days.
       const STORAGE = {
         url: "gold-v2-live-url-current",
         key: "gold-v2-read-key",
-        goalTargetUsd: "gold-v2-goal-target-usd",
         goalMonthlyPct: "gold-v2-goal-monthly-pct",
       };
-      const DEFAULT_GOAL_TARGET_USD = 200000;
       const DEFAULT_GOAL_MONTHLY_PCT = 5;
       const USDTHB_RATE = 32.5;
       const GOAL_TARGETS_USD = [200000, 300000, 600000];
+      const RISK_THRESHOLDS = Object.freeze({
+        slowMinutes: 12,
+        staleMinutes: 25,
+        ddWatchPct: -15,
+        ddCriticalPct: -25,
+        equityGapCriticalRatio: -0.25,
+        marginWatchPct: 300,
+        marginCriticalPct: 150,
+      });
+      const SEVERITY_WEIGHT = Object.freeze({ green: 1, yellow: 2, red: 3 });
 
       const EXPECTED = [
-        { id: "201101469", broker: "MH", bots: ["Smart Gold 0.06", "Gold Sniper 0.04", "Gold Devil 0.02", "Gold Slayer 0.02"] },
-        { id: "201101470", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
-        { id: "24892586", broker: "VT", bots: ["Grandma Gold 0.06", "Gold Sniper 0.05", "Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
-        { id: "201100915", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
-        { id: "201100978", broker: "MH Wave", bots: ["Smart Gold 0.06", "Gold Sniper 0.01"] },
-        { id: "201101468", broker: "MH", bots: ["Prince of Persia 0.02"] },
-        { id: "201100977", broker: "MH", bots: ["John Wick 0.10", "Gold Slayer 0.02"] },
-        { id: "7012808", broker: "MH", bots: ["Smart Gold 0.01", "Gold Sniper 0.01"] },
+        { id: "2011****69", broker: "MH", bots: ["Smart Gold 0.06", "Gold Sniper 0.04", "Gold Devil 0.02", "Gold Slayer 0.02"] },
+        { id: "2011****70", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
+        { id: "2489****86", broker: "VT", bots: ["Grandma Gold 0.06", "Gold Sniper 0.05", "Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
+        { id: "2011****15", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
+        { id: "2011****78", broker: "MH Wave", bots: ["Smart Gold 0.06", "Gold Sniper 0.01"] },
+        { id: "2011****68", broker: "MH", bots: ["Prince of Persia 0.02"] },
+        { id: "2011****77", broker: "MH", bots: ["John Wick 0.10", "Gold Slayer 0.02"] },
+        { id: "7012****08", broker: "MH", bots: ["Smart Gold 0.01", "Gold Sniper 0.01"] },
       ];
 
       const state = {
@@ -1715,9 +1842,12 @@ Just keep stacking days.
         rankMode: "day",
         logs: [],
         sortDanger: true,
-        goalTargetUsd: DEFAULT_GOAL_TARGET_USD,
         goalMonthlyPct: DEFAULT_GOAL_MONTHLY_PCT,
+        loading: false,
+        loadingHistory: false,
+        requestId: 0,
       };
+      let modalReturnFocus = null;
 
       const money = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 });
       const pct = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -1730,6 +1860,20 @@ Just keep stacking days.
       function n(value, fallback = 0) {
         const num = Number(value);
         return Number.isFinite(num) ? num : fallback;
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+        })[character]);
+      }
+
+      function hasNumber(value) {
+        return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
       }
 
       function parseJson(value, fallback = []) {
@@ -1758,13 +1902,14 @@ Just keep stacking days.
         }
       }
 
-      function applyUrlParams() {
+      function scrubSensitiveUrlParams() {
         const params = new URLSearchParams(location.search);
-        const readKey = String(params.get("read_key") || params.get("key") || "").trim();
-        const liveUrl = cleanUrl(params.get("live_url") || params.get("url") || params.get("deployment"));
-        if (liveUrl) localStorage.setItem(STORAGE.url, liveUrl);
-        if (readKey) localStorage.setItem(STORAGE.key, readKey);
-        if (readKey || liveUrl) history.replaceState(null, "", location.pathname + location.hash);
+        const blocked = ["read_key", "key", "live_url", "url", "deployment"];
+        const hadSensitiveParams = blocked.some((name) => params.has(name));
+        blocked.forEach((name) => params.delete(name));
+        if (!hadSensitiveParams) return;
+        const search = params.toString();
+        history.replaceState(null, "", location.pathname + (search ? "?" + search : "") + location.hash);
       }
 
       function settings() {
@@ -1802,8 +1947,27 @@ Just keep stacking days.
       function setDisciplineOpen(open) {
         const modal = $("disciplineModal");
         if (!modal) return;
-        modal.classList.toggle("open", Boolean(open));
-        modal.setAttribute("aria-hidden", open ? "false" : "true");
+        const shouldOpen = Boolean(open);
+        if (shouldOpen) modalReturnFocus = document.activeElement;
+        modal.classList.toggle("open", shouldOpen);
+        modal.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+        document.body.classList.toggle("modal-open", shouldOpen);
+        $("appRoot").inert = shouldOpen;
+        if (shouldOpen) {
+          requestAnimationFrame(() => $("disciplineCloseBtn").focus());
+        } else if (modalReturnFocus && typeof modalReturnFocus.focus === "function") {
+          modalReturnFocus.focus();
+          modalReturnFocus = null;
+        }
+      }
+
+      function setLoading(loading) {
+        state.loading = Boolean(loading);
+        ["connectBtn", "refreshBtn"].forEach((id) => {
+          const button = $(id);
+          if (button) button.disabled = state.loading;
+        });
+        $("appRoot").setAttribute("aria-busy", state.loading ? "true" : "false");
       }
 
       function log(message, kind = "info") {
@@ -1932,15 +2096,17 @@ Just keep stacking days.
 
       function normalizeAccount(row) {
         const id = String(row.account || row.id || "");
-        const expected = EXPECTED.find((item) => item.id === id) || {};
+        const expected = EXPECTED.find((item) => item.id === maskAccount(id)) || {};
         const note = String(row.note || "");
         const isBlockedLegacyAccount = id.startsWith("601");
+        const balanceValid = hasNumber(row.balance);
+        const equityValid = hasNumber(row.equity);
         const balance = n(row.balance);
         const equity = n(row.equity);
         const equityGap = equity - balance;
         const ddPct = balance > 0 ? (Math.min(0, equityGap) / balance) * 100 : 0;
         const marginLevel = n(row.margin_level || row.marginLevel);
-        const bots = parseJson(row.bots, row.bots || []).map((bot) => {
+        const bots = parseJson(row.bots, Array.isArray(row.bots) ? row.bots : []).map((bot) => {
           if (typeof bot === "string") return bot;
           return [bot.name, bot.lot ? lots.format(bot.lot) : ""].filter(Boolean).join(" ");
         });
@@ -1948,6 +2114,9 @@ Just keep stacking days.
         return {
           id,
           isBlockedLegacyAccount,
+          dataComplete: Boolean(id) && balanceValid && equityValid,
+          balanceValid,
+          equityValid,
           broker: String(row.broker || expected.broker || ""),
           server: String(row.server || ""),
           note,
@@ -1957,12 +2126,12 @@ Just keep stacking days.
           ddPct,
           marginLevel,
           openPositions: n(row.open_positions || row.openPositions),
-          dayProfit: n(perf.day?.profit ?? row.account_day_profit ?? row.daily_profit),
-          weekProfit: n(perf.week?.profit ?? row.account_week_profit),
-          monthProfit: n(perf.month?.profit ?? row.account_month_profit),
-          dayPct: n(perf.day?.profitPct ?? row.account_day_profit_pct),
-          weekPct: n(perf.week?.profitPct ?? row.account_week_profit_pct),
-          monthPct: n(perf.month?.profitPct ?? row.account_month_profit_pct),
+          dayProfit: n(perf.day?.profit),
+          weekProfit: n(perf.week?.profit),
+          monthProfit: n(perf.month?.profit),
+          dayPct: n(perf.day?.profitPct),
+          weekPct: n(perf.week?.profitPct),
+          monthPct: n(perf.month?.profitPct),
           monthMaxDdPct: n(perf.month?.maxDdPct),
           monthMaxDdAt: perf.month?.maxDdAt || "",
           periodMeta: {
@@ -2004,9 +2173,9 @@ Just keep stacking days.
 
       function applyLiveBalancePeriodProfit(account, period) {
         const meta = account.periodMeta?.[period];
-        const baseline = n(meta?.baselineBalance);
-        const balance = n(account.balance);
-        if (!meta || !Number.isFinite(baseline) || baseline <= 0 || !Number.isFinite(balance)) return;
+        const baseline = Number(meta?.baselineBalance);
+        const balance = Number(account.balance);
+        if (!account.balanceValid || !meta || !Number.isFinite(baseline) || baseline <= 0 || !Number.isFinite(balance)) return;
 
         const profit = balance - baseline;
         const profitPct = baseline > 0 ? (profit / baseline) * 100 : 0;
@@ -2027,48 +2196,71 @@ Just keep stacking days.
         }
       }
 
-      function baselineConfidence(meta) {
+      function baselineConfidence(meta, period) {
         if (!meta || !Number.isFinite(Number(meta.baselineBalance))) return { kind: "bad", label: "No baseline", detail: "history missing" };
         const source = String(meta.baselineSource || "unknown");
-        const offset = Math.abs(n(meta.baselineOffsetMinutes, 0));
+        const signedOffset = n(meta.baselineOffsetMinutes, 0);
+        const offset = Math.abs(signedOffset);
         if (source === "manual") return { kind: "good", label: "Manual baseline", detail: "locked override" };
         if (source === "late_start") return { kind: "bad", label: "Late baseline", detail: "missing start snapshot" };
+        if (signedOffset < 0 && offset <= 3 * 24 * 60) return { kind: "good", label: "Prior market close", detail: Math.round(offset) + "m before reset" };
+        if (signedOffset < 0) return { kind: "bad", label: "Baseline too old", detail: Math.round(offset) + "m before reset" };
         if (offset > 30) return { kind: "bad", label: "Baseline far", detail: Math.round(offset) + "m from reset" };
         if (source === "near_start" || offset > 15) return { kind: "warn", label: "Baseline near", detail: Math.round(offset) + "m from reset" };
         return { kind: "good", label: "Baseline OK", detail: source };
       }
 
       function portfolioConfidence(period) {
-        const metas = state.accounts.map((account) => account.periodMeta?.[period]).filter(Boolean);
-        if (!metas.length) return { kind: "bad", label: "No audit", detail: "history not loaded" };
+        const expected = EXPECTED.length;
+        if (state.accounts.length !== expected) {
+          return { kind: "bad", label: `Partial ${state.accounts.length}/${expected}`, detail: "live account coverage incomplete" };
+        }
+        const metas = state.accounts
+          .filter((account) => account.balanceValid)
+          .map((account) => account.periodMeta?.[period])
+          .filter((meta) => meta && Number.isFinite(Number(meta.baselineBalance)) && Number(meta.baselineBalance) > 0);
+        if (metas.length !== expected) {
+          return { kind: "bad", label: `Partial ${metas.length}/${expected}`, detail: "verified baselines incomplete" };
+        }
         const scores = { good: 1, warn: 2, bad: 3 };
         return metas
-          .map((meta) => baselineConfidence(meta))
+          .map((meta) => baselineConfidence(meta, period))
           .sort((a, b) => scores[b.kind] - scores[a.kind])[0];
+      }
+
+      function hasCompletePortfolioCoverage(item) {
+        return Boolean(item) && Number(item.accounts) === EXPECTED.length;
       }
 
       function dangerFor(account) {
         const reasons = [];
         const age = minutesAgo(account.lastAt);
         if (!account.id) reasons.push({ severity: "red", text: "Missing account id" });
+        if (!account.dataComplete) reasons.push({ severity: "red", text: "Data incomplete" });
         if (age === Infinity) reasons.push({ severity: "red", text: "No timestamp" });
-        else if (age > 25) reasons.push({ severity: "red", text: "Stale " + Math.round(age) + "m" });
-        else if (age > 12) reasons.push({ severity: "yellow", text: "Slow " + Math.round(age) + "m" });
-        if (account.ddPct <= -25) reasons.push({ severity: "red", text: "DD " + pct.format(account.ddPct) + "%" });
-        else if (account.ddPct <= -15) reasons.push({ severity: "yellow", text: "DD " + pct.format(account.ddPct) + "%" });
-        if (account.equityGap < -account.balance * 0.25) reasons.push({ severity: "red", text: "Big equity gap" });
-        if (account.openPositions > 0 && account.marginLevel > 0 && account.marginLevel < 150) reasons.push({ severity: "red", text: "Margin " + pct.format(account.marginLevel) + "%" });
-        else if (account.openPositions > 0 && account.marginLevel > 0 && account.marginLevel < 300) reasons.push({ severity: "yellow", text: "Margin " + pct.format(account.marginLevel) + "%" });
+        else if (age > RISK_THRESHOLDS.staleMinutes) reasons.push({ severity: "red", text: "Stale " + Math.round(age) + "m" });
+        else if (age > RISK_THRESHOLDS.slowMinutes) reasons.push({ severity: "yellow", text: "Slow " + Math.round(age) + "m" });
+        if (account.ddPct <= RISK_THRESHOLDS.ddCriticalPct) reasons.push({ severity: "red", text: "DD " + pct.format(account.ddPct) + "%" });
+        else if (account.ddPct <= RISK_THRESHOLDS.ddWatchPct) reasons.push({ severity: "yellow", text: "DD " + pct.format(account.ddPct) + "%" });
+        if (account.balanceValid && account.equityGap < account.balance * RISK_THRESHOLDS.equityGapCriticalRatio) reasons.push({ severity: "red", text: "Big equity gap" });
+        if (account.openPositions > 0 && account.marginLevel > 0 && account.marginLevel < RISK_THRESHOLDS.marginCriticalPct) reasons.push({ severity: "red", text: "Margin " + pct.format(account.marginLevel) + "%" });
+        else if (account.openPositions > 0 && account.marginLevel > 0 && account.marginLevel < RISK_THRESHOLDS.marginWatchPct) reasons.push({ severity: "yellow", text: "Margin " + pct.format(account.marginLevel) + "%" });
         if (!reasons.length) reasons.push({ severity: "green", text: "OK" });
         return reasons;
       }
 
+      function topDangerReason(account) {
+        return dangerFor(account).reduce((worst, item) => {
+          return (SEVERITY_WEIGHT[item.severity] || 0) > (SEVERITY_WEIGHT[worst.severity] || 0) ? item : worst;
+        }, { severity: "green", text: "OK" });
+      }
+
       function severityScore(account) {
-        const map = { red: 3, yellow: 2, green: 1 };
-        return Math.max(...dangerFor(account).map((item) => map[item.severity] || 0));
+        return SEVERITY_WEIGHT[topDangerReason(account).severity] || 0;
       }
 
       async function connect() {
+        if (state.loading) return;
         const cfg = settings();
         if (!cfg.url) {
           setSettingsOpen(true);
@@ -2108,19 +2300,24 @@ Just keep stacking days.
 
       async function loadAll() {
         const cfg = settings();
+        const requestId = ++state.requestId;
+        setLoading(true);
         setConnection("Loading", "warn");
-        state.liveOk = false;
-        state.historyOk = false;
         try {
           const live = await fetchJson(authedUrl(cfg.url, cfg.key), 18000);
+          if (requestId !== state.requestId) return;
           state.liveOk = true;
           state.liveAt = new Date();
           state.meta = live.meta || {};
           state.accounts = (live.accounts || []).map(normalizeAccount).filter(isVisibleAccount);
           log("Live loaded: " + state.accounts.length + " accounts", "live");
+          state.loadingHistory = true;
+          setConnection("Live • history loading", "live");
+          render();
 
           try {
             const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 75000);
+            if (requestId !== state.requestId) return;
             state.historyOk = true;
             state.historyAt = new Date();
             state.performance = history.performance || {};
@@ -2128,35 +2325,53 @@ Just keep stacking days.
             mergeHistoryAccounts(history.accounts || []);
             log("History loaded", "live");
           } catch (historyError) {
+            state.historyOk = false;
             log("History failed: " + historyError.message, "bad");
           }
 
+          state.loadingHistory = false;
           setConnection("Live " + new Date().toLocaleTimeString("th-TH", { hour12: false }), "live");
           setSettingsOpen(false);
+          render();
         } catch (error) {
-          state.accounts = [];
-          state.performance = {};
+          if (requestId !== state.requestId) return;
+          state.liveOk = false;
+          state.loadingHistory = false;
           setConnection(error.message.includes("Unauthorized") ? "Key wrong" : "Offline", "bad");
           setSettingsOpen(true);
           log("Live failed: " + error.message, "bad");
+          render();
+        } finally {
+          if (requestId === state.requestId) setLoading(false);
         }
-        render();
       }
 
       function renderKpis() {
-        const totalBalance = state.accounts.reduce((sum, account) => sum + account.balance, 0);
-        const totalEquity = state.accounts.reduce((sum, account) => sum + account.equity, 0);
+        const validAccounts = state.accounts.filter((account) => account.dataComplete);
+        const totalBalance = validAccounts.reduce((sum, account) => sum + account.balance, 0);
+        const totalEquity = validAccounts.reduce((sum, account) => sum + account.equity, 0);
         const equityGap = totalEquity - totalBalance;
-        const ddWatch = state.accounts.filter((account) => account.ddPct <= -15).length;
-        const stale = state.accounts.filter((account) => minutesAgo(account.lastAt) > 25).length;
+        const riskAccounts = state.accounts.filter((account) => severityScore(account) > SEVERITY_WEIGHT.green);
+        const critical = riskAccounts.filter((account) => severityScore(account) === SEVERITY_WEIGHT.red).length;
+        const watch = riskAccounts.length - critical;
         const dayDisplay = currentDayDisplay();
         const day = dayDisplay.item || {};
-        const dangerCount = ddWatch + stale;
+        const hasDay = hasCompletePortfolioCoverage(day) && Number.isFinite(Number(day.profit));
+        const historyNote = state.loadingHistory
+          ? "loading history…"
+          : hasDay
+            ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%"
+            : day.accounts
+              ? `partial history ${n(day.accounts)}/${EXPECTED.length} accounts`
+              : "waiting history";
+        const completenessNote = validAccounts.length === state.accounts.length
+          ? "all " + state.accounts.length + " accounts"
+          : validAccounts.length + " of " + state.accounts.length + " complete";
         $("kpiGrid").innerHTML = [
-          kpi("Total Balance", fmtMoney(totalBalance), `<span class="kpi-thb">${fmtUscThb(totalBalance)}</span><span class="kpi-note">at 32.5 THB/USD</span>`),
+          kpi("Accounts at Risk", String(riskAccounts.length), critical + " critical, " + watch + " watch", riskAccounts.length ? "tone-negative" : "tone-positive"),
           kpi("Equity Gap", `<span class="${clsNum(equityGap)}">${fmtSigned(equityGap)}</span>`, "equity - balance", toneClass(equityGap)),
-          kpi(dayDisplay.label, `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit || 0)}</span>`, day.accounts ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%" : "waiting history", toneClass(day.profit || 0)),
-          kpi("Danger Count", String(dangerCount), ddWatch + " DD watch, " + stale + " stale", dangerCount ? "tone-negative" : "tone-positive"),
+          kpi(dayDisplay.label, hasDay ? `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit)}</span>` : "Need history", historyNote, hasDay ? toneClass(day.profit) : "tone-watch"),
+          kpi("Total Balance", fmtMoney(totalBalance), `<span class="kpi-thb">${fmtUscThb(totalBalance)}</span><span class="kpi-note">${completenessNote} / 32.5 THB/USD</span>`, "tone-neutral"),
         ].join("");
       }
 
@@ -2172,16 +2387,16 @@ Just keep stacking days.
       function currentDayDisplay() {
         const latestSeries = latestSeriesItem(state.performance.daily_series);
         const liveDay = livePeriodItem("day", latestSeries);
-        const weekend = isBangkokWeekend(new Date());
-        if (weekend) return { label: "Last Market Day P/L", item: liveDay || latestSeries || state.performance.day || {} };
-        return { label: "Today P/L", item: liveDay || state.performance.day || latestSeries || {} };
+        const candidates = [liveDay, state.performance.day, latestSeries].filter(Boolean);
+        const item = candidates.find(hasCompletePortfolioCoverage) || candidates.find((candidate) => candidate.accounts) || {};
+        return { label: "Market Day P/L", item };
       }
 
       function livePeriodItem(period, fallback = {}) {
         const rows = state.accounts
           .map((account) => ({ account, meta: account.periodMeta?.[period] }))
-          .filter((row) => row.meta && Number.isFinite(n(row.meta.baselineBalance)) && n(row.meta.baselineBalance) > 0);
-        if (!rows.length) return null;
+          .filter((row) => row.account.balanceValid && row.meta && Number.isFinite(Number(row.meta.baselineBalance)) && Number(row.meta.baselineBalance) > 0);
+        if (state.accounts.length !== EXPECTED.length || rows.length !== EXPECTED.length) return null;
 
         const baselineBalance = rows.reduce((sum, row) => sum + n(row.meta.baselineBalance), 0);
         const latestBalance = rows.reduce((sum, row) => sum + n(row.account.balance), 0);
@@ -2200,13 +2415,10 @@ Just keep stacking days.
       }
 
       function latestSeriesItem(rows) {
-        const series = Array.isArray(rows) ? rows.filter((item) => Number.isFinite(Number(item?.profit))) : [];
+        const series = Array.isArray(rows)
+          ? rows.filter((item) => Number.isFinite(Number(item?.profit)) && hasCompletePortfolioCoverage(item))
+          : [];
         return series.length ? series[series.length - 1] : null;
-      }
-
-      function isBangkokWeekend(date) {
-        const parts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Bangkok", weekday: "short" }).format(date);
-        return parts === "Sat" || parts === "Sun";
       }
 
       function renderGoal() {
@@ -2278,18 +2490,25 @@ Just keep stacking days.
       }
 
       function renderDanger() {
-        const rows = [...state.accounts].sort((a, b) => severityScore(b) - severityScore(a) || a.id.localeCompare(b.id)).slice(0, 9);
+        const rows = state.accounts
+          .filter((account) => severityScore(account) > SEVERITY_WEIGHT.green)
+          .sort((a, b) => severityScore(b) - severityScore(a) || a.id.localeCompare(b.id))
+          .slice(0, 9);
         $("dangerList").innerHTML = rows.length
           ? rows.map((account) => {
               const reasons = dangerFor(account);
-              const top = reasons[0] || { severity: "green", text: "OK" };
+              const top = topDangerReason(account);
+              const riskText = reasons.filter((item) => item.severity !== "green").map((item) => escapeHtml(item.text)).join(" • ");
+              const balance = account.balanceValid ? fmtMoney(account.balance) : "balance missing";
+              const gap = account.balanceValid && account.equityValid ? fmtSigned(account.equityGap) : "gap unavailable";
               return `<div class="danger-card ${top.severity}">
-                <span class="card-label">${maskAccount(account.id)} ${account.broker}</span>
-                <strong>${top.text}</strong>
-                <em>${fmtMoney(account.balance)} / ${fmtSigned(account.equityGap)} / last ${fmtAge(minutesAgo(account.lastAt))}</em>
+                <span class="card-label">${escapeHtml(maskAccount(account.id))} ${escapeHtml(account.broker)}</span>
+                <strong>${escapeHtml(top.text)}</strong>
+                <small class="danger-reasons">${riskText}</small>
+                <em>${escapeHtml(balance)} / ${escapeHtml(gap)} / last ${escapeHtml(fmtAge(minutesAgo(account.lastAt)))}</em>
               </div>`;
             }).join("")
-          : `<div class="empty">No live accounts loaded yet.</div>`;
+          : `<div class="empty">${state.accounts.length ? "All accounts are within dashboard thresholds." : "No live accounts loaded yet."}</div>`;
       }
 
       function renderRanking() {
@@ -2299,7 +2518,9 @@ Just keep stacking days.
 
         const mode = state.rankMode || "day";
         tabs.querySelectorAll("[data-rank-mode]").forEach((button) => {
-          button.classList.toggle("active", button.dataset.rankMode === mode);
+          const active = button.dataset.rankMode === mode;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-pressed", active ? "true" : "false");
         });
 
         const rows = state.accounts
@@ -2310,7 +2531,7 @@ Just keep stacking days.
 
         list.innerHTML = rows.length
           ? rows.map((row, index) => rankCard(row, index + 1)).join("")
-          : `<div class="empty">No ranking data yet.</div>`;
+          : `<div class="empty">${state.loadingHistory ? "Ranking loads after verified history." : "No accounts with a verified baseline for this ranking."}</div>`;
       }
 
       function renderRankingSafe() {
@@ -2330,12 +2551,21 @@ Just keep stacking days.
           month: [account.monthProfit, account.monthPct, "Month"],
         };
         const base = map[mode] || map.day;
+        const rankingPeriod = map[mode] ? mode : "day";
+        const requiredPeriods = mode === "risk" ? ["day", "month"] : [rankingPeriod];
+        const hasVerifiedPerformance = requiredPeriods.every((period) => {
+          const meta = account.periodMeta?.[period];
+          const baseline = Number(meta?.baselineBalance);
+          return account.balanceValid && Boolean(meta) && Number.isFinite(baseline) && baseline > 0;
+        });
         const profit = n(base[0]);
         const profitPct = n(base[1]);
         const ddAbs = Math.abs(Math.min(0, n(account.ddPct)));
         const monthMaxDd = n(account.monthMaxDdPct);
-        const score = mode === "risk" ? profitPct - ddAbs * 0.5 - monthMaxDd * 0.2 : profitPct;
-        return { account, mode, label: mode === "risk" ? "Risk Score" : base[2], profit, profitPct, ddAbs, monthMaxDd, score };
+        const score = hasVerifiedPerformance
+          ? mode === "risk" ? profitPct - ddAbs * 0.5 - monthMaxDd * 0.2 : profitPct
+          : Number.NaN;
+        return { account, mode, label: mode === "risk" ? "Risk Score" : base[2], profit, profitPct, ddAbs, monthMaxDd, score, hasVerifiedPerformance };
       }
 
       function rankCard(row, rank) {
@@ -2348,8 +2578,8 @@ Just keep stacking days.
           <div class="rank-head">
             <div class="rank-title">
               <span class="rank-no">#${rank}</span>
-              <strong>${maskAccount(account.id)}</strong>
-              <span>${account.broker || "-"} ${account.server ? "/ " + account.server : ""}</span>
+              <strong>${escapeHtml(maskAccount(account.id))}</strong>
+              <span>${escapeHtml(account.broker || "-")} ${account.server ? "/ " + escapeHtml(account.server) : ""}</span>
             </div>
             <div class="rank-value">
               <strong class="${row.mode === "risk" ? clsNum(row.score) : clsNum(row.profit)}">${mainValue}</strong>
@@ -2374,12 +2604,17 @@ Just keep stacking days.
         ];
         $("periodCards").innerHTML = labels.map(([key, label, liveOverride]) => {
           const item = liveOverride || state.performance[key] || {};
-          const has = Number.isFinite(Number(item.profit));
+          const has = hasCompletePortfolioCoverage(item) && Number.isFinite(Number(item.profit));
           const confidence = portfolioConfidence(key);
+          const missingNote = state.loadingHistory
+            ? "live risk is ready; history is loading"
+            : item.accounts
+              ? `partial history ${n(item.accounts)}/${EXPECTED.length} accounts`
+              : "history endpoint not ready";
           return `<div class="period-card">
             <span class="card-label">${label}</span>
-            <strong class="${clsNum(item.profit)}">${has ? fmtSigned(item.profit) : "Need history"}</strong>
-            ${has ? `<span class="period-thb">${fmtUscThb(item.profit || 0)}</span><small class="period-meta">${pct.format(item.profitPct || 0)}% / DD ${pct.format(item.drawdownPct || 0)}% / ${confidence.label}</small>` : `<small class="period-meta">history endpoint not ready</small>`}
+            <strong class="${clsNum(item.profit)}">${has ? fmtSigned(item.profit) : state.loadingHistory ? "Loading…" : "Need history"}</strong>
+            ${has ? `<span class="period-thb">${fmtUscThb(item.profit || 0)}</span><small class="period-meta">${pct.format(item.profitPct || 0)}% / DD ${pct.format(item.drawdownPct || 0)}% / ${confidence.label}</small>` : `<small class="period-meta">${missingNote}</small>`}
           </div>`;
         }).join("");
         renderBaselineAudit();
@@ -2388,13 +2623,15 @@ Just keep stacking days.
       function renderBaselineAudit() {
         const scores = { good: 1, warn: 2, bad: 3 };
         const rows = state.accounts
-          .map((account) => ({ account, meta: account.periodMeta?.day, confidence: baselineConfidence(account.periodMeta?.day) }))
+          .map((account) => ({ account, meta: account.periodMeta?.day, confidence: baselineConfidence(account.periodMeta?.day, "day") }))
           .filter((row) => row.meta)
           .sort((a, b) => scores[b.confidence.kind] - scores[a.confidence.kind] || Math.abs(n(b.meta.baselineOffsetMinutes)) - Math.abs(n(a.meta.baselineOffsetMinutes)))
           .slice(0, 4);
 
         if (!rows.length) {
-          $("baselineAudit").innerHTML = `<div class="audit-card bad"><span class="card-label">P/L confidence</span><strong>No baseline audit</strong><small>History endpoint has not returned period metadata yet.</small></div>`;
+          $("baselineAudit").innerHTML = state.loadingHistory
+            ? `<div class="audit-card warn"><span class="card-label">P/L confidence</span><strong>Loading history</strong><small>Live risk data is already available.</small></div>`
+            : `<div class="audit-card bad"><span class="card-label">P/L confidence</span><strong>No baseline audit</strong><small>History endpoint has not returned period metadata yet.</small></div>`;
           return;
         }
 
@@ -2402,7 +2639,7 @@ Just keep stacking days.
           const offset = n(meta.baselineOffsetMinutes, 0);
           const offsetText = offset === 0 ? "at reset" : (offset > 0 ? "+" : "") + Math.round(offset) + "m from reset";
           return `<div class="audit-card ${confidence.kind}">
-            <span class="card-label">${maskAccount(account.id)} day baseline</span>
+            <span class="card-label">${escapeHtml(maskAccount(account.id))} day baseline</span>
             <strong>${confidence.label}</strong>
             <small>${fmtMoney(meta.baselineBalance)} / ${fmtTime(meta.baselineAt)} / ${offsetText}</small>
           </div>`;
@@ -2413,15 +2650,19 @@ Just keep stacking days.
         const target = $(targetId);
         const series = Array.isArray(rows) ? rows : [];
         if (!series.length) {
-          target.innerHTML = `<div class="empty">Need history</div>`;
+          target.innerHTML = `<div class="empty">${state.loadingHistory ? "Loading history…" : "Need history"}</div>`;
           return;
         }
         const max = Math.max(1, ...series.map((item) => Math.abs(n(item.profit))));
         target.innerHTML = series.map((item) => {
           const profit = n(item.profit);
           const width = Math.max(3, Math.round((Math.abs(profit) / max) * 100));
+          const accountCount = Number(item.accounts);
+          const coverage = Number.isFinite(accountCount) && accountCount > 0 && accountCount !== EXPECTED.length
+            ? ` (${accountCount}/${EXPECTED.length})`
+            : "";
           return `<div class="bar-row">
-            <span>${item.label || item.date || "-"}</span>
+            <span>${escapeHtml(item.label || item.date || "-")}${coverage}</span>
             <div class="bar-track"><div class="bar ${profit < 0 ? "negative" : ""}" style="width:${width}%"></div></div>
             <strong class="${clsNum(profit)}">${fmtSigned(profit)}</strong>
           </div>`;
@@ -2451,26 +2692,26 @@ Just keep stacking days.
 
       function accountCard(account) {
         const reasons = dangerFor(account);
-        const top = reasons[0] || { severity: "green" };
+        const top = topDangerReason(account);
         const age = minutesAgo(account.lastAt);
         const ageLabel = age === Infinity ? "no timestamp" : Math.round(age) + "m ago";
         return `<article class="account-card danger-${top.severity}">
           <div class="account-title">
-            <strong>${maskAccount(account.id)}</strong>
-            <span>${account.broker || "-"} ${account.server ? "/ " + account.server : ""}</span>
-            <small class="account-last">Last ${ageLabel}</small>
+            <strong>${escapeHtml(maskAccount(account.id))}</strong>
+            <span>${escapeHtml(account.broker || "-")} ${account.server ? "/ " + escapeHtml(account.server) : ""}</span>
+            <small class="account-last">Last ${escapeHtml(ageLabel)}</small>
             <div class="pill-row">
-              ${reasons.map((item) => `<span class="pill ${item.severity}">${item.text}</span>`).join("")}
+              ${reasons.map((item) => `<span class="pill ${item.severity}">${escapeHtml(item.text)}</span>`).join("")}
             </div>
             <div class="pill-row">
-              ${account.bots.slice(0, 6).map((bot) => `<span class="pill">${bot}</span>`).join("")}
+              ${account.bots.slice(0, 6).map((bot) => `<span class="pill">${escapeHtml(bot)}</span>`).join("")}
             </div>
           </div>
           <div class="account-metrics">
-            ${mini("Balance", fmtMoney(account.balance))}
-            ${mini("Equity", fmtMoney(account.equity))}
-            ${mini("Gap", `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>`)}
-            ${mini("DD / Month Max DD", ddStack(account, top), "dd-stack")}
+            ${mini("Balance", account.balanceValid ? fmtMoney(account.balance) : "Need data")}
+            ${mini("Equity", account.equityValid ? fmtMoney(account.equity) : "Need data")}
+            ${mini("Gap", account.balanceValid && account.equityValid ? `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>` : "Need data")}
+            ${mini("DD / Month Max DD", ddStack(account), "dd-stack")}
             ${mini("Margin", account.marginLevel ? pct.format(account.marginLevel) + "%" : "-")}
             ${mini("D / W / M P/L", plStack(account), "pl-stack")}
           </div>
@@ -2479,9 +2720,9 @@ Just keep stacking days.
 
       function plStack(account) {
         return `<div class="pl-grid">` + [
-          plRow("D", account.dayProfit, account.dayPct),
-          plRow("W", account.weekProfit, account.weekPct),
-          plRow("M", account.monthProfit, account.monthPct),
+          plRow("D", account.dayProfit, account.dayPct, Boolean(account.periodMeta?.day)),
+          plRow("W", account.weekProfit, account.weekPct, Boolean(account.periodMeta?.week)),
+          plRow("M", account.monthProfit, account.monthPct, Boolean(account.periodMeta?.month)),
         ].join("") + `</div>`;
       }
 
@@ -2491,14 +2732,16 @@ Just keep stacking days.
         return `<span class="negative">${pct.format(value)}%</span><small>${fmtTime(account.monthMaxDdAt)}</small>`;
       }
 
-      function ddStack(account, top) {
-        return `<span class="dd-cell"><b>Current</b><span class="${top.severity === "red" ? "negative" : ""}">${pct.format(account.ddPct)}%</span></span>
+      function ddStack(account) {
+        const ddClass = account.ddPct <= RISK_THRESHOLDS.ddWatchPct ? "negative" : "";
+        return `<span class="dd-cell"><b>Current</b><span class="${ddClass}">${pct.format(account.ddPct)}%</span></span>
           <span class="dd-cell"><b>Month Max</b>${maxDdLabel(account)}</span>`;
       }
 
-      function plRow(label, profit, profitPct) {
-        const cls = clsNum(profit) || "neutral";
+      function plRow(label, profit, profitPct, ready) {
         const labelMap = { D: "Day", W: "Week", M: "Month" };
+        if (!ready) return `<span class="pl-row neutral"><b>${labelMap[label] || label}</b><span>Need history</span><em>—</em></span>`;
+        const cls = clsNum(profit) || "neutral";
         return `<span class="pl-row ${cls}"><b>${labelMap[label] || label}</b><span>${fmtSigned(profit)}</span><em>${pct.format(profitPct)}%</em></span>`;
       }
 
@@ -2542,7 +2785,7 @@ Just keep stacking days.
         const usage = n(sheet.usage_pct);
         const status = sheet.status || "unknown";
         const freshest = state.accounts.reduce((best, account) => Math.min(best, minutesAgo(account.lastAt)), Infinity);
-        const staleAccounts = state.accounts.filter((account) => minutesAgo(account.lastAt) > 25).length;
+        const staleAccounts = state.accounts.filter((account) => minutesAgo(account.lastAt) > RISK_THRESHOLDS.staleMinutes).length;
         const freshnessKind = !state.accounts.length ? "warn" : staleAccounts ? "warn" : "ok";
         const freshnessNote = !state.accounts.length ? "waiting live accounts" : staleAccounts ? staleAccounts + " stale accounts" : "live values look fresh";
         $("dataHealthGrid").innerHTML = [
@@ -2555,22 +2798,22 @@ Just keep stacking days.
 
         const gaps = Array.isArray(health.known_data_gaps) ? health.known_data_gaps : [];
         $("gapWarning").innerHTML = gaps.length
-          ? `<div class="gap-warning"><strong>Known data gap:</strong> ${gaps.map((gap) => `${gap.start} to ${gap.end}. ${gap.impact || gap.reason || ""}`).join("<br>")}</div>`
+          ? `<div class="gap-warning"><strong>Known data gap:</strong> ${gaps.map((gap) => `${escapeHtml(gap.start)} to ${escapeHtml(gap.end)}. ${escapeHtml(gap.impact || gap.reason || "")}`).join("<br>")}</div>`
           : "";
       }
 
       function healthCard(label, value, note, kind) {
-        return `<div class="health-card ${kind || ""}"><span class="card-label">${label}</span><strong>${value}</strong><small>${note || ""}</small></div>`;
+        return `<div class="health-card ${kind || ""}"><span class="card-label">${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(note || "")}</small></div>`;
       }
 
       function renderLogs() {
-        const rows = state.logs.map((item) => `<div><strong>${item.at}</strong> - ${item.message}</div>`).join("");
+        const rows = state.logs.map((item) => `<div><strong>${escapeHtml(item.at)}</strong> - ${escapeHtml(item.message)}</div>`).join("");
         $("loadLog").innerHTML = rows || `<div>Waiting for first load.</div>`;
         $("healthLog").innerHTML = [
           `<div><strong>Live:</strong> ${state.liveOk ? "OK" : "not loaded"} ${state.liveAt ? state.liveAt.toLocaleTimeString("th-TH", { hour12: false }) : ""}</div>`,
           `<div><strong>History:</strong> ${state.historyOk ? "OK" : "not loaded"} ${state.historyAt ? state.historyAt.toLocaleTimeString("th-TH", { hour12: false }) : ""}</div>`,
           `<div><strong>Accounts:</strong> ${state.accounts.length}</div>`,
-          `<div><strong>Auto cleanup:</strong> ${state.meta.data_health ? "active" : "waiting"} ${state.meta.data_health ? "(raw retention " + state.meta.data_health.raw_retention_days + " days)" : ""}</div>`,
+          `<div><strong>Auto cleanup:</strong> ${state.meta.data_health ? "active" : "waiting"} ${state.meta.data_health ? "(raw retention " + escapeHtml(state.meta.data_health.raw_retention_days) + " days)" : ""}</div>`,
           rows,
         ].join("");
       }
@@ -2625,11 +2868,19 @@ Just keep stacking days.
       }
 
       function init() {
-        applyUrlParams();
+        scrubSensitiveUrlParams();
         const savedMonthly = localStorage.getItem(STORAGE.goalMonthlyPct);
         state.goalMonthlyPct = savedMonthly === null ? DEFAULT_GOAL_MONTHLY_PCT : Math.max(0, n(savedMonthly, DEFAULT_GOAL_MONTHLY_PCT));
-        $("endpointInput").value = localStorage.getItem(STORAGE.url) || DEFAULT_ENDPOINT;
-        $("readKeyInput").value = localStorage.getItem(STORAGE.key) || "";
+        const savedUrl = cleanUrl(localStorage.getItem(STORAGE.url)) || DEFAULT_ENDPOINT;
+        const savedKey = localStorage.getItem(STORAGE.key) || "";
+        $("endpointInput").value = savedUrl;
+        if (savedUrl !== DEFAULT_ENDPOINT && savedKey) {
+          localStorage.removeItem(STORAGE.key);
+          $("readKeyInput").value = "";
+          log("Endpoint differs from the pinned deployment. Re-enter the key to confirm it.", "warn");
+        } else {
+          $("readKeyInput").value = savedKey;
+        }
         setSettingsOpen(!$("readKeyInput").value);
         $("goalMonthlyInput").value = state.goalMonthlyPct;
         $("connectBtn").addEventListener("click", connect);
@@ -2637,13 +2888,28 @@ Just keep stacking days.
         $("refreshBtn").addEventListener("click", connect);
         $("clearBtn").addEventListener("click", clearSettings);
         $("exportBtn").addEventListener("click", exportCsv);
+        $("endpointInput").addEventListener("change", () => {
+          const nextUrl = cleanUrl($("endpointInput").value);
+          const savedEndpoint = cleanUrl(localStorage.getItem(STORAGE.url)) || DEFAULT_ENDPOINT;
+          if (!nextUrl || nextUrl === savedEndpoint || !$("readKeyInput").value) return;
+          $("readKeyInput").value = "";
+          localStorage.removeItem(STORAGE.key);
+          setConnection("Re-enter key", "warn");
+          log("Endpoint changed. Saved key cleared for safety.", "warn");
+        });
         $("disciplineOpenBtn").addEventListener("click", () => setDisciplineOpen(true));
         $("disciplineCloseBtn").addEventListener("click", () => setDisciplineOpen(false));
         $("disciplineModal").addEventListener("click", (event) => {
           if (event.target.id === "disciplineModal") setDisciplineOpen(false);
         });
         document.addEventListener("keydown", (event) => {
+          const modalOpen = $("disciplineModal").classList.contains("open");
+          if (!modalOpen) return;
           if (event.key === "Escape") setDisciplineOpen(false);
+          if (event.key === "Tab") {
+            event.preventDefault();
+            $("disciplineCloseBtn").focus();
+          }
         });
         $("goalMonthlyInput").addEventListener("input", saveGoalSettings);
         $("rankingTabs").addEventListener("click", (event) => {
@@ -2656,6 +2922,7 @@ Just keep stacking days.
         $("sortDangerBtn").addEventListener("click", () => {
           state.sortDanger = !state.sortDanger;
           $("sortDangerBtn").textContent = state.sortDanger ? "Sort danger" : "Sort account";
+          $("sortDangerBtn").setAttribute("aria-pressed", state.sortDanger ? "true" : "false");
           renderAccounts();
         });
         render();
