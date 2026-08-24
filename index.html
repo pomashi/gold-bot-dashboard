@@ -1824,10 +1824,7 @@ Just keep stacking days.
         { id: "2011****70", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
         { id: "2489****86", broker: "VT", bots: ["Grandma Gold 0.09", "Gold Sniper 0.05", "Smart Gold 0.02", "Gold Devil 0.01", "Gold Slayer 0.01"] },
         { id: "2011****15", broker: "MH", bots: ["Smart Gold 0.12", "Gold Sniper 0.08", "Gold Devil 0.06", "Gold Slayer 0.04"] },
-        { id: "2011****78", broker: "MH Wave", bots: ["Smart Gold 0.07", "Gold Sniper 0.01"] },
-        { id: "2011****68", broker: "MH", bots: ["Prince of Persia 0.02"] },
         { id: "2011****77", broker: "MH", bots: ["John Wick 0.10", "Gold Slayer 0.02"] },
-        { id: "7012****08", broker: "MH", bots: ["Smart Gold 0.01", "Gold Sniper 0.01", "Gold Devil 0.01"] },
       ];
 
       const state = {
@@ -2072,7 +2069,8 @@ Just keep stacking days.
         if (!account || !account.id) return false;
         const id = String(account.id).toUpperCase();
         if (id.includes("TEST")) return false;
-        return !account.isBlockedLegacyAccount;
+        if (account.isBlockedLegacyAccount) return false;
+        return EXPECTED.some((item) => item.id === maskAccount(account.id));
       }
 
       function minutesAgo(value) {
