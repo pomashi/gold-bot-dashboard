@@ -3,1727 +3,271 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#153622" />
+    <meta name="theme-color" content="#f7f8fa" />
     <meta name="description" content="Risk-first MT5 gold bot portfolio dashboard." />
     <title>Bot Portfolio Dashboard</title>
     <style>
-      :root {
-        --bg: #eaf0ec;
-        --panel: #ffffff;
-        --panel-2: #f4f7f1;
-        --ink: #121815;
-        --muted: #66746d;
-        --line: #d8dfd7;
-        --green: #16754a;
-        --green-strong: #0f5d39;
-        --green-soft: #def3e6;
-        --gold: #b8842d;
-        --gold-soft: #fff0cf;
-        --red: #c43f36;
-        --red-soft: #fde5df;
-        --blue: #225f9e;
-        --blue-soft: #e2effb;
-        --teal: #167276;
-        --teal-soft: #ddf2f1;
-        --purple: #6a50b7;
-        --purple-soft: #eee9ff;
-        --shadow: 0 10px 30px rgba(22, 35, 29, 0.09);
-      }
 
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        background:
-          radial-gradient(circle at 18% -10%, rgba(22, 117, 74, 0.18), transparent 34%),
-          radial-gradient(circle at 84% 4%, rgba(184, 132, 45, 0.18), transparent 28%),
-          linear-gradient(180deg, #f7faf7 0, var(--bg) 310px),
-          var(--bg);
-        color: var(--ink);
-        font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-        font-variant-numeric: tabular-nums;
-      }
-
-      body.modal-open {
-        overflow: hidden;
-      }
-
-      button,
-      input {
-        font: inherit;
-      }
-
-      button {
-        border: 0;
-        cursor: pointer;
-      }
-
-      button:disabled {
-        cursor: wait;
-        opacity: 0.62;
-      }
-
-      :where(button, input, a):focus-visible {
-        outline: 3px solid #f1c15c;
-        outline-offset: 3px;
-      }
-
-      section[id] {
-        scroll-margin-top: 132px;
-      }
-
-      .app {
-        min-height: 100vh;
-      }
-
-      .topbar {
-        position: sticky;
-        top: 0;
-        z-index: 20;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: linear-gradient(90deg, #0b1510, #153622 54%, #6a511e);
-        color: #fff;
-        box-shadow: 0 12px 34px rgba(8, 18, 13, 0.22);
-      }
-
-      .topbar-inner {
-        max-width: 1320px;
-        margin: 0 auto;
-        padding: 14px;
-      }
-
-      .brand-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-width: 0;
-      }
-
-      .logo {
-        width: 42px;
-        height: 42px;
-        display: grid;
-        place-items: center;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #f1c15c, #a87624);
-        color: #111814;
-        font-weight: 900;
-      }
-
-      .brand small {
-        display: block;
-        color: #b7c2bb;
-        font-weight: 800;
-      }
-
-      .brand strong {
-        display: block;
-        font-size: 18px;
-        line-height: 1.15;
-      }
-
-      .status-pill {
-        min-height: 38px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0 11px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.1);
-        color: #d8e2dc;
-        font-size: 13px;
-        font-weight: 900;
-        white-space: nowrap;
-      }
-
-      .topbar-actions {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .settings-toggle {
-        min-height: 38px;
-        padding: 0 11px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.14);
-        color: #fff;
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .settings-toggle:hover {
-        background: rgba(255, 255, 255, 0.22);
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--gold);
-      }
-
-      .dot.live {
-        background: #36c982;
-      }
-
-      .dot.bad {
-        background: #ff6b5f;
-      }
-
-      .connect-panel {
-        display: grid;
-        grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr) auto auto;
-        gap: 8px;
-        margin-top: 12px;
-      }
-
-      .connect-panel.collapsed {
-        display: none;
-      }
-
-      .field {
-        display: grid;
-        gap: 4px;
-      }
-
-      .field label {
-        color: #b7c2bb;
-        font-size: 11px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      .field input {
-        width: 100%;
-        min-height: 42px;
-        padding: 0 11px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        border-radius: 8px;
-        outline: 0;
-        background: rgba(255, 255, 255, 0.08);
-        color: #fff;
-      }
-
-      .field input::placeholder {
-        color: #8c9991;
-      }
-
-      .btn {
-        min-height: 42px;
-        padding: 0 14px;
-        border-radius: 10px;
-        font-weight: 900;
-      }
-
-      .btn.primary {
-        background: linear-gradient(135deg, var(--green), #2f9561);
-        color: #fff;
-      }
-
-      .btn.light {
-        background: rgba(255, 255, 255, 0.14);
-        color: #fff;
-      }
-
-      .btn.secondary {
-        border: 1px solid var(--line);
-        background: #fffdf8;
-        color: var(--ink);
-      }
-
-      .btn.danger {
-        background: var(--red-soft);
-        color: var(--red);
-      }
-
-      .nav {
-        display: flex;
-        gap: 6px;
-        margin-top: 12px;
-        overflow-x: auto;
-        scrollbar-width: none;
-      }
-
-      .nav::-webkit-scrollbar {
-        display: none;
-      }
-
-      .nav a {
-        min-height: 34px;
-        display: inline-flex;
-        align-items: center;
-        padding: 0 12px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.08);
-        color: #dbe4de;
-        font-size: 12px;
-        font-weight: 900;
-        text-decoration: none;
-        white-space: nowrap;
-      }
-
-      .nav a:hover {
-        background: rgba(255, 255, 255, 0.18);
-      }
-
-      main {
-        max-width: 1320px;
-        margin: 0 auto;
-        padding: 16px 14px 40px;
-      }
-
-      .hero {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 16px;
-        margin: 8px 0 14px;
-        padding: 10px 0 4px;
-      }
-
-      .hero > div:first-child {
-        flex: 0 0 270px;
-      }
-
-      .hero > .toolbar {
-        flex-wrap: nowrap;
-      }
-
-      h1,
-      h2,
-      h3,
-      p {
-        margin: 0;
-      }
-
-      .eyebrow {
-        color: var(--gold);
-        font-size: 13px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        margin-top: 4px;
-        font-size: clamp(28px, 4vw, 46px);
-        letter-spacing: 0;
-      }
-
-      .subtitle {
-        max-width: 760px;
-        margin-top: 8px;
-        color: var(--muted);
-        font-size: 15px;
-        line-height: 1.5;
-      }
-
-      .hero-strip {
-        margin-top: 12px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .hero-chip {
-        min-height: 30px;
-        display: inline-flex;
-        align-items: center;
-        padding: 0 10px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.74);
-        color: #314139;
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .discipline-banner {
-        grid-column: 1 / -1;
-        flex: 1 1 0;
-        min-width: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-top: 0;
-        padding: 12px 14px;
-        border: 1px solid #d4b15f;
-        border-left: 5px solid var(--gold);
-        border-radius: 12px;
-        background: linear-gradient(135deg, #fffaf0, #edf7ef);
-      }
-
-      .discipline-banner strong {
-        font-size: 18px;
-        letter-spacing: 0;
-      }
-
-      .discipline-banner span {
-        display: block;
-        margin-top: 3px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .discipline-modal {
-        position: fixed;
-        inset: 0;
-        z-index: 60;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-        background: rgba(8, 18, 14, 0.72);
-      }
-
-      .discipline-modal.open {
-        display: flex;
-      }
-
-      .discipline-dialog {
-        width: min(720px, 100%);
-        max-height: min(760px, 92vh);
-        overflow: auto;
-        padding: 22px;
-        border: 1px solid rgba(255, 255, 255, 0.22);
-        border-radius: 16px;
-        background: linear-gradient(145deg, #101c16, #173726);
-        color: #f7fbf8;
-        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
-      }
-
-      .discipline-dialog h2 {
-        font-size: clamp(24px, 4vw, 42px);
-        line-height: 1.05;
-      }
-
-      .discipline-note {
-        margin-top: 18px;
-        white-space: pre-line;
-        color: #e9f0ea;
-        font-size: clamp(18px, 2.8vw, 26px);
-        font-weight: 900;
-        line-height: 1.35;
-      }
-
-      .discipline-close {
-        margin-top: 18px;
-      }
-
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(12, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .panel {
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.92);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-
-      .panel.pad {
-        padding: 16px;
-      }
-
-      .span-12 {
-        grid-column: span 12;
-      }
-
-      .span-8 {
-        grid-column: span 8;
-      }
-
-      .span-6 {
-        grid-column: span 6;
-      }
-
-      .span-4 {
-        grid-column: span 4;
-      }
-
-      .section-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-
-      .section-head h2 {
-        margin-top: 3px;
-        font-size: 22px;
-      }
-
-      .section-head p {
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.45;
-      }
-
-      .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .kpi {
-        min-height: 112px;
-        display: grid;
-        align-content: space-between;
-        gap: 10px;
-        padding: 14px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: linear-gradient(180deg, #ffffff, #f8fbf7);
-      }
-
-      .kpi {
-        border-top: 4px solid var(--blue);
-      }
-
-      .kpi > span,
-      .card-label {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      .kpi strong {
-        font-size: 28px;
-        line-height: 1.05;
-        letter-spacing: 0;
-        white-space: nowrap;
-      }
-
-      .kpi strong span {
-        font-size: inherit;
-        font-weight: inherit;
-        line-height: inherit;
-        text-transform: none;
-      }
-
-      .kpi small {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-      }
-
-      .kpi.tone-positive {
-        border-top-color: var(--green);
-        background: linear-gradient(180deg, #ffffff, #f0fbf4);
-      }
-
-      .kpi.tone-negative {
-        border-top-color: var(--red);
-        background: linear-gradient(180deg, #ffffff, #fff2ef);
-      }
-
-      .kpi.tone-watch {
-        border-top-color: var(--gold);
-        background: linear-gradient(180deg, #ffffff, #fff9ea);
-      }
-
-      .kpi.tone-neutral {
-        border-top-color: var(--blue);
-      }
-
-      .kpi-thb {
-        display: block;
-        margin-top: 4px;
-        color: #8a641f;
-        font-size: 14px;
-        font-weight: 900;
-      }
-
-      .kpi-note {
-        display: block;
-        margin-top: 4px;
-      }
-
-      .danger-list {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .ranking-tabs {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .rank-tab {
-        min-height: 44px;
-        padding: 0 12px;
-        border: 1px solid var(--line);
-        border-radius: 10px;
-        background: #fff;
-        color: var(--muted);
-        font-weight: 900;
-        cursor: pointer;
-      }
-
-      .rank-tab.active {
-        border-color: #137b4e;
-        background: var(--green);
-        color: #fff;
-      }
-
-      .ranking-list {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      .rank-card {
-        min-height: 150px;
-        display: grid;
-        align-content: space-between;
-        gap: 10px;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: linear-gradient(180deg, #ffffff, #f7fbf8);
-      }
-
-      .rank-card.top {
-        border-color: #b9d9c2;
-        background: linear-gradient(145deg, #f8fff9, #e4f5e9);
-      }
-
-      .rank-card.negative {
-        border-color: #f3b9b0;
-        background: linear-gradient(145deg, #ffffff, #fff3f0);
-      }
-
-      .rank-head {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 8px;
-      }
-
-      .rank-no {
-        width: 34px;
-        height: 34px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 8px;
-        background: #10251d;
-        color: #fff;
-        font-weight: 900;
-      }
-
-      .rank-title strong,
-      .rank-value strong {
-        display: block;
-        font-size: 18px;
-      }
-
-      .rank-title span,
-      .rank-value span,
-      .rank-risk {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .rank-stats {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .rank-stat {
-        padding: 8px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.72);
-      }
-
-      .rank-stat b {
-        display: block;
-        color: var(--muted);
-        font-size: 10px;
-        text-transform: uppercase;
-      }
-
-      .rank-stat span {
-        display: block;
-        margin-top: 3px;
-        font-size: 13px;
-        font-weight: 900;
-      }
-
-      .danger-card {
-        min-height: 106px;
-        display: grid;
-        align-content: space-between;
-        gap: 8px;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-left: 5px solid var(--green);
-        border-radius: 12px;
-        background: linear-gradient(180deg, #ffffff, #f7fbf8);
-      }
-
-      .danger-card.red {
-        border-left-color: var(--red);
-        background: var(--red-soft);
-      }
-
-      .danger-card.yellow {
-        border-left-color: var(--gold);
-        background: var(--gold-soft);
-      }
-
-      .danger-card strong {
-        font-size: 16px;
-      }
-
-      .danger-reasons {
-        color: #48574f;
-        font-size: 11px;
-        font-weight: 800;
-        line-height: 1.35;
-      }
-
-      .danger-card em {
-        color: var(--muted);
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 800;
-      }
-
-      .period-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .audit-grid {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-      }
-
-      .period-card {
-        min-height: 124px;
-        display: grid;
-        align-content: space-between;
-        padding: 14px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: linear-gradient(160deg, #ffffff, #fff8e7);
-      }
-
-      .audit-card {
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fff;
-      }
-
-      .audit-card.good {
-        background: var(--green-soft);
-      }
-
-      .audit-card.warn {
-        background: var(--gold-soft);
-      }
-
-      .audit-card.bad {
-        background: var(--red-soft);
-      }
-
-      .audit-card strong {
-        display: block;
-        margin-top: 6px;
-        font-size: 15px;
-      }
-
-      .audit-card small {
-        display: block;
-        margin-top: 5px;
-        color: var(--muted);
-        font-weight: 800;
-        line-height: 1.35;
-      }
-
-      .goal-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-        gap: 12px;
-      }
-
-      .goal-hero {
-        min-height: 220px;
-        padding: 16px;
-        border-radius: 8px;
-        background: linear-gradient(135deg, #103324, #167276 52%, #b8842d);
-        color: #fff;
-      }
-
-      .goal-hero .card-label {
-        color: #dbe9df;
-      }
-
-      .goal-big {
-        margin-top: 10px;
-        font-size: clamp(30px, 5vw, 54px);
-        font-weight: 900;
-        line-height: 1;
-      }
-
-      .goal-sub {
-        margin-top: 8px;
-        color: #e7efe9;
-        font-weight: 800;
-      }
-
-      .progress-track {
-        height: 16px;
-        margin-top: 18px;
-        overflow: hidden;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.22);
-      }
-
-      .progress-fill {
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, #f5c85f, #5ee09a);
-      }
-
-      .goal-controls,
-      .health-grid {
-        display: grid;
-        gap: 10px;
-      }
-
-      .goal-controls {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .goal-ladder {
-        display: grid;
-        gap: 10px;
-      }
-
-      .goal-target-card {
-        display: grid;
-        gap: 10px;
-        padding: 13px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: linear-gradient(145deg, #ffffff, #f8fbf7);
-      }
-
-      .goal-target-card.hit {
-        border-color: #b9e6c8;
-        background: linear-gradient(145deg, #f7fff8, var(--green-soft));
-      }
-
-      .goal-target-head {
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
-      }
-
-      .goal-target-head strong {
-        display: block;
-        font-size: 22px;
-      }
-
-      .goal-target-head span,
-      .goal-eta-row span {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .goal-eta-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .goal-eta-row {
-        padding: 9px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.72);
-      }
-
-      .goal-eta-row b {
-        display: block;
-        margin-top: 3px;
-        font-size: 13px;
-      }
-
-      .goal-card,
-      .health-card {
-        padding: 13px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fff;
-      }
-
-      .goal-card strong,
-      .health-card strong {
-        display: block;
-        margin-top: 7px;
-        font-size: 20px;
-      }
-
-      .goal-input {
-        width: 100%;
-        min-height: 38px;
-        margin-top: 8px;
-        padding: 0 9px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        outline: 0;
-        background: #fffdf8;
-        color: var(--ink);
-        font-weight: 900;
-      }
-
-      .health-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-
-      .health-card.ok {
-        background: var(--green-soft);
-      }
-
-      .health-card.warn {
-        background: var(--gold-soft);
-      }
-
-      .health-card.bad {
-        background: var(--red-soft);
-      }
-
-      .gap-warning {
-        margin-top: 10px;
-        padding: 12px;
-        border: 1px solid #e8c264;
-        border-radius: 8px;
-        background: #fff6df;
-        color: #5f4617;
-        font-size: 13px;
-        font-weight: 800;
-        line-height: 1.45;
-      }
-
-      .period-card strong {
-        display: block;
-        margin-top: 8px;
-        font-size: 26px;
-      }
-
-      .period-card small {
-        display: block;
-        margin-top: 5px;
-        color: var(--muted);
-        font-weight: 800;
-      }
-
-      .period-thb {
-        display: block;
-        margin-top: 5px;
-        color: #8a641f;
-        font-size: 13px;
-        font-weight: 900;
-      }
-
-      .period-meta {
-        display: block;
-        margin-top: 6px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-        line-height: 1.35;
-      }
-
-      .series {
-        display: grid;
-        gap: 8px;
-        margin-top: 12px;
-      }
-
-      .bar-row {
-        display: grid;
-        grid-template-columns: 64px minmax(0, 1fr) 112px;
-        align-items: center;
-        gap: 8px;
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .bar-track {
-        position: relative;
-        height: 13px;
-        border-radius: 999px;
-        background: #dfe7e0;
-        overflow: hidden;
-      }
-
-      .bar {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        min-width: 2px;
-        border-radius: 999px;
-        background: var(--green);
-      }
-
-      .bar.negative {
-        background: var(--red);
-      }
-
-      .accounts-tools {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-
-      .search {
-        min-height: 42px;
-        padding: 0 12px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        outline: 0;
-        background: #fff;
-      }
-
-      .account-list {
-        display: grid;
-        gap: 12px;
-      }
-
-      .account-card {
-        display: grid;
-        grid-template-columns: 210px minmax(0, 1fr);
-        gap: 14px;
-        padding: 14px;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: linear-gradient(180deg, #ffffff, #fbfdfb);
-        box-shadow: 0 8px 22px rgba(22, 35, 29, 0.07);
-      }
-
-      .account-card.danger-red {
-        border-left: 5px solid var(--red);
-        background: linear-gradient(180deg, #ffffff, #fff5f3);
-      }
-
-      .account-card.danger-yellow {
-        border-left: 5px solid var(--gold);
-        background: linear-gradient(180deg, #ffffff, #fff9e8);
-      }
-
-      .account-card.danger-green {
-        border-left: 5px solid var(--green);
-      }
-
-      .account-title strong {
-        display: block;
-        font-size: 20px;
-      }
-
-      .account-title span {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .account-title .account-last {
-        display: block;
-        margin-top: 4px;
-        color: var(--teal);
-        font-size: 11px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      .pill-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-top: 8px;
-      }
-
-      .pill {
-        min-height: 26px;
-        display: inline-flex;
-        align-items: center;
-        padding: 0 8px;
-        border-radius: 999px;
-        background: var(--panel-2);
-        color: var(--ink);
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .pill.red {
-        background: var(--red-soft);
-        color: var(--red);
-      }
-
-      .pill.yellow {
-        background: var(--gold-soft);
-        color: #8d661d;
-      }
-
-      .pill.green {
-        background: var(--green-soft);
-        color: var(--green);
-      }
-
-      .account-group {
-        display: grid;
-        gap: 10px;
-      }
-
-      .account-group + .account-group {
-        margin-top: 16px;
-      }
-
-      .account-group-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 10px;
-        padding: 0 2px;
-      }
-
-      .account-group-head h3 {
-        font-size: 18px;
-      }
-
-      .account-group-head span {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      .account-metrics {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .mini {
-        min-height: 78px;
-        padding: 10px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fbfcfb;
-      }
-
-      .mini.pl-stack {
-        grid-column: 1 / -1;
-        min-height: 0;
-        padding: 0;
-        border: 0;
-        background: transparent;
-      }
-
-      .mini.dd-stack strong {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      .dd-cell {
-        display: grid;
-        gap: 4px;
-      }
-
-      .dd-cell b {
-        color: var(--muted);
-        font-size: 10px;
-        text-transform: uppercase;
-      }
-
-      .dd-cell em {
-        color: var(--muted);
-        font-size: 11px;
-        font-style: normal;
-        font-weight: 900;
-      }
-
-      .mini:nth-child(1),
-      .mini:nth-child(2) {
-        background: var(--blue-soft);
-      }
-
-      .mini:nth-child(3),
-      .mini:nth-child(4) {
-        background: var(--gold-soft);
-      }
-
-      .mini:nth-child(5) {
-        background: var(--green-soft);
-      }
-
-      .mini.pl-stack {
-        border: 0;
-        background: transparent;
-      }
-
-      .mini span {
-        display: block;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 900;
-        text-transform: uppercase;
-      }
-
-      .mini strong {
-        display: block;
-        margin-top: 5px;
-        font-size: 14px;
-        line-height: 1.2;
-      }
-
-      .pl-row {
-        display: grid;
-        gap: 5px;
-        min-height: 78px;
-        padding: 10px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #fff;
-      }
-
-      .pl-row b {
-        color: var(--muted);
-        font-size: 11px;
-        text-transform: uppercase;
-      }
-
-      .pl-row span {
-        display: block;
-        font-size: 17px;
-        font-weight: 900;
-        line-height: 1.1;
-      }
-
-      .pl-row em {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-        font-style: normal;
-      }
-
-      .pl-row.positive {
-        border-color: #b9e6c8;
-        background: linear-gradient(180deg, #f6fff8, var(--green-soft));
-      }
-
-      .pl-row.negative {
-        border-color: #f3b9b0;
-        background: linear-gradient(180deg, #fff9f8, var(--red-soft));
-      }
-
-      .pl-row.neutral {
-        background: linear-gradient(180deg, #ffffff, var(--panel-2));
-      }
-
-      .pl-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-      }
-
-      .formula-grid {
-        display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
-        gap: 10px;
-      }
-
-      .formula-card {
-        display: grid;
-        gap: 8px;
-        min-height: 132px;
-        padding: 12px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: linear-gradient(180deg, #ffffff, #f7fbf8);
-      }
-
-      .formula-card strong {
-        font-size: 20px;
-        line-height: 1.1;
-      }
-
-      .formula-card b {
-        color: var(--green);
-        font-size: 22px;
-      }
-
-      .formula-card span,
-      .formula-footnote {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-        line-height: 1.35;
-      }
-
-      .formula-footnote {
-        margin-top: 10px;
-      }
-
-      .table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .table th,
-      .table td {
-        padding: 10px 8px;
-        border-bottom: 1px solid var(--line);
-        text-align: left;
-        font-size: 13px;
-      }
-
-      .table th {
-        color: var(--muted);
-        font-size: 11px;
-        text-transform: uppercase;
-      }
-
-      .positive {
-        color: var(--green);
-      }
-
-      .negative {
-        color: var(--red);
-      }
-
-      .muted {
-        color: var(--muted);
-      }
-
-      .empty {
-        padding: 16px;
-        border: 1px dashed var(--line);
-        border-radius: 8px;
-        background: #fbfcfb;
-        color: var(--muted);
-        font-weight: 800;
-      }
-
-      .log {
-        display: grid;
-        gap: 6px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-      }
-
-      @media (max-width: 980px) {
-        .connect-panel {
-          grid-template-columns: 1fr;
-        }
-
-        .hero {
-          display: block;
-        }
-
-        .hero > div:first-child {
-          flex: none;
-        }
-
-        .toolbar {
-          margin-top: 12px;
-        }
-
-        .discipline-banner {
-          margin-top: 12px;
-        }
-
-        .span-8,
-        .span-6,
-        .span-4 {
-          grid-column: span 12;
-        }
-
-        .ranking-list,
-        .formula-grid,
-        .period-grid,
-        .audit-grid,
-        .goal-layout,
-        .health-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .kpi-grid,
-        .danger-list {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .account-card {
-          grid-template-columns: 1fr;
-        }
-
-        .account-metrics {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .pl-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .goal-controls {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 560px) {
-        .topbar-inner,
-        main {
-          padding-left: 10px;
-          padding-right: 10px;
-        }
-
-        .brand-row {
-          align-items: flex-start;
-          gap: 8px;
-        }
-
-        .status-pill {
-          max-width: 112px;
-          justify-content: center;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-
-        .topbar-actions {
-          gap: 6px;
-        }
-
-        .settings-toggle {
-          min-height: 40px;
-          padding: 0 9px;
-          font-size: 11px;
-        }
-
-        .nav a {
-          min-height: 40px;
-          padding: 0 11px;
-        }
-
-        main {
-          padding-top: 10px;
-        }
-
-        .hero {
-          margin: 2px 0 10px;
-          padding-top: 4px;
-        }
-
-        h1 {
-          font-size: 30px;
-        }
-
-        .toolbar {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-        }
-
-        .discipline-banner {
-          align-items: stretch;
-          flex-direction: column;
-          gap: 9px;
-          margin-top: 9px;
-          padding: 10px 11px;
-        }
-
-        .discipline-banner strong {
-          font-size: 14px;
-          line-height: 1.25;
-        }
-
-        .discipline-banner span {
-          font-size: 11px;
-          line-height: 1.35;
-        }
-
-        .btn {
-          width: 100%;
-        }
-
-        .panel.pad {
-          padding: 12px;
-        }
-
-        .kpi {
-          min-height: 102px;
-          gap: 7px;
-          padding: 10px;
-        }
-
-        .kpi strong {
-          font-size: clamp(18px, 5.2vw, 22px);
-          white-space: normal;
-        }
-
-        .kpi > span,
-        .card-label {
-          font-size: 10px;
-        }
-
-        .kpi small,
-        .kpi-thb {
-          font-size: 11px;
-        }
-
-        .danger-card {
-          min-height: 118px;
-          padding: 10px;
-        }
-
-        .danger-card strong {
-          font-size: 14px;
-        }
-
-        .danger-card em {
-          font-size: 11px;
-          line-height: 1.35;
-        }
-
-        .bar-row {
-          grid-template-columns: 52px minmax(0, 1fr);
-        }
-
-        .bar-row > strong {
-          grid-column: 1 / -1;
-        }
-      }
-
-      @media (max-width: 360px) {
-        .danger-list {
-          grid-template-columns: 1fr;
-        }
-      }
+:root{color-scheme:light;--bg:#f7f8fa;--panel:#fff;--ink:#24272c;--muted:#626a75;--line:#dde2e8;--green:#16745c;--green-soft:#edf7f2;--gold:#946219;--gold-soft:#fff6df;--red:#b73540;--red-soft:#fff0f1;--blue:#315ea4}
+*{box-sizing:border-box;letter-spacing:0}[hidden]{display:none!important}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 "Segoe UI",Tahoma,Arial,sans-serif;font-variant-numeric:tabular-nums}
+h1,h2,h3,p{margin:0}h1{font-size:28px;line-height:1.25;font-weight:650}h2{font-size:19px;font-weight:650}h3{font-size:15px;font-weight:650}small{font-size:12px}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:wait}a{color:inherit;text-decoration:none}a:hover{color:var(--blue)}:focus-visible{outline:3px solid #5586c9;outline-offset:3px}.icon{flex:none;vertical-align:middle;stroke-width:1.75}.muted,.section-head p,.history-block p{color:var(--muted)}.positive{color:var(--green)}.negative{color:var(--red)}.neutral{color:var(--muted)}
+.skip-link{position:fixed;top:-100px;left:16px;background:white;padding:12px;z-index:100}.skip-link:focus{top:12px}
+.topbar{position:fixed;inset:0 auto 0 0;width:212px;background:#fff;border-right:1px solid var(--line);z-index:20}.topbar-inner{height:100%;display:flex;flex-direction:column;padding:28px 16px 18px}.brand{display:flex;align-items:center;gap:10px;padding:0 8px 32px}.logo{width:35px;height:35px;display:grid;place-items:center;background:#e6b951;border:1px solid #cba145;border-radius:6px;font-weight:750;font-size:13px;color:#292b2d}.brand strong{font-size:16px;display:block}.brand small{display:block;color:var(--muted);font-size:11px}
+.nav{display:flex;flex-direction:column;gap:6px}.nav a{display:flex;align-items:center;gap:12px;padding:12px;border-radius:6px;color:var(--muted);font-weight:550;min-height:44px}.nav a:hover{background:#f5f6f8;color:var(--ink)}.nav a[aria-current="page"]{background:#eef1f5;color:#1f2937;font-weight:650}.nav a[aria-current="page"]:before{content:"";position:absolute;left:0;width:3px;height:24px;background:#c39536}.rail-bottom{margin-top:auto;padding:24px 10px 0;font-size:12px;color:var(--muted)}.rail-bottom strong{display:block;color:var(--ink);margin:8px 0 3px}
+main{margin-left:212px;padding:0 36px 40px;max-width:1740px;min-width:0}.utility-bar{min-height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:16px}.utility-context{display:flex;gap:12px;align-items:center;font-size:12px;color:var(--muted)}.read-only{border-left:1px solid var(--line);padding-left:12px}.topbar-actions,.toolbar{display:flex;gap:8px;align-items:center}.status-pill{display:flex;align-items:center;gap:7px;font-size:12px;white-space:nowrap;color:var(--muted)}.dot{width:7px;height:7px;display:inline-block;border-radius:50%;background:#858b94}.dot.live{background:var(--green)}.dot.warn{background:var(--gold)}.dot.bad{background:var(--red)}
+.btn,.settings-toggle{min-height:38px;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:5px;padding:8px 13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:13px}.btn:hover,.settings-toggle:hover{background:#f0f2f5}.btn.primary{background:#272e38;color:white;border-color:#272e38}.btn.primary:hover{background:#414b59}.icon-button{width:38px;padding:8px}.text-button{background:none;border:0;color:var(--muted);padding:8px 0;font-size:12px;text-decoration:underline;text-underline-offset:3px}
+.connect-panel{margin-top:16px;padding:20px;background:white;border:1px solid var(--line);border-radius:6px;display:grid;grid-template-columns:minmax(200px,1fr) minmax(140px,.6fr) auto auto auto;gap:12px;align-items:end}.connect-panel.collapsed{display:none}.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}.field input,.search,.goal-input{border:1px solid #cbd1d9;border-radius:4px;background:white;padding:9px 11px;min-height:40px;width:100%;color:var(--ink)}
+.page-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:28px 0 22px}.eyebrow{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:5px}.page-heading p:last-child{font-size:13px;color:var(--muted);margin-top:7px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.section-head p{font-size:12px;margin-top:5px}.section-head .eyebrow{display:none}.section-link{font-size:12px;font-weight:600;color:var(--blue);display:inline-flex;gap:6px;align-items:center}
+.grid{display:grid;gap:20px;min-width:0;scroll-margin-top:20px;margin-top:0!important}.panel{min-width:0}.pad{padding:0}.span-12{grid-column:1/-1}main>section{margin-bottom:30px}
+.decision-strip{display:grid;grid-template-columns:minmax(220px,1.5fr) minmax(160px,1fr);gap:20px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);border-left:3px solid #9aa2ad;padding:16px 20px;background:#f0f2f5;margin-bottom:24px}.decision-strip.tone-negative{border-left-color:var(--red);background:var(--red-soft)}.decision-strip.tone-watch{border-left-color:#c39536;background:var(--gold-soft)}.decision-strip.tone-positive{border-left-color:var(--green);background:var(--green-soft)}.decision-cell{min-width:0}.decision-cell>span{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}.decision-cell>strong{display:block;font-size:13px;font-weight:600;overflow-wrap:anywhere}.decision-cell:first-child>strong{font-size:16px}.decision-cell>small{display:block;color:var(--muted);margin-top:5px;font-size:12px}.decision-data{margin-top:7px;color:var(--muted);font-size:11px}
+.kpi-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;border-bottom:1px solid var(--line);padding-bottom:24px;gap:24px}.kpi{min-width:0;border-right:1px solid var(--line);padding-right:20px;display:flex;flex-direction:column;gap:10px}.kpi:last-child{border:0;padding:0}.kpi>span{font-size:12px;color:var(--muted);font-weight:550}.kpi>strong{font-size:27px;font-weight:650;line-height:1.3;overflow-wrap:anywhere}.kpi:first-child>strong{font-size:34px}.kpi>small{font-size:11px;color:var(--muted);line-height:1.7}.kpi-note{display:block}.kpi.tone-negative>strong{color:var(--red)}.kpi.tone-watch>strong{color:var(--gold)}
+.overview-layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:30px}.overview-main{min-width:0}.overview-aside{border-left:1px solid var(--line);padding-left:24px;min-width:0}.snapshot-table{width:100%;border-collapse:collapse;font-size:13px}.snapshot-table th{text-align:right;font-size:11px;color:var(--muted);font-weight:550;padding:10px 12px;background:#edf0f4}.snapshot-table th:first-child{text-align:left}.snapshot-table td{padding:15px 12px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}.snapshot-table td:first-child{text-align:left}.snapshot-table td strong{font-weight:600}.snapshot-table td small{display:block;font-size:11px;color:var(--muted);margin-top:3px}.account-link{color:var(--ink);font-weight:600;text-decoration:underline;text-decoration-color:#cbd1d9;text-underline-offset:4px}
+.dd-meter{height:4px;min-width:50px;max-width:88px;background:#e6e9ed;margin:6px 0 0 auto;border-radius:2px;overflow:hidden}.dd-meter span{display:block;height:100%;background:#5c8c7b}.dd-meter.watch span{background:#c49a42}.dd-meter.critical span{background:var(--red)}.snapshot-caption{color:var(--muted);font-size:11px;margin-top:12px}.coverage-list{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.aside-label{font-size:11px;color:var(--muted);margin-bottom:9px}.aside-value{font-size:24px;font-weight:600;margin-bottom:10px}.aside-copy{font-size:12px;color:var(--muted);line-height:1.7}.aside-block+.aside-block{border-top:1px solid var(--line);margin-top:23px;padding-top:22px}.aside-pair{display:flex;justify-content:space-between;font-size:12px;margin:9px 0}.aside-pair span{color:var(--muted)}
+.danger-list{display:grid;gap:8px}.danger-card{display:grid;grid-template-columns:160px 140px minmax(100px,1fr);align-items:center;gap:12px;padding:12px 16px;background:#fff;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:5px;font-size:12px}.danger-card.red{border-left-color:var(--red)}.danger-card>strong{font-size:13px}.danger-card em{font-size:11px;font-style:normal;color:var(--muted);grid-column:1/-1}.danger-reasons{color:var(--muted)}.card-label{display:block;font-size:11px;color:var(--muted);font-weight:550}.empty{padding:22px 0;color:var(--muted);font-size:13px;line-height:1.7}.empty strong{display:block;color:var(--ink);font-size:15px;margin-bottom:6px}.empty a{color:var(--blue);text-decoration:underline}.empty.tall{padding:32px 0;min-height:140px}
+.accounts-tools{display:flex;gap:12px;align-items:center;margin-bottom:16px}.search{max-width:340px}.account-list{display:grid;gap:14px}.account-card{background:#fff;border:1px solid var(--line);border-left:3px solid #869ca0;border-radius:6px;padding:20px}.account-card.danger-red{border-left-color:var(--red)}.account-card.danger-yellow{border-left-color:#c39536}.account-title{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.account-title>strong{font-size:17px}.account-title>span,.account-last{color:var(--muted);font-size:12px}.account-last{margin-left:auto}.pill-row{display:flex;flex-wrap:wrap;gap:5px}.pill-row.recorded{width:100%;margin-top:4px;align-items:center}.pill{font-size:11px;display:inline-block;padding:3px 6px;background:#f1f3f6;border-radius:3px;color:#59616d}.pill.green{background:var(--green-soft);color:var(--green)}.pill.yellow{background:var(--gold-soft);color:var(--gold)}.pill.red{background:var(--red-soft);color:var(--red)}
+.account-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 24px}.mini{min-width:0}.mini>span{font-size:11px;color:var(--muted);display:block;margin-bottom:6px}.mini>strong{display:block;font-size:18px;font-weight:600;overflow-wrap:anywhere}.mini>strong small{display:block;font-size:11px;color:var(--muted);font-weight:400;margin-top:4px}.metric-stack b{font-size:15px;display:block;font-weight:600}.metric-stack em{display:block;font-size:11px;font-style:normal;font-weight:400;color:var(--muted);margin-top:4px}.dd-cell{display:flex;align-items:center;gap:10px;font-size:13px}.dd-cell>b{font-size:11px;font-weight:400;color:var(--muted);min-width:65px}.dd-cell small{display:none!important}.dd-cell+.dd-cell{margin-top:5px}.pl-stack{grid-column:span 2}.pl-grid{display:flex;gap:20px}.pl-row{display:grid;gap:3px;font-size:13px;min-width:0}.pl-row b,.pl-row em{font-size:11px;font-style:normal;font-weight:400;color:var(--muted)}
+.period-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;border-bottom:1px solid var(--line);padding-bottom:24px}.period-card{min-width:0;border-right:1px solid var(--line);padding-right:20px}.period-card:last-child{border:0}.period-card>strong{display:block;font-size:28px;margin:10px 0}.period-thb,.period-meta{display:block;color:var(--muted);font-size:11px}.history-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}.history-block{min-width:0}.history-block p{font-size:11px;margin:4px 0 16px}.series{display:grid;gap:12px}.bar-row{display:grid;grid-template-columns:74px minmax(20px,1fr) 76px;gap:8px;align-items:center;font-size:11px}.bar-row>span{color:var(--muted);overflow-wrap:anywhere}.bar-row strong{text-align:right;font-weight:600}.bar-track{height:6px;background:#e6e9ee;border-radius:2px;overflow:hidden}.bar{height:100%;background:#3c8a72}.bar.negative{background:#c65c62}
+.overview-chart{margin-top:28px}.overview-chart .section-head{margin-bottom:10px}.balance-bars{height:134px;display:flex;gap:12px;align-items:stretch}.balance-column{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:10px;color:var(--muted)}.balance-column strong{font-size:11px;font-weight:600;margin-bottom:5px}.balance-bar-area{height:88px;display:flex;align-items:flex-end;width:100%;justify-content:center;border-bottom:1px solid var(--line)}.balance-bar{width:60%;max-width:45px;background:#679f8b;border-radius:3px 3px 0 0;min-height:2px}.balance-bar.loss{background:#c97e83}.balance-column>span{margin-top:6px}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.plan-card{background:white;border:1px solid var(--line);border-top:3px solid #527c70;border-radius:6px;padding:24px}.plan-card.fast{border-top-color:#bc9148}.plan-head{display:flex;justify-content:space-between;gap:15px;align-items:center}.plan-head strong{font-size:19px;display:block}.plan-capital{text-align:right}.plan-capital span{display:block;font-size:11px;color:var(--muted)}.plan-capital b{font-size:22px;font-weight:600}.plan-lots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;padding:24px 0;border-bottom:1px solid var(--line)}.plan-lot span{font-size:11px;display:block;color:var(--muted)}.plan-lot b{display:block;font-size:22px;font-weight:600;margin-top:4px}.plan-lot.off b{color:var(--muted)}.plan-note{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.8}
+.goal-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:28px}.goal-hero{padding-right:28px;border-right:1px solid var(--line)}.goal-big{font-size:32px;font-weight:650;margin:10px 0}.goal-sub{font-size:12px;color:var(--muted);margin:10px 0}.progress-track{height:6px;background:#e2e6eb;overflow:hidden;border-radius:3px;margin:14px 0}.progress-fill{height:100%;background:#b9913d}.goal-ladder{display:grid;gap:14px}.goal-target-card{padding-bottom:16px;border-bottom:1px solid var(--line);min-width:0}.goal-target-head{display:flex;justify-content:space-between;gap:16px;font-size:12px;color:var(--muted)}.goal-target-head strong{font-size:20px;color:var(--ink);font-weight:600}.goal-target-head>div:last-child{text-align:right}.goal-eta-grid{margin-top:12px;display:grid;gap:6px}.goal-eta-row{display:flex;justify-content:space-between;gap:12px;font-size:12px}.goal-eta-row span{color:var(--muted)}.goal-eta-row b{font-weight:550;text-align:right}.goal-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;padding-top:24px;margin-top:20px!important;border-top:1px solid var(--line)}.goal-card strong{display:block;font-size:15px;margin-top:10px;font-weight:600}.goal-input{margin-top:8px;max-width:220px}
+.secondary-section{border-top:1px solid var(--line);padding-top:18px}.secondary-section summary{cursor:pointer;list-style-position:outside;margin-left:16px;font-size:13px}.secondary-summary{display:inline-flex;gap:15px;flex-wrap:wrap;align-items:center}.secondary-summary>span{font-size:11px;color:var(--muted)}.secondary-content{padding-top:20px}.ranking-tabs{display:flex;gap:4px;margin-bottom:16px}.rank-tab{border:0;background:transparent;padding:8px 16px;border-radius:4px;color:var(--muted)}.rank-tab.active{background:#e6ebf1;color:var(--ink)}.ranking-list{display:grid;grid-template-columns:1fr 1fr;gap:16px}.rank-card{background:white;border:1px solid var(--line);border-radius:5px;padding:18px}.rank-head{display:flex;justify-content:space-between;gap:16px}.rank-title{display:grid;font-size:12px}.rank-title span{font-size:11px;color:var(--muted)}.rank-value{text-align:right}.rank-value>strong{display:block;font-size:20px}.rank-value>span{font-size:11px}.rank-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;font-size:11px}.rank-stat b{color:var(--muted);font-weight:400;display:block}
+.diagnostic-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}.diagnostic-block p{font-size:12px;margin-top:8px;color:var(--muted)}.log{font:11px/1.8 Consolas,monospace;color:var(--muted);overflow-wrap:anywhere}.audit-grid,.health-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.audit-card,.health-card{padding:12px;border:1px solid var(--line);background:white;border-radius:4px;font-size:12px}.audit-card strong,.health-card strong{display:block;margin:5px 0}.audit-card small,.health-card small{display:block;color:var(--muted);font-size:11px}.bad strong{color:var(--red)}.warn strong{color:var(--gold)}.gap-warning{padding:12px;background:var(--gold-soft);font-size:12px}.page-footer{border-top:1px solid var(--line);padding-top:16px;font-size:11px;display:flex;justify-content:space-between;gap:16px;color:var(--muted)}
+.discipline-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:#171b2670;z-index:60;padding:20px}.discipline-modal.open{display:flex}.discipline-dialog{background:white;border-radius:8px;max-width:520px;width:100%;padding:30px;box-shadow:0 8px 32px #20252b14;max-height:90dvh;overflow:auto}.discipline-note{white-space:pre-line;font-size:15px;line-height:1.85;margin:20px 0}.discipline-close{width:100%}body.modal-open{overflow:hidden}
+@media(min-width:1600px){main{padding-left:48px;padding-right:48px}.kpi>strong{font-size:32px}}
+@media(max-width:1180px){.topbar{width:180px}.topbar-inner{padding-left:10px;padding-right:10px}main{margin-left:180px;padding-left:24px;padding-right:24px}.overview-layout{grid-template-columns:minmax(0,1fr) 210px;gap:20px}.overview-aside{padding-left:20px}.snapshot-table td,.snapshot-table th{padding-left:7px;padding-right:7px}.snapshot-table .margin-column{display:none}.kpi-grid{gap:16px}.kpi{padding-right:12px}.kpi>strong{font-size:24px}.kpi:first-child>strong{font-size:29px}.history-grid{grid-template-columns:1fr}.bar-row{grid-template-columns:100px 1fr 90px}.plan-grid{grid-template-columns:1fr}.connect-panel{grid-template-columns:1fr 1fr}.connect-panel .field:first-child{grid-column:1/-1}.connect-panel .btn{width:100%}.goal-layout{grid-template-columns:220px 1fr}.account-metrics{gap:16px}}
+@media(max-width:900px){.topbar{position:static;width:auto;border:0;background:var(--bg)}.topbar-inner{padding:16px 20px 0;display:block}.brand{padding:0 0 16px}.brand small{display:none}.brand strong{font-size:16px}.logo{width:30px;height:30px}.rail-bottom{display:none}.nav{flex-direction:row;gap:6px;border-bottom:1px solid var(--line)}.nav a{flex:1;justify-content:center;padding:10px 6px;font-size:12px;border-radius:0;gap:6px;position:relative}.nav a[aria-current="page"]{background:transparent;border-bottom:2px solid #bb903b}.nav a[aria-current="page"]:before{display:none}.nav .icon{width:16px;height:16px}main{margin:0;padding:0 20px 28px}.utility-bar{min-height:58px}.utility-context{font-size:11px}.page-heading{padding:22px 0 18px}h1{font-size:26px}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.kpi:nth-child(2){border:0}.kpi:nth-child(3){border-right:1px solid var(--line)}.kpi:first-child>strong{font-size:30px}.kpi>strong{font-size:26px}.goal-controls{grid-template-columns:1fr 1fr}.goal-layout{grid-template-columns:1fr}.goal-hero{border-right:0;padding-right:0;border-bottom:1px solid var(--line);padding-bottom:18px}.account-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.danger-card{grid-template-columns:1fr 1fr}.danger-reasons{grid-column:1/-1}}
+@media(max-width:640px){.topbar-inner{padding:14px 16px 0}main{padding:0 16px 24px}.brand{padding-bottom:12px}.nav a{font-size:11px;flex-direction:column;gap:4px;min-height:54px}.utility-context .read-only{display:none}.utility-bar{gap:8px}.topbar-actions{gap:6px}.status-pill{font-size:11px}.btn{font-size:12px;min-height:38px;padding:8px 10px}.page-heading{gap:8px}h1{font-size:24px}.page-heading p:last-child{font-size:12px}.page-heading .text-button{max-width:100px;text-align:right}.decision-strip{grid-template-columns:1fr;gap:10px;padding:14px 16px;margin-bottom:20px}.decision-cell:first-child>strong{font-size:15px}.decision-cell>strong{font-size:12px}.decision-cell>span{font-size:10px}.decision-cell>small{font-size:11px}.decision-cell:last-child>span{display:none}.kpi-grid{gap:18px 16px;padding-bottom:20px}.kpi>strong,.kpi:first-child>strong{font-size:25px}.kpi>span{font-size:11px}.kpi>small{font-size:10px}.overview-layout{grid-template-columns:1fr;gap:25px}.overview-aside{border:0;border-top:1px solid var(--line);padding:22px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:24px}.aside-block+.aside-block{border:0;margin:0;padding:0}.aside-value{font-size:22px}.aside-copy{font-size:11px}.snapshot-table{font-size:12px}.snapshot-table .exposure-column{display:none}.snapshot-table th{font-size:10px}.snapshot-table td,.snapshot-table th{padding:13px 6px}.snapshot-table td:first-child,.snapshot-table th:first-child{padding-left:0}.snapshot-table th:last-child,.snapshot-table td:last-child{padding-right:0}.snapshot-table td small{font-size:10px}.section-head{margin-bottom:14px}h2{font-size:17px}.section-link{font-size:11px}.snapshot-caption{font-size:10px}.overview-chart{margin-top:24px}main>section{margin-bottom:24px}.account-card{padding:16px}.account-title>strong{font-size:16px}.account-title{gap:6px}.account-last{width:100%;margin:0}.account-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px}.mini>strong{font-size:18px}.account-title>span{overflow-wrap:anywhere}.accounts-tools{align-items:stretch}.accounts-tools .btn{font-size:11px;flex-shrink:0}.search{min-width:0}.period-grid{grid-template-columns:1fr;gap:18px}.period-card{border:0;border-bottom:1px solid var(--line);padding:0 0 16px;display:grid;grid-template-columns:1fr auto;gap:5px 12px}.period-card>strong{font-size:24px;margin:0;grid-column:2;grid-row:1/3}.period-card>small{grid-column:1/-1}.history-grid{gap:28px}.plan-card{padding:18px}.plan-head strong{font-size:16px}.plan-capital b{font-size:20px}.plan-lots{gap:8px}.plan-lot span{font-size:10px}.plan-lot b{font-size:21px}.plan-note{font-size:11px}.goal-controls{gap:16px}.goal-target-head strong{font-size:18px}.goal-eta-row{font-size:11px}.goal-eta-row b{max-width:50%}.ranking-list,.diagnostic-grid{grid-template-columns:1fr}.secondary-summary{gap:3px}.secondary-summary>span{display:block}.page-footer{font-size:10px}.connect-panel{grid-template-columns:1fr 1fr;padding:16px}.connect-panel .field{grid-column:1/-1}.connect-panel .btn:last-child{grid-column:1/-1}.discipline-dialog{padding:24px}.discipline-note{font-size:14px}.balance-column strong{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
     </style>
+
   </head>
   <body>
+    <a class="skip-link" href="#mainContent">Skip to portfolio</a>
+    <!-- Lucide Icons, ISC License. Copyright (c) 2026 Lucide Icons and Contributors.
+    Permission to use, copy, modify, and/or distribute this software for any purpose
+    with or without fee is hereby granted, provided that the above copyright notice
+    and this permission notice appear in all copies.
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+
+    Feather-derived icons: MIT License, Copyright (c) 2013-present Cole Bemis.
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE. -->
     <div class="app" id="appRoot">
-      <header class="topbar">
-        <div class="topbar-inner">
-          <div class="brand-row">
-            <div class="brand">
-              <div class="logo">AU</div>
-              <div>
-                <small>Live Accounts</small>
-                <strong>Bot Portfolio</strong>
-              </div>
-            </div>
-            <div class="topbar-actions">
-              <div class="status-pill" id="connectionBadge" role="status" aria-live="polite"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
-              <button class="settings-toggle" id="settingsToggle" type="button" aria-expanded="true">Settings</button>
-            </div>
+      <header class="topbar"><div class="topbar-inner">
+        <a class="brand" href="#overview"><div class="logo">AU</div><div><strong>Bot Portfolio</strong><small>Pom's capital desk</small></div></a>
+        <nav class="nav" aria-label="Dashboard sections">
+          <a href="#overview" data-nav="overview" aria-current="page"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <rect width="7" height="9" x="3" y="3" rx="1" />
+  <rect width="7" height="5" x="14" y="3" rx="1" />
+  <rect width="7" height="9" x="14" y="12" rx="1" />
+  <rect width="7" height="5" x="3" y="16" rx="1" />
+</svg>
+<span>Overview</span></a>
+          <a href="#accounts" data-nav="accounts"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+  <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+</svg>
+<span>Accounts</span></a>
+          <a href="#pnl" data-nav="performance"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M12 16v5" />
+  <path d="M16 14.639V21" />
+  <path d="M20 10.656V21" />
+  <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" />
+  <path d="M4 18.463V21" />
+  <path d="M8 14.656V21" />
+</svg>
+<span>Performance</span></a>
+          <a href="#plans" data-nav="plans"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <circle cx="6" cy="19" r="3" />
+  <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+  <circle cx="18" cy="5" r="3" />
+</svg>
+<span>Plans & goals</span></a>
+          <a href="#health" data-nav="data"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  <path d="m9 12 2 2 4-4" />
+</svg>
+<span>Data health</span></a>
+        </nav>
+        <div class="rail-bottom"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+  <path d="m9 12 2 2 4-4" />
+</svg>
+<strong>Capital first.</strong><span>ความสงบมาก่อนกำไร</span><br><span>Read-only / no trade execution</span></div>
+      </div></header>
+      <main id="mainContent" tabindex="-1">
+        <div class="utility-bar">
+          <div class="utility-context"><span>PORTFOLIO / USD</span><span class="read-only">Read-only</span></div>
+          <div class="topbar-actions">
+            <div class="status-pill" id="connectionBadge" role="status" aria-live="polite"><span class="dot" id="connectionDot"></span><span id="connectionText">Not connected</span></div>
+            <button class="settings-toggle icon-button" id="settingsToggle" type="button" aria-expanded="false" aria-controls="connectPanel" aria-label="Connection settings" title="Connection settings"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M14 17H5" />
+  <path d="M19 7h-9" />
+  <circle cx="17" cy="17" r="3" />
+  <circle cx="7" cy="7" r="3" />
+</svg>
+</button>
+            <button class="btn" id="refreshBtn" type="button" title="Refresh account snapshot"><svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+  <path d="M21 3v5h-5" />
+  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+  <path d="M8 16H3v5" />
+</svg>
+<span>Refresh</span></button>
           </div>
-
-          <div class="connect-panel" id="connectPanel">
-            <div class="field">
-              <label for="endpointInput">Apps Script URL</label>
-              <input id="endpointInput" type="url" autocomplete="off" spellcheck="false" />
-            </div>
-            <div class="field">
-              <label for="readKeyInput">Read key</label>
-              <input id="readKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Paste read key" />
-            </div>
-            <button class="btn primary" id="connectBtn" type="button">Connect</button>
-            <button class="btn light" id="clearBtn" type="button">Clear</button>
-          </div>
-
-          <nav class="nav" aria-label="Dashboard sections">
-            <a href="#pnl">P/L</a>
-            <a href="#danger">Danger</a>
-            <a href="#ranking">Ranking</a>
-            <a href="#formula">Formula</a>
-            <a href="#accounts">Accounts</a>
-            <a href="#goal">Goal</a>
-            <a href="#health">Health</a>
-          </nav>
         </div>
-      </header>
-
-      <main>
-        <section class="hero">
-          <div>
-            <p class="eyebrow">Live trading control room</p>
-            <h1>Bot Portfolio</h1>
+        <div class="connect-panel collapsed" id="connectPanel">
+          <div class="field"><label for="endpointInput">Apps Script endpoint</label><input id="endpointInput" type="url" autocomplete="off" spellcheck="false"></div>
+          <div class="field"><label for="readKeyInput">Read key</label><input id="readKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Your private read key"></div>
+          <button class="btn primary" id="connectBtn" type="button">Connect</button><button class="btn" id="clearBtn" type="button">Disconnect</button><button class="btn" id="exportBtn" type="button">Export CSV</button>
+        </div>
+        <div class="page-heading"><div><p class="eyebrow" id="viewEyebrow">YOUR CAPITAL, AT A GLANCE</p><h1 id="viewTitle">Portfolio overview</h1><p id="viewSubtitle">รักษาทุนให้ได้ก่อน แล้วค่อยเดินต่อ</p></div><button class="text-button" id="disciplineOpenBtn" type="button">Capital-first note</button></div>
+        <section class="grid" id="overview" data-view="overview"><div class="panel span-12">
+          <div class="decision-strip tone-watch" id="decisionStrip" role="status" aria-live="polite"></div>
+          <div class="kpi-grid" id="kpiGrid"></div>
+        </div></section>
+        <section id="snapshot" data-view="overview" class="overview-layout">
+          <div class="overview-main"><div class="section-head"><h2>Account watch</h2><a class="section-link" href="#accounts">Account details <svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M7 7h10v10" />
+  <path d="M7 17 17 7" />
+</svg>
+</a></div><div id="accountSnapshot"></div>
+            <div class="overview-chart"><div class="section-head"><div><h3>Monthly balance change</h3><p>Transfers included / not trading profit</p></div><a class="section-link" href="#pnl">History <svg aria-hidden="true" class="icon"
+  xmlns="http://www.w3.org/2000/svg"
+  width="20"
+  height="20"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+>
+  <path d="M7 7h10v10" />
+  <path d="M7 17 17 7" />
+</svg>
+</a></div><div id="overviewHistory"></div></div>
           </div>
-          <div class="toolbar">
-            <button class="btn secondary" id="refreshBtn" type="button">Refresh</button>
-            <button class="btn secondary" id="exportBtn" type="button">Export CSV</button>
-          </div>
-          <div class="discipline-banner">
-            <div>
-              <strong>THE BOT MAKES MONEY. YOUR JOB IS NOT TO INTERFERE.</strong>
-              <span>Read before sizing up, manual trading, liquidating, or forcing anything.</span>
-            </div>
-            <button class="btn secondary" id="disciplineOpenBtn" type="button">Read discipline note</button>
-          </div>
+          <aside class="overview-aside" id="overviewAside" aria-label="Capital plan"></aside>
         </section>
-
-        <section class="grid" id="overview">
-          <div class="panel pad span-12">
-            <div class="kpi-grid" id="kpiGrid"></div>
-          </div>
-        </section>
-
-        <section class="grid" id="danger" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Risk first</p>
-                <h2>Danger Now</h2>
-                <p>Only accounts that need attention. Red always outranks yellow.</p>
-              </div>
-            </div>
-            <div class="danger-list" id="dangerList"></div>
-          </div>
-        </section>
-
-        <section class="grid" id="pnl" style="margin-top: 12px">
-          <div class="panel pad span-8">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Daily command center</p>
-                <h2>Balance P/L & DD</h2>
-                <p>Today, week, and month use current balance minus baseline balance.</p>
-              </div>
-            </div>
-            <div class="period-grid" id="periodCards"></div>
-            <div class="audit-grid" id="baselineAudit"></div>
-          </div>
-          <div class="panel pad span-4">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Market clock</p>
-                <h2>Reset Info</h2>
-                <p id="marketInfo">Waiting for backend meta.</p>
-              </div>
-            </div>
-            <div class="log" id="loadLog"></div>
-          </div>
-          <div class="panel pad span-4">
-            <div class="section-head"><div><h2>Daily P/L</h2><p>Last 7 market days.</p></div></div>
-            <div class="series" id="dailySeries"></div>
-          </div>
-          <div class="panel pad span-4">
-            <div class="section-head"><div><h2>Weekly P/L</h2><p>Last 4 market weeks.</p></div></div>
-            <div class="series" id="weeklySeries"></div>
-          </div>
-          <div class="panel pad span-4">
-            <div class="section-head"><div><h2>Monthly P/L</h2><p>Last 6 months.</p></div></div>
-            <div class="series" id="monthlySeries"></div>
-          </div>
-        </section>
-
-        <section class="grid" id="ranking" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Performance</p>
-                <h2>Account Ranking</h2>
-                <p>Ranks ports by balance P/L %, with risk mode penalizing DD and month max DD.</p>
-              </div>
-              <div class="ranking-tabs" id="rankingTabs" role="group" aria-label="Ranking period">
-                <button class="rank-tab active" type="button" data-rank-mode="day" aria-pressed="true">Day</button>
-                <button class="rank-tab" type="button" data-rank-mode="week" aria-pressed="false">Week</button>
-                <button class="rank-tab" type="button" data-rank-mode="month" aria-pressed="false">Month</button>
-                <button class="rank-tab" type="button" data-rank-mode="risk" aria-pressed="false">Risk</button>
-              </div>
-            </div>
-            <div class="ranking-list" id="rankingList"></div>
-          </div>
-        </section>
-
-        <section class="grid" id="formula" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Bot formula notes</p>
-                <h2>June 2026 Combo Profit / 3,000 USD</h2>
-                <p>Quick reference only. Live danger still comes from DD, equity gap, margin, and stale data.</p>
-              </div>
-            </div>
-            <div class="formula-grid">
-              <div class="formula-card">
-                <strong>3-2-1-1</strong>
-                <b>4.64%</b>
-                <span>Smart 0.03 / Sniper 0.02 / Devil 0.01 / Slayer 0.01</span>
-              </div>
-              <div class="formula-card">
-                <strong>3-2-1.5-1</strong>
-                <b>4.94%</b>
-                <span>Smart 0.03 / Sniper 0.02 / Devil 0.015 / Slayer 0.01</span>
-              </div>
-              <div class="formula-card">
-                <strong>3-2-2-1</strong>
-                <b>5.24%</b>
-                <span>Smart 0.03 / Sniper 0.02 / Devil 0.02 / Slayer 0.01</span>
-              </div>
-              <div class="formula-card">
-                <strong>6-2-1-1</strong>
-                <b>5.30%</b>
-                <span>Sniper 0.06 / Smart 0.02 / Devil 0.01 / Slayer 0.01</span>
-              </div>
-              <div class="formula-card">
-                <strong>3-3-2-1-1</strong>
-                <b>5.82%</b>
-                <span>Grandma 0.03 / Smart 0.03 / Sniper 0.02 / Devil 0.01 / Slayer 0.01</span>
-              </div>
-            </div>
-            <div class="formula-footnote">
-              Gold group can run together. John Wick can run with gold. Prince of Persia is oil and should be treated separately. ETH is excluded. Grandma is upside-grid style, so read profit with DD context.
-            </div>
-          </div>
-        </section>
-
-        <section class="grid" id="accounts" style="margin-top: 12px">
+        <section class="grid" id="danger" data-view="overview"><div class="panel span-12"><div class="section-head"><h2>Needs attention</h2><span class="muted" style="font-size:11px">DD watch 15% / review 25%</span></div><div class="danger-list" id="dangerList"></div></div></section>
+        <section class="grid" id="accounts" data-view="accounts" hidden style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
               <div>
                 <p class="eyebrow">Accounts</p>
-                <h2>Per Account Truth</h2>
-                <p>Shows balance, equity, equity gap, DD, and D/W/M balance P/L per port.</p>
+                <h2>Account detail</h2>
+                <p>Broker lots are account-specific. Net exposure can change when BUY positions take profit.</p>
               </div>
             </div>
             <div class="accounts-tools">
@@ -1733,13 +277,76 @@
             <div class="account-list" id="accountList"></div>
           </div>
         </section>
-
-        <section class="grid" id="goal" style="margin-top: 12px">
+        <section class="grid" id="pnl" data-view="performance" hidden style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Daily command center</p>
+                <h2>Balance change</h2>
+                <p>Current balance minus period baseline. Deposits and withdrawals are included; this is not trading profit.</p>
+              </div>
+            </div>
+            <div class="period-grid" id="periodCards"></div>
+          </div>
+          <div class="panel pad span-12">
+            <div class="history-grid">
+              <div class="history-block"><h3>Daily change</h3><p>Last 7 market days</p><div class="series" id="dailySeries"></div></div>
+              <div class="history-block"><h3>Weekly change</h3><p>Last 4 market weeks</p><div class="series" id="weeklySeries"></div></div>
+              <div class="history-block"><h3>Monthly change</h3><p>Last 6 months</p><div class="series" id="monthlySeries"></div></div>
+            </div>
+          </div>
+        </section>
+        <section class="grid" id="plans" data-view="plans" hidden style="margin-top: 12px">
+          <div class="panel pad span-12">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Portfolio plans</p>
+                <h2>Main + Aggressive</h2>
+                <p>Planning reference only. Not a live EA configuration or a guarantee of returns.</p>
+              </div>
+            </div>
+            <div class="plan-grid">
+              <article class="plan-card">
+                <div class="plan-head">
+                  <div>
+                    <span class="card-label">พอร์ตหลัก</span>
+                    <strong>Main Portfolio</strong>
+                  </div>
+                  <div class="plan-capital"><span>Capital</span><b>$20,000</b></div>
+                </div>
+                <div class="plan-lots" aria-label="Main portfolio bot lots">
+                  <div class="plan-lot"><span>Grandma</span><b>0.25</b></div>
+                  <div class="plan-lot"><span>Gold Devil</span><b>0.08</b></div>
+                  <div class="plan-lot"><span>Gold Slayer</span><b>0.05</b></div>
+                  <div class="plan-lot"><span>Smart Gold</span><b>0.01</b></div>
+                </div>
+                <div class="plan-note"><b>Role:</b> Peace-first core portfolio. Planning target 2.5-3.0% per month; risk control comes before return.</div>
+              </article>
+              <article class="plan-card fast">
+                <div class="plan-head">
+                  <div>
+                    <span class="card-label">พอร์ตซิ่ง</span>
+                    <strong>Aggressive Portfolio</strong>
+                  </div>
+                  <div class="plan-capital"><span>Capital</span><b>$3,000</b></div>
+                </div>
+                <div class="plan-lots" aria-label="Aggressive portfolio bot lots">
+                  <div class="plan-lot off"><span>Grandma</span><b>OFF</b></div>
+                  <div class="plan-lot"><span>Gold Devil</span><b>0.05</b></div>
+                  <div class="plan-lot"><span>Gold Slayer</span><b>0.01</b></div>
+                  <div class="plan-lot"><span>Smart Gold</span><b>0.01</b></div>
+                </div>
+                <div class="plan-note"><b>Role:</b> Separate capped risk bucket. It must never consume the Main Portfolio survival buffer.</div>
+              </article>
+            </div>
+          </div>
+        </section>
+        <section class="grid" id="goal" data-view="plans" hidden style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
               <div>
                 <p class="eyebrow">Goal tracking</p>
-                <h2>Freedom Target Ladder</h2>
+                <h2>The next chapter</h2>
               </div>
             </div>
             <div class="goal-layout">
@@ -1748,66 +355,90 @@
             </div>
             <div class="goal-controls" style="margin-top: 10px">
                 <div class="goal-card">
-                  <label class="card-label" for="goalMonthlyInput">Standard / month</label>
+                  <label class="card-label" for="goalMonthlyInput">Plan return / month (%)</label>
                   <input class="goal-input" id="goalMonthlyInput" type="number" min="0" step="0.1" />
                 </div>
-                <div class="goal-card"><span class="card-label">Standard ETA</span><strong id="goalEta">-</strong></div>
-                <div class="goal-card"><span class="card-label">6M avg pace</span><strong id="goalActualEta">-</strong></div>
+                <div class="goal-card">
+                  <label class="card-label" for="goalContributionInput">Contribution / month (USD)</label>
+                  <input class="goal-input" id="goalContributionInput" type="number" min="0" step="50" />
+                </div>
+                <div class="goal-card"><span class="card-label">Plan ETA to 600K</span><strong id="goalEta">-</strong></div>
+                <div class="goal-card"><span class="card-label">Contribution-only ETA to 600K</span><strong id="goalActualEta">-</strong></div>
                 <div class="goal-card"><span class="card-label">Ultimate Target</span><strong>600K USD</strong></div>
             </div>
           </div>
         </section>
+        <section class="grid" id="ranking" data-view="performance" hidden style="margin-top: 12px">
+          <details class="panel pad span-12 secondary-section">
+            <summary>
+              <span class="secondary-summary"><strong>Account Ranking</strong><span>Balance change by account. Transfers can affect this ranking.</span></span>
+            </summary>
+            <div class="secondary-content">
+              <div class="ranking-tabs" id="rankingTabs" role="group" aria-label="Ranking period">
+                <button class="rank-tab active" type="button" data-rank-mode="day" aria-pressed="true">Day</button>
+                <button class="rank-tab" type="button" data-rank-mode="week" aria-pressed="false">Week</button>
+                <button class="rank-tab" type="button" data-rank-mode="month" aria-pressed="false">Month</button>
 
-        <section class="grid" id="health" style="margin-top: 12px">
-          <div class="panel pad span-12">
-            <div class="section-head">
-              <div>
-                <p class="eyebrow">Connector</p>
-                <h2>Live Health</h2>
-                <p>Use this to see immediately whether live and history calls passed.</p>
               </div>
+              <div class="ranking-list" id="rankingList"></div>
             </div>
-            <div class="log" id="healthLog"></div>
-            <div class="health-grid" id="dataHealthGrid" style="margin-top: 12px"></div>
-            <div id="gapWarning"></div>
-          </div>
+          </details>
         </section>
+        <section class="grid" id="health" data-view="data" hidden style="margin-top: 12px">
+          <details open class="panel pad span-12 secondary-section">
+            <summary>
+              <span class="secondary-summary"><strong>Diagnostics</strong><span>Connector, reset clock, baseline confidence, and storage health.</span></span>
+            </summary>
+            <div class="secondary-content">
+              <div class="diagnostic-grid">
+                <div class="diagnostic-block">
+                  <h3>Market Reset</h3>
+                  <p id="marketInfo">Waiting for backend meta.</p>
+                  <div class="log" id="loadLog" style="margin-top: 10px"></div>
+                </div>
+                <div class="diagnostic-block">
+                  <h3>Baseline Audit</h3>
+                  <div class="audit-grid" id="baselineAudit"></div>
+                </div>
+              </div>
+              <div class="log" id="healthLog" style="margin-top: 16px"></div>
+              <div class="health-grid" id="dataHealthGrid" style="margin-top: 12px"></div>
+              <div id="gapWarning"></div>
+            </div>
+          </details>
+        </section>
+        <footer class="page-footer"><span>Snapshots are not execution prices. Review thresholds do not guarantee safety.</span><span>Bot Portfolio / 2026</span></footer>
       </main>
     </div>
+    <div class="discipline-modal" id="disciplineModal" aria-hidden="true"><div class="discipline-dialog" role="dialog" aria-modal="true" aria-labelledby="disciplineTitle">
+      <p class="eyebrow">A NOTE TO FUTURE ME</p><h2 id="disciplineTitle">รักษาทุนก่อน รักษาโอกาสไว้</h2>
+      <div class="discipline-note">ความสงบทางใจคือเป้าหมายแรก กำไรคือเป้าหมายที่สอง
 
-    <div class="discipline-modal" id="disciplineModal" aria-hidden="true">
-      <div class="discipline-dialog" role="dialog" aria-modal="true" aria-labelledby="disciplineTitle">
-        <h2 id="disciplineTitle">YOUR BIGGEST RISK IS NOT THE MARKET. IT'S YOU.</h2>
-        <div class="discipline-note">Don't touch.
-Don't force.
-Don't liquidate.
+ก่อนปรับพอร์ต: เช็กข้อมูลสด, Equity, DD และไม้จริงให้ครบ
 
-The system has a plan.
+ไม่เพิ่มลอทเพื่อเอาคืน และไม่ถือว่าการรอคือการลดความเสี่ยง
 
-Follow it.
+DD 15% = ทบทวนความเสี่ยง
+DD 25% = ถึงเส้นที่ต้องทบทวนแผนอย่างจริงจัง
+ตัวเลขเหล่านี้เป็นจุดเตือน ไม่ใช่ระบบหยุดขาดทุน
 
-6 years of discipline
-is worth more than
-6 hours of brilliance.
-
-Just keep stacking days.
-
-มึงผ่านจุดนั้นมาแล้ว อย่ากลับไปจุดนั้นอีก
-รวยได้แล้ว อย่ากลับไปจน</div>
-        <button class="btn primary discipline-close" id="disciplineCloseBtn" type="button">Close</button>
-      </div>
-    </div>
+การลดความเสี่ยงตามแผนไม่ใช่ความพ่ายแพ้
+เราไม่ได้ต้องชนะวันนี้ เราต้องเหลือทุนเดินต่อ</div>
+      <button class="btn primary discipline-close" id="disciplineCloseBtn" type="button">กลับไปดูพอร์ต</button>
+    </div></div>
 
     <script>
       const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzxANvMEXaDZBxfJ4F3YFkzs1_B3M6gJgOzGDWuRCwP-1MZlsypmfjdfqMwuWBSfQMR/exec";
       const STORAGE = {
         url: "gold-v2-live-url-current",
         key: "gold-v2-read-key",
-        goalMonthlyPct: "gold-v2-goal-monthly-pct",
+        goalMonthlyPct: "gold-v3-goal-monthly-pct",
+        goalMonthlyContribution: "gold-v3-goal-monthly-contribution-usd",
       };
-      const DEFAULT_GOAL_MONTHLY_PCT = 5;
+      const DEFAULT_GOAL_MONTHLY_PCT = 3;
+      const DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD = 500;
       const USDTHB_RATE = 32.5;
-      const GOAL_TARGETS_USD = [200000, 300000, 600000];
+      const GOAL_TARGETS_USD = [100000, 200000, 600000];
       const RISK_THRESHOLDS = Object.freeze({
         slowMinutes: 12,
         staleMinutes: 25,
@@ -1820,10 +451,10 @@ Just keep stacking days.
       const SEVERITY_WEIGHT = Object.freeze({ green: 1, yellow: 2, red: 3 });
 
       const EXPECTED = [
-        { id: "2011****69", broker: "MH", bots: ["Smart Gold 0.01", "Recovery: old Smart scale pending"] },
-        { id: "2011****70", broker: "MH", bots: ["Smart Gold 0.01", "Recovery: old Smart scale pending"] },
-        { id: "2489****86", broker: "VT", bots: ["Grandma Gold 0.36", "Smart Gold 0.01", "Smart scale 3000/0.01", "Recovery: old Smart scale pending"] },
-        { id: "2011****15", broker: "MH", bots: ["Smart Gold 0.01", "Recovery: old Smart scale pending"] },
+        { id: "2011****69", broker: "MH", bots: ["Smart Gold 0.01", "Gold Devil 0.01"] },
+        { id: "2011****70", broker: "MH", bots: ["Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
+        { id: "2489****86", broker: "VT", bots: ["Grandma Gold 0.03", "Gold Devil 0.01", "Smart Gold 0.01"] },
+        { id: "2011****15", broker: "MH", bots: ["Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
         { id: "2011****77", broker: "MH", bots: ["John Wick 0.10", "Gold Slayer 0.01"] },
       ];
 
@@ -1840,6 +471,7 @@ Just keep stacking days.
         logs: [],
         sortDanger: true,
         goalMonthlyPct: DEFAULT_GOAL_MONTHLY_PCT,
+        goalMonthlyContribution: DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD,
         loading: false,
         loadingHistory: false,
         requestId: 0,
@@ -1870,7 +502,8 @@ Just keep stacking days.
       }
 
       function hasNumber(value) {
-        return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+        return (typeof value === "number" || typeof value === "string")
+          && String(value).trim() !== "" && Number.isFinite(Number(value));
       }
 
       function parseJson(value, fallback = []) {
@@ -1934,7 +567,7 @@ Just keep stacking days.
         if (!panel || !toggle) return;
         panel.classList.toggle("collapsed", !open);
         toggle.setAttribute("aria-expanded", open ? "true" : "false");
-        toggle.textContent = open ? "Hide" : "Settings";
+        toggle.setAttribute("title", open ? "Close connection settings" : "Connection settings");
       }
 
       function toggleSettings() {
@@ -1993,6 +626,24 @@ Just keep stacking days.
         return "$" + money.format(n(value));
       }
 
+      function fmtUsdFromUsc(value) {
+        return fmtUsd(n(value) / 100);
+      }
+
+      function fmtSignedUsdFromUsc(value) {
+        const num = n(value) / 100;
+        const sign = num > 0 ? "+" : "";
+        return (num < 0 ? "-" : sign) + "$" + money.format(Math.abs(num));
+      }
+
+      function fmtAccountMoney(value) {
+        return `${fmtUsdFromUsc(value)}<small class="raw-amount">${fmtMoney(value)}</small>`;
+      }
+
+      function fmtAccountSignedMoney(value) {
+        return `<span class="${clsNum(value)}">${fmtSignedUsdFromUsc(value)}</span><small class="raw-amount">${fmtSigned(value)}</small>`;
+      }
+
       function uscToThb(value) {
         return (n(value) / 100) * USDTHB_RATE;
       }
@@ -2025,29 +676,20 @@ Just keep stacking days.
         return date.toLocaleDateString("en-CA", { timeZone: "Asia/Bangkok" });
       }
 
-      function etaDays(current, target, monthlyPct) {
+      function etaDays(current, target, monthlyPct, monthlyContribution = 0) {
         const cur = n(current);
         const tgt = n(target);
         const rate = n(monthlyPct) / 100;
-        if (cur <= 0 || tgt <= cur || rate <= 0) return tgt <= cur ? 0 : Infinity;
-        return (Math.log(tgt / cur) / Math.log(1 + rate)) * 30.44;
-      }
+        const contribution = Math.max(0, n(monthlyContribution));
+        if (tgt <= cur) return 0;
+        if (cur <= 0 && contribution <= 0) return Infinity;
+        if (rate < 0) return Infinity;
+        if (rate === 0) return contribution > 0 ? ((tgt - cur) / contribution) * 30.44 : Infinity;
 
-      function averageMonthlyPace() {
-        const series = Array.isArray(state.performance.monthly_series) ? state.performance.monthly_series : [];
-        const rows = series
-          .filter((item) => Number.isFinite(Number(item.profitPct)))
-          .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
-        if (!rows.length) return { pct: 0, months: 0, usedCurrentMonth: false };
-
-        const completedRows = rows.length > 1 ? rows.slice(0, -1) : rows;
-        const usedRows = completedRows.slice(-6);
-        const avg = usedRows.reduce((sum, item) => sum + n(item.profitPct), 0) / usedRows.length;
-        return {
-          pct: avg,
-          months: usedRows.length,
-          usedCurrentMonth: rows.length <= 1,
-        };
+        // Contributions are added at the end of each month.
+        const contributionOffset = contribution / rate;
+        const months = Math.log((tgt + contributionOffset) / (cur + contributionOffset)) / Math.log(1 + rate);
+        return months * 30.44;
       }
 
       function clsNum(value) {
@@ -2076,7 +718,8 @@ Just keep stacking days.
       function minutesAgo(value) {
         const date = new Date(value);
         if (!value || Number.isNaN(date.getTime())) return Infinity;
-        return Math.max(0, (Date.now() - date.getTime()) / 60000);
+        const minutes = (Date.now() - date.getTime()) / 60000;
+        return minutes < -2 ? Infinity : Math.max(0, minutes);
       }
 
       function fmtTime(value) {
@@ -2103,7 +746,36 @@ Just keep stacking days.
         const equity = n(row.equity);
         const equityGap = equity - balance;
         const ddPct = balance > 0 ? (Math.min(0, equityGap) / balance) * 100 : 0;
-        const marginLevel = n(row.margin_level || row.marginLevel);
+        const marginValue = row.margin_level ?? row.marginLevel;
+        const marginLevel = n(marginValue);
+        const countValue = row.open_positions ?? row.openPositions;
+        const positionCountValid = hasNumber(countValue) && Number.isInteger(Number(countValue)) && Number(countValue) >= 0;
+        const openPositions = positionCountValid ? Number(countValue) : null;
+        let parsedPositions = null;
+        try {
+          parsedPositions = typeof row.positions === "string" ? JSON.parse(row.positions) : row.positions;
+        } catch (_) { /* Missing or truncated position data must not become zero exposure. */ }
+        const positions = Array.isArray(parsedPositions) ? parsedPositions.filter((p) => p && typeof p === "object").map((p) => ({
+          ...p,
+          type: p.type === 0 ? "BUY" : p.type === 1 ? "SELL" : String(p.type || p.side || "").toUpperCase(),
+        })) : [];
+        const tickets = positions.map((p) => p.ticket).filter((ticket) => ticket !== undefined && ticket !== null);
+        const positionsComplete = Array.isArray(parsedPositions) && positionCountValid
+          && parsedPositions.length === positions.length && positions.length === openPositions
+          && new Set(tickets.map(String)).size === tickets.length
+          && positions.every((p) => String(p.symbol || "").trim() && ["BUY", "SELL"].includes(p.type)
+            && hasNumber(p.lot ?? p.volume) && Number(p.lot ?? p.volume) > 0);
+        const marginValid = hasNumber(marginValue) && (openPositions === 0 || marginLevel > 0);
+        const xauPositions = positions.filter((position) => {
+          const symbol = String(position.symbol || "").toUpperCase();
+          return symbol.includes("XAU") || symbol.includes("GOLD");
+        });
+        const xauBuyLots = xauPositions
+          .filter((position) => String(position.type || position.side || "").toUpperCase() === "BUY")
+          .reduce((sum, position) => sum + n(position.lot ?? position.volume), 0);
+        const xauSellLots = xauPositions
+          .filter((position) => String(position.type || position.side || "").toUpperCase() === "SELL")
+          .reduce((sum, position) => sum + n(position.lot ?? position.volume), 0);
         const bots = parseJson(row.bots, Array.isArray(row.bots) ? row.bots : []).map((bot) => {
           if (typeof bot === "string") return bot;
           return [bot.name, bot.lot ? lots.format(bot.lot) : ""].filter(Boolean).join(" ");
@@ -2112,7 +784,7 @@ Just keep stacking days.
         return {
           id,
           isBlockedLegacyAccount,
-          dataComplete: Boolean(id) && balanceValid && equityValid,
+          dataComplete: Boolean(id) && balanceValid && equityValid && balance >= 0,
           balanceValid,
           equityValid,
           broker: String(row.broker || expected.broker || ""),
@@ -2123,7 +795,17 @@ Just keep stacking days.
           equityGap,
           ddPct,
           marginLevel,
-          openPositions: n(row.open_positions || row.openPositions),
+          openPositions,
+          positionCountValid,
+          positionsComplete,
+          exposureComplete: positionsComplete && new Set(xauPositions.map((p) => String(p.symbol).toUpperCase())).size <= 1,
+          marginValid,
+          ddValid: balanceValid && equityValid && balance > 0,
+          positions,
+          xauPositionCount: xauPositions.length,
+          xauBuyLots,
+          xauSellLots,
+          netXauLots: Math.round((xauBuyLots - xauSellLots) * 10000) / 10000,
           dayProfit: n(perf.day?.profit),
           weekProfit: n(perf.week?.profit),
           monthProfit: n(perf.month?.profit),
@@ -2195,7 +877,7 @@ Just keep stacking days.
       }
 
       function baselineConfidence(meta, period) {
-        if (!meta || !Number.isFinite(Number(meta.baselineBalance))) return { kind: "bad", label: "No baseline", detail: "history missing" };
+        if (!meta || !hasNumber(meta.baselineBalance) || Number(meta.baselineBalance) <= 0) return { kind: "bad", label: "No baseline", detail: "history missing" };
         const source = String(meta.baselineSource || "unknown");
         const signedOffset = n(meta.baselineOffsetMinutes, 0);
         const offset = Math.abs(signedOffset);
@@ -2210,7 +892,7 @@ Just keep stacking days.
 
       function portfolioConfidence(period) {
         const expected = EXPECTED.length;
-        if (state.accounts.length !== expected) {
+        if (!completeAccountMapping()) {
           return { kind: "bad", label: `Partial ${state.accounts.length}/${expected}`, detail: "live account coverage incomplete" };
         }
         const metas = state.accounts
@@ -2235,6 +917,9 @@ Just keep stacking days.
         const age = minutesAgo(account.lastAt);
         if (!account.id) reasons.push({ severity: "red", text: "Missing account id" });
         if (!account.dataComplete) reasons.push({ severity: "red", text: "Data incomplete" });
+        if (!account.exposureComplete) reasons.push({ severity: "yellow", text: "Exposure unverified" });
+        if (!account.marginValid && account.openPositions !== 0) reasons.push({ severity: "yellow", text: "Margin unverified" });
+        if (account.dataComplete && account.equity <= 0 && account.openPositions > 0) reasons.push({ severity: "red", text: "Equity depleted" });
         if (age === Infinity) reasons.push({ severity: "red", text: "No timestamp" });
         else if (age > RISK_THRESHOLDS.staleMinutes) reasons.push({ severity: "red", text: "Stale " + Math.round(age) + "m" });
         else if (age > RISK_THRESHOLDS.slowMinutes) reasons.push({ severity: "yellow", text: "Slow " + Math.round(age) + "m" });
@@ -2304,8 +989,11 @@ Just keep stacking days.
         try {
           const live = await fetchJson(authedUrl(cfg.url, cfg.key), 18000);
           if (requestId !== state.requestId) return;
+          if (!Array.isArray(live.accounts)) throw new Error("Invalid account payload");
           state.liveOk = true;
           state.liveAt = new Date();
+          state.historyOk = false;
+          state.performance = {};
           state.meta = live.meta || {};
           state.accounts = (live.accounts || []).map(normalizeAccount).filter(isVisibleAccount);
           log("Live loaded: " + state.accounts.length + " accounts", "live");
@@ -2323,12 +1011,14 @@ Just keep stacking days.
             mergeHistoryAccounts(history.accounts || []);
             log("History loaded", "live");
           } catch (historyError) {
+            if (requestId !== state.requestId) return;
             state.historyOk = false;
+            state.performance = {};
             log("History failed: " + historyError.message, "bad");
           }
 
           state.loadingHistory = false;
-          setConnection("Live " + new Date().toLocaleTimeString("th-TH", { hour12: false }), "live");
+          updateFreshnessBadge();
           setSettingsOpen(false);
           render();
         } catch (error) {
@@ -2340,36 +1030,77 @@ Just keep stacking days.
           log("Live failed: " + error.message, "bad");
           render();
         } finally {
-          if (requestId === state.requestId) setLoading(false);
+          if (requestId === state.requestId) { setLoading(false); updateFreshnessBadge(); }
         }
       }
 
+      function xauExposureLabel(account) {
+        if (!account || !account.exposureComplete) return "Unverified";
+        if (!account.xauPositionCount) return "No XAU";
+        const net = n(account.netXauLots);
+        if (Math.abs(net) < 0.0001) return "FLAT 0.00";
+        return (net > 0 ? "BUY " : "SELL ") + lots.format(Math.abs(net));
+      }
+
+      function portfolioDecision() {
+        const snapshot = portfolioSnapshot();
+        if (!state.accounts.length) return {
+          tone: "tone-watch", label: state.loading ? "LOADING" : "CONNECT DATA",
+          detail: "ยังไม่มีข้อมูลพอร์ต ไม่ใช่ยอดเงินศูนย์",
+          focus: "Connect your read-only data source.",
+          data: "0/" + EXPECTED.length + " accounts",
+        };
+        const sorted = [...state.accounts].sort((a,b) => severityScore(b)-severityScore(a) || a.ddPct-b.ddPct);
+        const focusAccount = sorted[0];
+        const focus = maskAccount(focusAccount.id) + " / " + topDangerReason(focusAccount).text + " / XAU " + xauExposureLabel(focusAccount);
+        const data = snapshot.coverage + "/" + EXPECTED.length + " accounts / oldest " + fmtAge(snapshot.oldest);
+        if (!snapshot.ready) return {
+          tone: "tone-negative", label: "DATA BLOCKED",
+          detail: !state.liveOk ? "Refresh failed or disconnected. Previous values are not current."
+            : !snapshot.mapping ? "Account coverage is incomplete or duplicated. Portfolio totals are withheld."
+            : "Stale or incomplete account values. Refresh before reviewing risk.",
+          focus, data,
+        };
+        const critical = sorted.filter((a) => severityScore(a) === SEVERITY_WEIGHT.red);
+        if (critical.length) return { tone:"tone-negative", label:"REVIEW NOW",
+          detail: critical.length + " account(s) crossed review thresholds. ลดความเสี่ยงตามแผน ไม่ใช่เพิ่มลอทเอาคืน", focus, data };
+        const unverified = sorted.filter((a) => !a.exposureComplete || (!a.marginValid && a.openPositions !== 0));
+        if (unverified.length) return { tone:"tone-watch", label:"DATA LIMITED",
+          detail: unverified.length + " account(s) have unverified exposure or margin. No survival estimate is available.", focus, data };
+        const watch = sorted.filter((a) => severityScore(a) === SEVERITY_WEIGHT.yellow);
+        if (watch.length) return { tone:"tone-watch", label:"WATCH",
+          detail: watch.length + " account(s) crossed a watch threshold. ทบทวนก่อนเปลี่ยนความเสี่ยง", focus, data };
+        return { tone:"tone-positive", label:"WITHIN THRESHOLDS",
+          detail:"ยังไม่ถึงจุดเตือนที่ตั้งไว้ ไม่ได้แปลว่าปลอดความเสี่ยง",
+          focus:"DD watch 15% / review 25% / margin watch 300%", data };
+      }
+
+      function renderDecisionStrip() {
+        const decision = portfolioDecision();
+        $("decisionStrip").className = "decision-strip " + decision.tone;
+        $("decisionStrip").innerHTML = `
+          <div class="decision-cell"><span>PORTFOLIO STATUS</span><strong>${escapeHtml(decision.label)}</strong><small>${escapeHtml(decision.detail)}</small></div>
+          <div class="decision-cell"><span>FOCUS</span><strong>${escapeHtml(decision.focus)}</strong><div class="decision-data">${escapeHtml(decision.data)}</div></div>`;
+      }
+
       function renderKpis() {
-        const validAccounts = state.accounts.filter((account) => account.dataComplete);
-        const totalBalance = validAccounts.reduce((sum, account) => sum + account.balance, 0);
-        const totalEquity = validAccounts.reduce((sum, account) => sum + account.equity, 0);
-        const equityGap = totalEquity - totalBalance;
-        const riskAccounts = state.accounts.filter((account) => severityScore(account) > SEVERITY_WEIGHT.green);
-        const critical = riskAccounts.filter((account) => severityScore(account) === SEVERITY_WEIGHT.red).length;
-        const watch = riskAccounts.length - critical;
-        const dayDisplay = currentDayDisplay();
-        const day = dayDisplay.item || {};
-        const hasDay = hasCompletePortfolioCoverage(day) && Number.isFinite(Number(day.profit));
-        const historyNote = state.loadingHistory
-          ? "loading history…"
-          : hasDay
-            ? fmtUscThb(day.profit || 0) + " / " + pct.format(day.profitPct || 0) + "%"
-            : day.accounts
-              ? `partial history ${n(day.accounts)}/${EXPECTED.length} accounts`
-              : "waiting history";
-        const completenessNote = validAccounts.length === state.accounts.length
-          ? "all " + state.accounts.length + " accounts"
-          : validAccounts.length + " of " + state.accounts.length + " complete";
+        const s = portfolioSnapshot();
+        const worst = s.valid.reduce((best,a) => a.ddValid && (!best || a.ddPct < best.ddPct) ? a : best, null);
+        const risk = state.accounts.filter((a) => severityScore(a) > SEVERITY_WEIGHT.green);
+        const critical = risk.filter((a) => severityScore(a) === SEVERITY_WEIGHT.red).length;
+        const note = s.ready ? "Verified values / " + s.coverage + " accounts" : "Awaiting a complete, fresh snapshot";
         $("kpiGrid").innerHTML = [
-          kpi("Accounts at Risk", String(riskAccounts.length), critical + " critical, " + watch + " watch", riskAccounts.length ? "tone-negative" : "tone-positive"),
-          kpi("Equity Gap", `<span class="${clsNum(equityGap)}">${fmtSigned(equityGap)}</span>`, "equity - balance", toneClass(equityGap)),
-          kpi(dayDisplay.label, hasDay ? `<span class="${clsNum(day.profit)}">${fmtSigned(day.profit)}</span>` : "Need history", historyNote, hasDay ? toneClass(day.profit) : "tone-watch"),
-          kpi("Total Balance", fmtMoney(totalBalance), `<span class="kpi-thb">${fmtUscThb(totalBalance)}</span><span class="kpi-note">${completenessNote} / 32.5 THB/USD</span>`, "tone-neutral"),
+          kpi("Portfolio equity", s.ready ? fmtUsdFromUsc(s.equity) : "—",
+            s.ready ? "Balance " + fmtUsdFromUsc(s.balance) + "<br>" + note : note),
+          kpi("Equity gap", s.ready ? fmtSignedUsdFromUsc(s.equity-s.balance) : "—",
+            s.ready ? "Equity minus balance<br>Portfolio DD " + pct.format(s.balance > 0 ? Math.max(0,(s.balance-s.equity)/s.balance*100) : 0) + "%" : "Not assumed to be zero",
+            s.ready && s.equity < s.balance ? "tone-negative" : ""),
+          kpi("Worst Current DD", s.ready && worst ? pct.format(Math.abs(worst.ddPct)) + "%" : "—",
+            s.ready && worst ? maskAccount(worst.id) + "<br>Review threshold 25%" : "Fresh account data required",
+            s.ready && worst && worst.ddPct <= -25 ? "tone-negative" : s.ready && worst && worst.ddPct <= -15 ? "tone-watch" : ""),
+          kpi("Accounts at Risk", s.ready ? String(risk.length) : "—",
+            s.ready ? critical + " review / " + (risk.length-critical) + " watch<br>Includes data-quality alerts" : s.coverage + "/" + EXPECTED.length + " accounts reported",
+            s.ready && risk.length ? critical ? "tone-negative" : "tone-watch" : ""),
         ].join("");
       }
 
@@ -2383,18 +1114,14 @@ Just keep stacking days.
       }
 
       function currentDayDisplay() {
-        const latestSeries = latestSeriesItem(state.performance.daily_series);
-        const liveDay = livePeriodItem("day", latestSeries);
-        const candidates = [liveDay, state.performance.day, latestSeries].filter(Boolean);
-        const item = candidates.find(hasCompletePortfolioCoverage) || candidates.find((candidate) => candidate.accounts) || {};
-        return { label: "Market Day P/L", item };
+        return { label: "Market day change", item: state.historyOk ? livePeriodItem("day", state.performance.day) || {} : {} };
       }
 
       function livePeriodItem(period, fallback = {}) {
         const rows = state.accounts
           .map((account) => ({ account, meta: account.periodMeta?.[period] }))
           .filter((row) => row.account.balanceValid && row.meta && Number.isFinite(Number(row.meta.baselineBalance)) && Number(row.meta.baselineBalance) > 0);
-        if (state.accounts.length !== EXPECTED.length || rows.length !== EXPECTED.length) return null;
+        if (!completeAccountMapping() || !state.liveOk || rows.length !== EXPECTED.length) return null;
 
         const baselineBalance = rows.reduce((sum, row) => sum + n(row.meta.baselineBalance), 0);
         const latestBalance = rows.reduce((sum, row) => sum + n(row.account.balance), 0);
@@ -2420,71 +1147,32 @@ Just keep stacking days.
       }
 
       function renderGoal() {
-        const totalBalanceUsc = state.accounts.reduce((sum, account) => sum + account.balance, 0);
-        const currentUsd = totalBalanceUsc / 100;
-        const targetUsd = GOAL_TARGETS_USD[GOAL_TARGETS_USD.length - 1];
-        const standardPct = Math.max(0, n(state.goalMonthlyPct, DEFAULT_GOAL_MONTHLY_PCT));
-        const avgPace = averageMonthlyPace();
-        const actualPct = avgPace.pct;
-        const progress = targetUsd > 0 ? Math.min(100, Math.max(0, (currentUsd / targetUsd) * 100)) : 0;
-        const remaining = Math.max(0, targetUsd - currentUsd);
-        const standardDays = etaDays(currentUsd, targetUsd, standardPct);
-        const actualDays = etaDays(currentUsd, targetUsd, actualPct);
-
-        $("goalHero").innerHTML = `
-          <span class="card-label">Ultimate goal progress</span>
-          <div class="goal-big">${pct.format(progress)}%</div>
-          <div class="goal-sub">${fmtUsd(currentUsd)} / ${fmtUsd(targetUsd)} target</div>
-          <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
-          <div class="goal-sub">${fmtUsd(remaining)} remaining. Balance source: ${fmtMoney(totalBalanceUsc)} cent-account balance.</div>
-          <div class="goal-sub">Cashflow idea: 600K USD at 5%/month is about 30K USD/month before withdrawals and risk.</div>
-        `;
-        $("goalLadder").innerHTML = GOAL_TARGETS_USD.map((goal) => goalTargetCard(goal, currentUsd, standardPct, actualPct, avgPace)).join("");
-        $("goalEta").textContent = standardDays === 0 ? "Goal hit" : fmtDayCount(standardDays);
-        $("goalActualEta").textContent =
-          actualPct > 0
-            ? fmtDayCount(actualDays) +
-              " / " +
-              fmtEtaDate(actualDays) +
-              " at " +
-              pct.format(actualPct) +
-              "%/mo avg (" +
-              avgPace.months +
-              "m" +
-              (avgPace.usedCurrentMonth ? ", current" : "") +
-              ")"
-            : "Need positive 6M avg";
+        const s = portfolioSnapshot();
+        const current = s.equity / 100;
+        const rate = Math.max(0, n(state.goalMonthlyPct));
+        const contribution = Math.max(0, n(state.goalMonthlyContribution));
+        const ultimate = GOAL_TARGETS_USD[GOAL_TARGETS_USD.length-1];
+        $("goalHero").innerHTML = s.ready
+          ? `<span class="card-label">Equity toward ${fmtUsd(ultimate)}</span><div class="goal-big">${pct.format(Math.max(0,Math.min(100,current/ultimate*100)))}%</div>
+            <div class="goal-sub">${fmtUsd(current)} current equity</div><div class="progress-track"><div class="progress-fill" style="width:${Math.max(0,Math.min(100,current/ultimate*100))}%"></div></div>
+            <div class="goal-sub">${fmtUsd(Math.max(0,ultimate-current))} remaining</div>
+            <div class="goal-sub">Scenario: ${pct.format(rate)}%/month + ${fmtUsd(contribution)} at each month-end. All returns reinvested.</div>
+            <div class="goal-sub">Not a forecast. Assumes no withdrawals, fees, tax or drawdown. A fixed return is not guaranteed.</div>`
+          : '<div class="empty"><strong>Waiting for verified equity</strong>Goals remain saved. Progress and dates are withheld while account data is missing or stale.</div>';
+        $("goalLadder").innerHTML = GOAL_TARGETS_USD.map((target) => goalTargetCard(target, s.ready ? current : null, rate, contribution)).join("");
+        $("goalEta").textContent = s.ready ? formatHorizon(etaDays(current,ultimate,rate,contribution)) : "Need fresh equity";
+        $("goalActualEta").textContent = s.ready ? formatHorizon(etaDays(current,ultimate,0,contribution)) : "Need fresh equity";
+        renderOverviewAside();
       }
 
-      function goalTargetCard(targetUsd, currentUsd, standardPct, actualPct, avgPace) {
-        const progress = targetUsd > 0 ? Math.min(100, Math.max(0, (currentUsd / targetUsd) * 100)) : 0;
-        const remaining = Math.max(0, targetUsd - currentUsd);
-        const standardDays = etaDays(currentUsd, targetUsd, standardPct);
-        const actualDays = etaDays(currentUsd, targetUsd, actualPct);
-        const hit = remaining <= 0;
-        const monthlyCashflow = targetUsd * (standardPct / 100);
-
-        return `<article class="goal-target-card ${hit ? "hit" : ""}">
-          <div class="goal-target-head">
-            <div>
-              <span class="card-label">Target</span>
-              <strong>${fmtUsd(targetUsd)}</strong>
-            </div>
-            <div>
-              <span class="card-label">Progress</span>
-              <strong>${pct.format(progress)}%</strong>
-            </div>
-          </div>
+      function goalTargetCard(target, current, rate, contribution) {
+        const ready = current !== null;
+        const progress = ready ? Math.max(0,Math.min(100,current/target*100)) : 0;
+        return `<article class="goal-target-card">
+          <div class="goal-target-head"><div><span class="card-label">Milestone</span><strong>${fmtUsd(target)}</strong></div><div><span class="card-label">Equity progress</span><strong>${ready ? pct.format(progress)+"%" : "—"}</strong></div></div>
           <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
-          <div class="goal-target-head">
-            <span>${fmtUsd(remaining)} remaining</span>
-            <span>${fmtUsd(monthlyCashflow)}/mo at ${pct.format(standardPct)}%</span>
-          </div>
-          <div class="goal-eta-grid">
-            <div class="goal-eta-row"><span>Standard ETA</span><b>${hit ? "Hit" : fmtDayCount(standardDays)} / ${fmtEtaDate(standardDays)}</b></div>
-            <div class="goal-eta-row"><span>6M Avg ETA</span><b>${actualPct > 0 ? fmtDayCount(actualDays) + " / " + fmtEtaDate(actualDays) : "Need positive avg"}</b></div>
-          </div>
-        </article>`;
+          <div class="goal-eta-grid"><div class="goal-eta-row"><span>Plan scenario / ${pct.format(rate)}% monthly</span><b>${ready ? formatHorizon(etaDays(current,target,rate,contribution)) : "Need fresh equity"}</b></div>
+          <div class="goal-eta-row"><span>Contribution only / 0% return</span><b>${ready ? formatHorizon(etaDays(current,target,0,contribution)) : "Need fresh equity"}</b></div></div></article>`;
       }
 
       function renderDanger() {
@@ -2497,8 +1185,8 @@ Just keep stacking days.
               const reasons = dangerFor(account);
               const top = topDangerReason(account);
               const riskText = reasons.filter((item) => item.severity !== "green").map((item) => escapeHtml(item.text)).join(" • ");
-              const balance = account.balanceValid ? fmtMoney(account.balance) : "balance missing";
-              const gap = account.balanceValid && account.equityValid ? fmtSigned(account.equityGap) : "gap unavailable";
+              const balance = account.balanceValid ? fmtUsdFromUsc(account.balance) : "balance missing";
+              const gap = account.balanceValid && account.equityValid ? fmtSignedUsdFromUsc(account.equityGap) : "gap unavailable";
               return `<div class="danger-card ${top.severity}">
                 <span class="card-label">${escapeHtml(maskAccount(account.id))} ${escapeHtml(account.broker)}</span>
                 <strong>${escapeHtml(top.text)}</strong>
@@ -2506,7 +1194,7 @@ Just keep stacking days.
                 <em>${escapeHtml(balance)} / ${escapeHtml(gap)} / last ${escapeHtml(fmtAge(minutesAgo(account.lastAt)))}</em>
               </div>`;
             }).join("")
-          : `<div class="empty">${state.accounts.length ? "All accounts are within dashboard thresholds." : "No live accounts loaded yet."}</div>`;
+          : `<div class="empty">${portfolioSnapshot().ready ? "No account crossed a dashboard review threshold. This is not a guarantee of safety." : "Waiting for complete, fresh account data before assessing the portfolio."}</div>`;
       }
 
       function renderRanking() {
@@ -2571,7 +1259,7 @@ Just keep stacking days.
         const negative = row.mode === "risk" ? row.score < 0 : row.profit < 0;
         const top = rank <= 3 && !negative;
         const mainValue = row.mode === "risk" ? pct.format(row.score) : pct.format(row.profitPct) + "%";
-        const mainNote = row.mode === "risk" ? `${fmtSigned(row.profit)} / ${pct.format(row.profitPct)}% P/L` : fmtSigned(row.profit);
+        const mainNote = row.mode === "risk" ? `${fmtSignedUsdFromUsc(row.profit)} / ${pct.format(row.profitPct)}% P/L` : fmtSignedUsdFromUsc(row.profit);
         return `<article class="rank-card ${top ? "top" : ""} ${negative ? "negative" : ""}">
           <div class="rank-head">
             <div class="rank-title">
@@ -2587,8 +1275,8 @@ Just keep stacking days.
           <div class="rank-stats">
             <div class="rank-stat"><b>DD</b><span>${pct.format(row.ddAbs)}%</span></div>
             <div class="rank-stat"><b>Month Max DD</b><span>${pct.format(row.monthMaxDd)}%</span></div>
-            <div class="rank-stat"><b>Balance</b><span>${fmtMoney(account.balance)}</span></div>
-            <div class="rank-stat"><b>Gap</b><span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span></div>
+            <div class="rank-stat"><b>Balance</b><span>${fmtUsdFromUsc(account.balance)}</span></div>
+            <div class="rank-stat"><b>Gap</b><span class="${clsNum(account.equityGap)}">${fmtSignedUsdFromUsc(account.equityGap)}</span></div>
           </div>
         </article>`;
       }
@@ -2596,13 +1284,13 @@ Just keep stacking days.
       function renderPeriods() {
         const dayDisplay = currentDayDisplay();
         const labels = [
-          ["day", dayDisplay.label.replace(" P/L", ""), dayDisplay.item],
+          ["day", dayDisplay.label, dayDisplay.item],
           ["week", "This Week", livePeriodItem("week")],
           ["month", "This Month", livePeriodItem("month")],
         ];
         $("periodCards").innerHTML = labels.map(([key, label, liveOverride]) => {
           const item = liveOverride || state.performance[key] || {};
-          const has = hasCompletePortfolioCoverage(item) && Number.isFinite(Number(item.profit));
+          const has = state.historyOk && portfolioSnapshot().ready && hasCompletePortfolioCoverage(item) && hasNumber(item.profit);
           const confidence = portfolioConfidence(key);
           const missingNote = state.loadingHistory
             ? "live risk is ready; history is loading"
@@ -2611,8 +1299,8 @@ Just keep stacking days.
               : "history endpoint not ready";
           return `<div class="period-card">
             <span class="card-label">${label}</span>
-            <strong class="${clsNum(item.profit)}">${has ? fmtSigned(item.profit) : state.loadingHistory ? "Loading…" : "Need history"}</strong>
-            ${has ? `<span class="period-thb">${fmtUscThb(item.profit || 0)}</span><small class="period-meta">${pct.format(item.profitPct || 0)}% / DD ${pct.format(item.drawdownPct || 0)}% / ${confidence.label}</small>` : `<small class="period-meta">${missingNote}</small>`}
+            <strong class="${clsNum(item.profit)}">${has ? fmtSignedUsdFromUsc(item.profit) : state.loadingHistory ? "Loading…" : "Need history"}</strong>
+            ${has ? `<span class="period-thb">${fmtSigned(item.profit || 0)} / ${fmtUscThb(item.profit || 0) + " at planning FX " + USDTHB_RATE}</span><small class="period-meta">${pct.format(item.profitPct || 0)}% / DD ${pct.format(item.drawdownPct || 0)}% / ${confidence.label}</small>` : `<small class="period-meta">${missingNote}</small>`}
           </div>`;
         }).join("");
         renderBaselineAudit();
@@ -2653,6 +1341,7 @@ Just keep stacking days.
         }
         const max = Math.max(1, ...series.map((item) => Math.abs(n(item.profit))));
         target.innerHTML = series.map((item) => {
+          if (!hasNumber(item.profit)) return '<div class="bar-row"><span>' + escapeHtml(item.label || item.date || "-") + '</span><span></span><strong class="neutral">Unavailable</strong></div>';
           const profit = n(item.profit);
           const width = Math.max(3, Math.round((Math.abs(profit) / max) * 100));
           const accountCount = Number(item.accounts);
@@ -2662,7 +1351,7 @@ Just keep stacking days.
           return `<div class="bar-row">
             <span>${escapeHtml(item.label || item.date || "-")}${coverage}</span>
             <div class="bar-track"><div class="bar ${profit < 0 ? "negative" : ""}" style="width:${width}%"></div></div>
-            <strong class="${clsNum(profit)}">${fmtSigned(profit)}</strong>
+            <strong class="${clsNum(profit)}">${fmtSignedUsdFromUsc(profit)}</strong>
           </div>`;
         }).join("");
       }
@@ -2682,7 +1371,7 @@ Just keep stacking days.
         const query = $("searchInput").value.trim().toLowerCase();
         let rows = [...state.accounts];
         if (query) {
-          rows = rows.filter((account) => [account.id, account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
+          rows = rows.filter((account) => [account.id, maskAccount(account.id), account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
         }
         if (state.sortDanger) rows.sort((a, b) => severityScore(b) - severityScore(a) || a.id.localeCompare(b.id));
         $("accountList").innerHTML = rows.length ? rows.map(accountCard).join("") : `<div class="empty">${state.accounts.length ? "No accounts match." : "No live accounts loaded yet."}</div>`;
@@ -2693,7 +1382,7 @@ Just keep stacking days.
         const top = topDangerReason(account);
         const age = minutesAgo(account.lastAt);
         const ageLabel = age === Infinity ? "no timestamp" : Math.round(age) + "m ago";
-        return `<article class="account-card danger-${top.severity}">
+        return `<article id="account-${escapeHtml(maskAccount(account.id))}" class="account-card danger-${top.severity}">
           <div class="account-title">
             <strong>${escapeHtml(maskAccount(account.id))}</strong>
             <span>${escapeHtml(account.broker || "-")} ${account.server ? "/ " + escapeHtml(account.server) : ""}</span>
@@ -2701,26 +1390,40 @@ Just keep stacking days.
             <div class="pill-row">
               ${reasons.map((item) => `<span class="pill ${item.severity}">${escapeHtml(item.text)}</span>`).join("")}
             </div>
-            <div class="pill-row">
+            <div class="pill-row recorded"><span class="muted" style="font-size:11px">Recorded setup:</span>
               ${account.bots.slice(0, 6).map((bot) => `<span class="pill">${escapeHtml(bot)}</span>`).join("")}
             </div>
           </div>
           <div class="account-metrics">
-            ${mini("Balance", account.balanceValid ? fmtMoney(account.balance) : "Need data")}
-            ${mini("Equity", account.equityValid ? fmtMoney(account.equity) : "Need data")}
-            ${mini("Gap", account.balanceValid && account.equityValid ? `<span class="${clsNum(account.equityGap)}">${fmtSigned(account.equityGap)}</span>` : "Need data")}
+            ${mini("Balance", account.balanceValid ? fmtAccountMoney(account.balance) : "Need data")}
+            ${mini("Equity", account.equityValid ? fmtAccountMoney(account.equity) : "Need data")}
+            ${mini("Gap", account.balanceValid && account.equityValid ? fmtAccountSignedMoney(account.equityGap) : "Need data")}
             ${mini("DD / Month Max DD", ddStack(account), "dd-stack")}
-            ${mini("Margin", account.marginLevel ? pct.format(account.marginLevel) + "%" : "-")}
-            ${mini("D / W / M P/L", plStack(account), "pl-stack")}
+            ${mini("Margin / Open", marginStack(account))}
+            ${mini("XAU Buy / Sell / Net", exposureStack(account))}
+            ${mini("D / W / M balance change", plStack(account), "pl-stack")}
           </div>
         </article>`;
       }
 
+      function marginStack(account) {
+        const margin = account.openPositions === 0 ? "No positions" : account.marginValid ? pct.format(account.marginLevel) + "%" : "Unverified";
+        return `<span class="metric-stack"><b>${margin}</b><em>${account.positionCountValid ? money.format(account.openPositions) : "Unknown"} positions</em></span>`;
+      }
+
+      function exposureStack(account) {
+        if (!account.exposureComplete) return '<span class="metric-stack"><b>Unverified</b><em>Position list missing, partial or mixed contracts</em></span>';
+        if (!account.xauPositionCount) return '<span class="metric-stack"><b>No XAU</b><em>Verified position list</em></span>';
+        return `<span class="metric-stack"><b>${xauExposureLabel(account)}</b><em>B ${lots.format(account.xauBuyLots)} / S ${lots.format(account.xauSellLots)} / ${money.format(account.xauPositionCount)} positions</em></span>`;
+      }
+
       function plStack(account) {
+        const ready = (period) => state.historyOk && hasNumber(account.periodMeta?.[period]?.baselineBalance)
+          && Number(account.periodMeta[period].baselineBalance) > 0 && account.balanceValid;
         return `<div class="pl-grid">` + [
-          plRow("D", account.dayProfit, account.dayPct, Boolean(account.periodMeta?.day)),
-          plRow("W", account.weekProfit, account.weekPct, Boolean(account.periodMeta?.week)),
-          plRow("M", account.monthProfit, account.monthPct, Boolean(account.periodMeta?.month)),
+          plRow("D", account.dayProfit, account.dayPct, ready("day")),
+          plRow("W", account.weekProfit, account.weekPct, ready("week")),
+          plRow("M", account.monthProfit, account.monthPct, ready("month")),
         ].join("") + `</div>`;
       }
 
@@ -2731,6 +1434,7 @@ Just keep stacking days.
       }
 
       function ddStack(account) {
+        if (!account.ddValid) return '<span class="metric-stack"><b>Unavailable</b><em>Positive balance and equity data required</em></span>';
         const ddClass = account.ddPct <= RISK_THRESHOLDS.ddWatchPct ? "negative" : "";
         return `<span class="dd-cell"><b>Current</b><span class="${ddClass}">${pct.format(account.ddPct)}%</span></span>
           <span class="dd-cell"><b>Month Max</b>${maxDdLabel(account)}</span>`;
@@ -2740,7 +1444,7 @@ Just keep stacking days.
         const labelMap = { D: "Day", W: "Week", M: "Month" };
         if (!ready) return `<span class="pl-row neutral"><b>${labelMap[label] || label}</b><span>Need history</span><em>—</em></span>`;
         const cls = clsNum(profit) || "neutral";
-        return `<span class="pl-row ${cls}"><b>${labelMap[label] || label}</b><span>${fmtSigned(profit)}</span><em>${pct.format(profitPct)}%</em></span>`;
+        return `<span class="pl-row ${cls}"><b>${labelMap[label] || label}</b><span>${fmtSignedUsdFromUsc(profit)}</span><em>${pct.format(profitPct)}%</em></span>`;
       }
 
       function mini(label, value, className = "") {
@@ -2780,24 +1484,19 @@ Just keep stacking days.
       function renderDataHealth() {
         const health = state.meta.data_health || {};
         const sheet = health.history_sheet || {};
-        const usage = n(sheet.usage_pct);
-        const status = sheet.status || "unknown";
-        const freshest = state.accounts.reduce((best, account) => Math.min(best, minutesAgo(account.lastAt)), Infinity);
-        const staleAccounts = state.accounts.filter((account) => minutesAgo(account.lastAt) > RISK_THRESHOLDS.staleMinutes).length;
-        const freshnessKind = !state.accounts.length ? "warn" : staleAccounts ? "warn" : "ok";
-        const freshnessNote = !state.accounts.length ? "waiting live accounts" : staleAccounts ? staleAccounts + " stale accounts" : "live values look fresh";
+        const s = portfolioSnapshot();
+        const rowData = hasNumber(sheet.used_rows) && hasNumber(sheet.max_rows);
         $("dataHealthGrid").innerHTML = [
-          healthCard("Last Good Data", fmtAge(freshest), freshnessNote, freshnessKind),
-          healthCard("History Rows", `${money.format(n(sheet.used_rows))} / ${money.format(n(sheet.max_rows))}`, `${pct.format(usage)}% used`, healthStatusClass(status)),
-          healthCard("Free Rows", money.format(n(sheet.free_rows)), `warn at ${pct.format(n(sheet.warn_usage_pct, 80))}%`, n(sheet.free_rows) < 1000 ? "warn" : "ok"),
-          healthCard("Append", health.last_history_append_error ? "Error" : "OK", health.last_history_append_at || "waiting", health.last_history_append_error ? "bad" : "ok"),
-          healthCard("Retention", `${health.raw_retention_days || "-"} days`, `${health.append_interval_minutes || "-"} min snapshots`, "ok"),
+          healthCard("Account coverage", s.coverage + "/" + EXPECTED.length, s.mapping ? "All expected accounts, no duplicates" : "Missing or duplicate accounts", s.mapping ? "ok" : "warn"),
+          healthCard("Oldest account snapshot", fmtAge(s.oldest), state.liveOk ? "Age since receipt; not broker tick age" : "Not connected / previous data only", s.ready ? "ok" : "warn"),
+          healthCard("History rows", rowData ? money.format(sheet.used_rows) + " / " + money.format(sheet.max_rows) : "Unknown", rowData ? pct.format(n(sheet.usage_pct)) + "% used" : "No storage metadata received", rowData ? healthStatusClass(sheet.status) : "warn"),
+          healthCard("Last history append", health.last_history_append_error ? "Error" : health.last_history_append_at ? "OK" : "Unknown", health.last_history_append_at || "No append confirmation", health.last_history_append_error ? "bad" : health.last_history_append_at ? "ok" : "warn"),
+          healthCard("Unit convention", "100 USC = 1 USD", "Connector amounts are USC. THB is a planning estimate at " + USDTHB_RATE + ".", ""),
+          healthCard("Refresh policy", "Manual refresh", "Snapshot age updates locally. No AI or background network polling.", ""),
         ].join("");
-
         const gaps = Array.isArray(health.known_data_gaps) ? health.known_data_gaps : [];
         $("gapWarning").innerHTML = gaps.length
-          ? `<div class="gap-warning"><strong>Known data gap:</strong> ${gaps.map((gap) => `${escapeHtml(gap.start)} to ${escapeHtml(gap.end)}. ${escapeHtml(gap.impact || gap.reason || "")}`).join("<br>")}</div>`
-          : "";
+          ? '<div class="gap-warning"><strong>Known data gap:</strong> ' + gaps.map((gap) => escapeHtml(gap.start) + " to " + escapeHtml(gap.end) + ". " + escapeHtml(gap.impact || gap.reason || "")).join("<br>") + "</div>" : "";
       }
 
       function healthCard(label, value, note, kind) {
@@ -2817,7 +1516,12 @@ Just keep stacking days.
       }
 
       function render() {
+        $("exportBtn").disabled = !state.accounts.length;
+        updateFreshnessBadge();
+        renderDecisionStrip();
         renderKpis();
+        renderAccountSnapshot();
+        renderOverviewHistory();
         renderGoal();
         renderDanger();
         renderPeriods();
@@ -2832,19 +1536,34 @@ Just keep stacking days.
       }
 
       function exportCsv() {
-        const rows = [["account", "broker", "balance", "equity", "equity_gap", "dd_pct", "day_pl", "week_pl", "month_pl", "last_update"]];
-        state.accounts.forEach((account) => rows.push([account.id, account.broker, account.balance, account.equity, account.equityGap, account.ddPct, account.dayProfit, account.weekProfit, account.monthProfit, account.lastAt]));
-        const csv = rows.map((row) => row.map((cell) => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+        const rows = [["account", "broker", "balance_usc", "equity_usc", "equity_gap_usc", "dd_pct", "day_balance_change_usc", "week_balance_change_usc", "month_balance_change_usc", "last_update", "snapshot_status"]];
+        state.accounts.forEach((account) => rows.push([account.id, account.broker,
+          account.balanceValid ? account.balance : "", account.equityValid ? account.equity : "",
+          account.dataComplete ? account.equityGap : "", account.ddValid ? account.ddPct : "",
+          ...["day", "week", "month"].map((period) => state.historyOk && account.balanceValid
+            && hasNumber(account.periodMeta?.[period]?.baselineBalance) && Number(account.periodMeta[period].baselineBalance) > 0
+              ? account.balance - Number(account.periodMeta[period].baselineBalance) : ""), account.lastAt,
+          !state.liveOk || minutesAgo(account.lastAt) > RISK_THRESHOLDS.staleMinutes ? "STALE" : account.dataComplete ? "SNAPSHOT" : "INCOMPLETE"]));
+        const csv = rows.map((row) => row.map((cell) => {
+          const value = typeof cell === "string" && /^[=+@\-\t\r]/.test(cell) ? "'" + cell : String(cell ?? "");
+          return `"${value.replaceAll('"', '""')}"`;
+        }).join(",")).join("\n");
         const blob = new Blob([csv], { type: "text/csv" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = "gold-dashboard-v2.csv";
+        a.download = "gold-portfolio-snapshot.csv";
         a.click();
         URL.revokeObjectURL(url);
       }
 
       function clearSettings() {
+        ++state.requestId;
+        setLoading(false);
+        state.loadingHistory = false;
+        state.meta = {};
+        state.liveAt = null;
+        state.historyAt = null;
         localStorage.removeItem(STORAGE.key);
         localStorage.removeItem(STORAGE.url);
         $("readKeyInput").value = "";
@@ -2861,14 +1580,119 @@ Just keep stacking days.
 
       function saveGoalSettings() {
         state.goalMonthlyPct = Math.max(0, n($("goalMonthlyInput").value, DEFAULT_GOAL_MONTHLY_PCT));
+        state.goalMonthlyContribution = Math.max(0, n($("goalContributionInput").value, DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD));
         localStorage.setItem(STORAGE.goalMonthlyPct, String(state.goalMonthlyPct));
+        localStorage.setItem(STORAGE.goalMonthlyContribution, String(state.goalMonthlyContribution));
         renderGoal();
+      }
+
+
+      function completeAccountMapping() {
+        const ids = state.accounts.map((a) => maskAccount(a.id));
+        return ids.length === EXPECTED.length && new Set(ids).size === ids.length
+          && EXPECTED.every((expected) => ids.includes(expected.id));
+      }
+
+      function portfolioSnapshot() {
+        const valid = state.accounts.filter((a) => a.dataComplete);
+        const coverage = new Set(state.accounts.filter(isVisibleAccount).map((a) => maskAccount(a.id))).size;
+        const oldest = state.accounts.length ? Math.max(...state.accounts.map((a) => minutesAgo(a.lastAt))) : Infinity;
+        const mapping = completeAccountMapping();
+        return { valid, coverage, oldest, mapping,
+          ready: state.liveOk && mapping && valid.length === EXPECTED.length && oldest <= RISK_THRESHOLDS.staleMinutes,
+          equity: valid.reduce((sum,a) => sum+a.equity,0), balance: valid.reduce((sum,a) => sum+a.balance,0) };
+      }
+
+      function updateFreshnessBadge() {
+        if (state.loading) return;
+        const s = portfolioSnapshot();
+        if (!state.accounts.length) { setConnection("Not connected"); return; }
+        if (!state.liveOk) { setConnection("Offline / old data","bad"); return; }
+        if (!s.mapping) { setConnection("Partial " + s.coverage + "/" + EXPECTED.length, "bad"); return; }
+        if (s.oldest > RISK_THRESHOLDS.staleMinutes) { setConnection("Stale snapshot", "bad"); return; }
+        if (s.valid.length !== EXPECTED.length) { setConnection("Incomplete values", "bad"); return; }
+        setConnection("Snapshot " + fmtAge(s.oldest), s.oldest > RISK_THRESHOLDS.slowMinutes ? "warn" : "live");
+      }
+
+      function formatHorizon(days) {
+        if (!Number.isFinite(days) || days < 0) return "Not reached";
+        if (days === 0) return "Reached";
+        const months = Math.ceil(days/30.44);
+        const years = Math.floor(months/12);
+        return ((years ? years + "y " : "") + (months%12 ? months%12 + "m" : "")).trim() || "1m";
+      }
+
+      function renderAccountSnapshot() {
+        const rows = [...state.accounts].sort((a,b) => severityScore(b)-severityScore(a) || a.ddPct-b.ddPct);
+        const missing = EXPECTED.filter((item) => !rows.some((a) => maskAccount(a.id) === item.id));
+        if (!rows.length) {
+          $("accountSnapshot").innerHTML = '<div class="empty tall"><strong>Your capital stays private.</strong>No account snapshot is connected on this browser.<br><button class="text-button" data-connect type="button">Connect read-only data</button></div>';
+          return;
+        }
+        $("accountSnapshot").innerHTML = `<table class="snapshot-table"><thead><tr><th scope="col">Account</th><th scope="col">Equity</th><th scope="col">DD</th><th scope="col" class="exposure-column">Net XAU</th><th scope="col" class="margin-column">Margin level</th></tr></thead><tbody>` +
+          rows.map((a) => {
+            const top = topDangerReason(a);
+            const dd = a.ddValid ? Math.abs(a.ddPct) : null;
+            const old = !state.liveOk || minutesAgo(a.lastAt) > RISK_THRESHOLDS.staleMinutes;
+            return `<tr><td><a class="account-link" href="#accounts" data-account="${escapeHtml(maskAccount(a.id))}">${escapeHtml(maskAccount(a.id))}</a><small>${escapeHtml(a.broker)} / ${old ? "STALE" : escapeHtml(fmtAge(minutesAgo(a.lastAt)))}</small></td>
+              <td><strong>${a.equityValid ? fmtUsdFromUsc(a.equity) : "—"}</strong><small>${a.dataComplete ? fmtSignedUsdFromUsc(a.equityGap)+" gap" : "Incomplete"}</small></td>
+              <td><strong class="${dd !== null && dd >= 25 ? "negative" : ""}">${dd !== null ? pct.format(dd)+"%" : "—"}</strong><div class="dd-meter ${dd >= 25 ? "critical" : dd >= 15 ? "watch" : ""}" title="DD relative to 25% review threshold"><span style="width:${dd === null ? 0 : Math.min(100,dd/25*100)}%"></span></div></td>
+              <td class="exposure-column">${escapeHtml(xauExposureLabel(a))}<small>broker lots</small></td>
+              <td class="margin-column">${a.openPositions === 0 ? "—" : a.marginValid ? pct.format(a.marginLevel)+"%" : "Unverified"}</td></tr>`;
+          }).join("") + missing.map((a) => `<tr><td>${escapeHtml(a.id)}<small>${escapeHtml(a.broker)}</small></td><td colspan="4" class="negative">Missing account snapshot</td></tr>`).join("") + '</tbody></table><p class="snapshot-caption">DD uses Balance. Exposure is the current snapshot, not a stop-out forecast.</p>';
+      }
+
+      function renderOverviewAside() {
+        const s = portfolioSnapshot();
+        const equity = s.equity/100;
+        const target = GOAL_TARGETS_USD.find((value) => value > equity) || GOAL_TARGETS_USD[GOAL_TARGETS_USD.length-1];
+        const progress = s.ready ? Math.max(0,Math.min(100,equity/target*100)) : 0;
+        $("overviewAside").innerHTML = `<div class="aside-block"><p class="aside-label">NEXT MILESTONE</p><div class="aside-value">${s.ready ? fmtUsd(target) : "$100,000"}</div>
+          <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div><p class="aside-copy">${s.ready ? pct.format(progress)+"% funded by current equity" : "Progress awaits verified equity."}</p>
+          <div class="aside-pair"><span>Monthly contribution</span><b>${fmtUsd(state.goalMonthlyContribution)}</b></div><a class="section-link" href="#goal">View scenarios</a></div>
+          <div class="aside-block"><p class="aside-label">YOUR PORTFOLIO PLAN</p><div class="aside-pair"><span>Main</span><b>$20,000</b></div><div class="aside-pair"><span>Aggressive</span><b>$3,000</b></div>
+          <p class="aside-copy">Recorded plan, not current allocation. Keep the main portfolio separate from aggressive risk.</p><a class="section-link" href="#plans">Review allocations</a></div>`;
+      }
+
+      function renderOverviewHistory() {
+        const series = state.historyOk && Array.isArray(state.performance.monthly_series)
+          ? state.performance.monthly_series.filter((item) => hasCompletePortfolioCoverage(item) && hasNumber(item.profit)).slice(-6) : [];
+        if (!series.length) {
+          $("overviewHistory").innerHTML = '<div class="empty">No verified monthly history yet.</div>'; return;
+        }
+        const max = Math.max(1,...series.map((item) => Math.abs(Number(item.profit))));
+        $("overviewHistory").innerHTML = '<div class="balance-bars" role="img" aria-label="Monthly balance changes, including transfers">' +
+          series.map((item) => `<div class="balance-column"><strong class="${clsNum(item.profit)}">${fmtSignedUsdFromUsc(item.profit)}</strong><div class="balance-bar-area"><div class="balance-bar ${item.profit < 0 ? "loss" : ""}" style="height:${Math.abs(item.profit)/max*100}%"></div></div><span>${escapeHtml(item.label || item.date || "—")}</span></div>`).join("")+'</div>';
+      }
+
+      function navigateView() {
+        const hash = location.hash.slice(1);
+        const routes = {overview:"overview",snapshot:"overview",danger:"overview",accounts:"accounts",pnl:"performance",ranking:"performance",plans:"plans",goal:"plans",health:"data"};
+        const view = routes[hash] || "overview";
+        const titles = {
+          overview:["YOUR CAPITAL, AT A GLANCE","Portfolio overview","รักษาทุนให้ได้ก่อน แล้วค่อยเดินต่อ"],
+          accounts:["THE POSITION BEHIND THE NUMBER","Your accounts","Equity, drawdown and exposure. Account by account."],
+          performance:["RESULTS, WITH CONTEXT","Performance","Balance changes and their data quality."],
+          plans:["CAPITAL FIRST. GROWTH SECOND.","Plans & goals","พอร์ตหลัก + พอร์ตซิ่ง / วางแผน ไม่ใช่คำสัญญา"],
+          data:["TRUST STARTS WITH THE SOURCE","Data health","Freshness, account coverage and verified baselines."],
+        };
+        document.querySelectorAll("[data-view]").forEach((el) => { el.hidden = el.dataset.view !== view; });
+        document.querySelectorAll("[data-nav]").forEach((el) => {
+          if (el.dataset.nav === view) el.setAttribute("aria-current","page"); else el.removeAttribute("aria-current");
+        });
+        ["viewEyebrow","viewTitle","viewSubtitle"].forEach((id,i) => { $(id).textContent = titles[view][i]; });
+        if (hash === "goal" || hash === "ranking") $(hash).scrollIntoView({block:"start"});
+        else window.scrollTo({top:0,behavior:"instant"});
       }
 
       function init() {
         scrubSensitiveUrlParams();
         const savedMonthly = localStorage.getItem(STORAGE.goalMonthlyPct);
+        const savedContribution = localStorage.getItem(STORAGE.goalMonthlyContribution);
         state.goalMonthlyPct = savedMonthly === null ? DEFAULT_GOAL_MONTHLY_PCT : Math.max(0, n(savedMonthly, DEFAULT_GOAL_MONTHLY_PCT));
+        state.goalMonthlyContribution = savedContribution === null
+          ? DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD
+          : Math.max(0, n(savedContribution, DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD));
         const savedUrl = cleanUrl(localStorage.getItem(STORAGE.url)) || DEFAULT_ENDPOINT;
         const savedKey = localStorage.getItem(STORAGE.key) || "";
         $("endpointInput").value = savedUrl;
@@ -2879,8 +1703,9 @@ Just keep stacking days.
         } else {
           $("readKeyInput").value = savedKey;
         }
-        setSettingsOpen(!$("readKeyInput").value);
+        setSettingsOpen(false);
         $("goalMonthlyInput").value = state.goalMonthlyPct;
+        $("goalContributionInput").value = state.goalMonthlyContribution;
         $("connectBtn").addEventListener("click", connect);
         $("settingsToggle").addEventListener("click", toggleSettings);
         $("refreshBtn").addEventListener("click", connect);
@@ -2910,6 +1735,7 @@ Just keep stacking days.
           }
         });
         $("goalMonthlyInput").addEventListener("input", saveGoalSettings);
+        $("goalContributionInput").addEventListener("input", saveGoalSettings);
         $("rankingTabs").addEventListener("click", (event) => {
           const button = event.target.closest("[data-rank-mode]");
           if (!button) return;
@@ -2923,7 +1749,21 @@ Just keep stacking days.
           $("sortDangerBtn").setAttribute("aria-pressed", state.sortDanger ? "true" : "false");
           renderAccounts();
         });
+        window.addEventListener("hashchange", navigateView);
+        document.addEventListener("click", (event) => {
+          const accountLink = event.target.closest("[data-account]");
+          if (accountLink) {
+            $("searchInput").value = accountLink.dataset.account;
+            renderAccounts();
+          }
+          const connectLink = event.target.closest("[data-connect]");
+          if (connectLink) { setSettingsOpen(true); $("readKeyInput").focus(); }
+        });
+        navigateView();
         render();
+        // Only repaint data age locally. No polling, AI calls or scheduled jobs.
+        setInterval(() => { if (!document.hidden && state.accounts.length) render(); }, 30000);
+        document.addEventListener("visibilitychange", () => { if (!document.hidden) render(); });
         if ($("readKeyInput").value) connect();
         else log("Paste read key and press Connect");
       }
