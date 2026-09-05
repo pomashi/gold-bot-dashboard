@@ -1066,22 +1066,29 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         await loadAll();
       }
 
-      async function fetchJson(url, timeoutMs = 25000) {
+      async function fetchJson(url, timeoutMs = 25000, phase = "") {
+        const startedAt = performance.now();
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), timeoutMs);
-        let response;
+        let success = false;
         try {
-          response = await fetch(url, { cache: "no-store", signal: controller.signal });
+          const response = await fetch(url, { cache: "no-store", signal: controller.signal });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          const payload = await response.json();
+          if (payload && payload.error === "unauthorized") throw new Error("Unauthorized read key");
+          success = true;
+          return payload;
         } catch (error) {
           if (error.name === "AbortError") throw new Error("Request timed out");
           throw error;
         } finally {
           clearTimeout(timer);
+          // Only fixed labels and duration enter the in-memory log, never URLs or payloads.
+          if (phase === "Live" || phase === "History") {
+            log(phase + " request " + (success ? "OK" : "failed") + ": " +
+              ((performance.now() - startedAt) / 1000).toFixed(2) + " s", success ? "live" : "bad");
+          }
         }
-        if (!response.ok) throw new Error("HTTP " + response.status);
-        const payload = await response.json();
-        if (payload && payload.error === "unauthorized") throw new Error("Unauthorized read key");
-        return payload;
       }
 
       async function loadAll() {
@@ -1090,7 +1097,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         setLoading(true);
         setConnection("Loading", "warn");
         try {
-          const live = await fetchJson(authedUrl(cfg.url, cfg.key), 18000);
+          const live = await fetchJson(authedUrl(cfg.url, cfg.key), 18000, "Live");
           if (requestId !== state.requestId) return;
           if (!Array.isArray(live.accounts)) throw new Error("Invalid account payload");
           state.liveOk = true;
@@ -1105,7 +1112,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           render();
 
           try {
-            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 75000);
+            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 75000, "History");
             if (requestId !== state.requestId) return;
             state.historyOk = true;
             state.historyAt = new Date();
