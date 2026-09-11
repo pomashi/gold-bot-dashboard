@@ -138,6 +138,8 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
   .discipline-dialog { padding: 24px; }
   .discipline-quote { font-size: 16px; }
 }
+.plan-lots[aria-label="Main portfolio bot lots"] { grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); }
+.plan-lot small { display: block; margin-top: 5px; font-size: 10px; color: var(--muted); }
 </style>
 
   </head>
@@ -412,13 +414,14 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
                     <span class="card-label">พอร์ตหลัก</span>
                     <strong>Main Portfolio</strong>
                   </div>
-                  <div class="plan-capital"><span>Capital</span><b>$16,000</b></div>
+                  <div class="plan-capital"><span>Capital</span><b>$20,000</b></div>
                 </div>
                 <div class="plan-lots" aria-label="Main portfolio bot lots">
-                  <div class="plan-lot"><span>Grandma</span><b>0.20</b></div>
-                  <div class="plan-lot"><span>Gold Devil</span><b>0.06</b></div>
-                  <div class="plan-lot"><span>Gold Slayer</span><b>0.04</b></div>
-                  <div class="plan-lot"><span>Smart Gold</span><b>0.01</b></div>
+                  <div class="plan-lot"><span>Grandma</span><b>0.25</b><small>800 / 0.01</small></div>
+                  <div class="plan-lot"><span>Gold Devil</span><b>0.08</b><small>2500 / 0.01</small></div>
+                  <div class="plan-lot"><span>Gold Slayer</span><b>0.05</b><small>4000 / 0.01</small></div>
+                  <div class="plan-lot"><span>Smart Gold</span><b>0.02</b><small>10000 / 0.01</small></div>
+                  <div class="plan-lot"><span>Gold Sniper</span><b>0.03</b><small>6000 / 0.01</small></div>
                 </div>
                 <div class="plan-note"><b>Role:</b> Peace-first core portfolio. Planning target 2.5-3.0% per month; risk control comes before return.</div>
               </article>
@@ -556,7 +559,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       const EXPECTED = [
         { id: "2011****69", broker: "MH", bots: ["Smart Gold 0.01", "Gold Devil 0.01"] },
         { id: "2011****70", broker: "MH", bots: ["Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
-        { id: "2489****86", broker: "VT", bots: ["Grandma Gold 0.20", "Gold Devil 0.06", "Gold Slayer 0.04", "Smart Gold 0.01"] },
+        { id: "2489****86", broker: "VT", bots: ["Grandma Gold 0.25", "Gold Devil 0.08", "Gold Slayer 0.05", "Smart Gold 0.02", "Gold Sniper 0.03"] },
         { id: "2011****15", broker: "MH", bots: ["Smart Gold 0.01", "Gold Devil 0.01", "Gold Slayer 0.01"] },
         { id: "2011****77", broker: "MH", bots: ["John Wick 0.10", "Gold Slayer 0.01"] },
         { id: "2344****52", broker: "VT", bots: ["Gold Sniper V2 Trial 0.01"] },
