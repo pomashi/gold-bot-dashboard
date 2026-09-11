@@ -1205,7 +1205,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const note = s.ready ? "Verified values / " + s.coverage + " accounts" : "Awaiting a complete, fresh snapshot";
         $("kpiGrid").innerHTML = [
           kpi("Portfolio balance", s.ready ? fmtUsdFromUsc(s.balance) : "—",
-            s.ready ? "Equity " + fmtUsdFromUsc(s.equity) + "<br>" + note : note),
+            s.ready ? "<b class=\"balance-thb\">" + fmtUscThb(s.balance) + "</b><br>เรทสมมติ " + USDTHB_RATE.toFixed(2) + " THB/USD · ไม่ใช่เรทสด<br>Equity " + fmtUsdFromUsc(s.equity) + "<br>" + note : note),
           kpi("Equity gap", s.ready ? fmtSignedUsdFromUsc(s.equity-s.balance) : "—",
             s.ready ? "Equity minus balance<br>Portfolio DD " + pct.format(s.balance > 0 ? Math.max(0,(s.balance-s.equity)/s.balance*100) : 0) + "%" : "Not assumed to be zero",
             s.ready && s.equity < s.balance ? "tone-negative" : ""),
