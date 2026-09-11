@@ -140,6 +140,10 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
 }
 .plan-lots[aria-label="Main portfolio bot lots"] { grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); }
 .plan-lot small { display: block; margin-top: 5px; font-size: 10px; color: var(--muted); }
+.manual-portfolio{border-top:1px solid var(--line);padding:20px 0;display:grid;grid-template-columns:1fr 1.5fr 1.5fr;gap:18px;align-items:start}
+.manual-portfolio h3{font-size:16px;margin:0 0 8px}.manual-portfolio p{font-size:12px;color:var(--muted);margin:7px 0;overflow-wrap:anywhere}.manual-portfolio b{font-size:18px;overflow-wrap:anywhere}
+.manual-portfolio form{display:flex;flex-wrap:wrap;gap:8px;align-items:end}.manual-portfolio .field{flex:1;min-width:130px}.manual-portfolio input{width:100%;box-sizing:border-box}.manual-portfolio form p{flex-basis:100%;margin:0}
+@media(max-width:700px){.manual-portfolio{grid-template-columns:1fr}.manual-portfolio form{max-width:100%}}
 </style>
 
   </head>
@@ -326,6 +330,15 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
         <section class="grid" id="overview" data-view="overview"><div class="panel span-12">
           <div class="decision-strip tone-watch" id="decisionStrip" role="status" aria-live="polite"></div>
           <div class="kpi-grid" id="kpiGrid"></div>
+          <section class="manual-portfolio" aria-labelledby="manualTitle">
+            <div><h3 id="manualTitle">MT4 · FX portfolio</h3><p>Manual / เก็บเฉพาะเบราว์เซอร์นี้</p></div>
+            <div><b id="manualBalance">—</b><p id="manualUpdated">ยังไม่ได้บันทึก Balance</p><p>ไม่รวมในยอด MT5, Equity, DD และเป้าหมาย</p></div>
+            <form id="manualBalanceForm">
+              <div class="field"><label for="manualBalanceInput">Balance (USD)</label><input id="manualBalanceInput" type="number" min="0" max="1000000000" step="0.01" required inputmode="decimal" autocomplete="off"></div>
+              <button class="btn" type="submit">บันทึก Balance</button>
+              <p id="manualBalanceStatus" role="status" aria-live="polite"></p>
+            </form>
+          </section>
           <div class="principles-bar" aria-label="Portfolio principles"><span><b>01</b><strong>รักษาทุนก่อนผลตอบแทน</strong></span><span><b>02</b><strong>ไม่เร่งลอท ไม่ไล่เอาคืน</strong></span><span><b>03</b><strong>มีความสุขกับวันนี้ด้วย</strong></span></div>
         </div></section>
         <section id="snapshot" data-view="overview" class="overview-layout">
@@ -544,6 +557,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       const DEFAULT_GOAL_MONTHLY_PCT = 3;
       const DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD = 500;
       const USDTHB_RATE = 32.5;
+      const MANUAL_BALANCE_KEY = "gold-manual-mt4-fx-v1";
+      let manualBalance = null;
       const GOAL_TARGETS_USD = [100000, 200000, 600000];
       const RISK_THRESHOLDS = Object.freeze({
         slowMinutes: 12,
@@ -1218,6 +1233,46 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         ].join("");
       }
 
+      function renderManualBalance() {
+        $("manualBalance").textContent = manualBalance
+          ? "$" + money.format(manualBalance.usd) + " / " + fmtThb(manualBalance.usd * USDTHB_RATE)
+          : "—";
+        $("manualUpdated").textContent = manualBalance
+          ? "บันทึกเอง " + new Date(manualBalance.updatedAt).toLocaleString("th-TH") + " · เรทสมมติ " + USDTHB_RATE.toFixed(2)
+          : "ยังไม่ได้บันทึก Balance";
+      }
+
+      function loadManualBalance() {
+        try {
+          const raw = localStorage.getItem(MANUAL_BALANCE_KEY);
+          if (raw !== null) {
+            const saved = JSON.parse(raw);
+            if (!saved || typeof saved.usd !== "number" || !Number.isFinite(saved.usd) || saved.usd < 0 || saved.usd > 1e9
+                || typeof saved.updatedAt !== "string" || !Number.isFinite(Date.parse(saved.updatedAt))) throw new Error("Invalid manual balance");
+            manualBalance = saved;
+            $("manualBalanceInput").value = saved.usd.toFixed(2);
+          }
+        } catch {
+          $("manualBalanceStatus").textContent = "อ่านยอดที่บันทึกไม่ได้ กรุณากรอกใหม่";
+        }
+        renderManualBalance();
+      }
+
+      function saveManualBalance(event) {
+        event.preventDefault();
+        const input = $("manualBalanceInput");
+        if (!input.reportValidity() || !Number.isFinite(input.valueAsNumber)) return;
+        const next = { usd: Math.round(input.valueAsNumber * 100) / 100, updatedAt: new Date().toISOString() };
+        try {
+          localStorage.setItem(MANUAL_BALANCE_KEY, JSON.stringify(next));
+          manualBalance = next;
+          renderManualBalance();
+          $("manualBalanceStatus").textContent = "บันทึกแล้ว · ไม่ได้ส่งข้อมูลออกจากเบราว์เซอร์";
+        } catch {
+          $("manualBalanceStatus").textContent = "บันทึกไม่ได้ ยอดเดิมยังไม่เปลี่ยน ตรวจสอบพื้นที่จัดเก็บของเบราว์เซอร์";
+        }
+      }
+
       function kpi(label, value, note, tone = "") {
         return `<div class="kpi ${tone}"><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`;
       }
@@ -1805,6 +1860,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
 
       function init() {
         scrubSensitiveUrlParams();
+        loadManualBalance();
+        $("manualBalanceForm").addEventListener("submit", saveManualBalance);
         const savedMonthly = localStorage.getItem(STORAGE.goalMonthlyPct);
         const savedContribution = localStorage.getItem(STORAGE.goalMonthlyContribution);
         state.goalMonthlyPct = savedMonthly === null ? DEFAULT_GOAL_MONTHLY_PCT : Math.max(0, n(savedMonthly, DEFAULT_GOAL_MONTHLY_PCT));
