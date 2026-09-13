@@ -330,15 +330,6 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
         <section class="grid" id="overview" data-view="overview"><div class="panel span-12">
           <div class="decision-strip tone-watch" id="decisionStrip" role="status" aria-live="polite"></div>
           <div class="kpi-grid" id="kpiGrid"></div>
-          <section class="manual-portfolio" aria-labelledby="manualTitle">
-            <div><h3 id="manualTitle">MT4 · FX portfolio</h3><p>Manual / เก็บเฉพาะเบราว์เซอร์นี้</p></div>
-            <div><b id="manualBalance">—</b><p id="manualUpdated">ยังไม่ได้บันทึก Balance</p><p>ไม่รวมในยอด MT5, Equity, DD และเป้าหมาย</p></div>
-            <form id="manualBalanceForm">
-              <div class="field"><label for="manualBalanceInput">Balance (USD)</label><input id="manualBalanceInput" type="number" min="0" max="1000000000" step="0.01" required inputmode="decimal" autocomplete="off"></div>
-              <button class="btn" type="submit">บันทึก Balance</button>
-              <p id="manualBalanceStatus" role="status" aria-live="polite"></p>
-            </form>
-          </section>
           <div class="principles-bar" aria-label="Portfolio principles"><span><b>01</b><strong>รักษาทุนก่อนผลตอบแทน</strong></span><span><b>02</b><strong>ไม่เร่งลอท ไม่ไล่เอาคืน</strong></span><span><b>03</b><strong>มีความสุขกับวันนี้ด้วย</strong></span></div>
         </div></section>
         <section id="snapshot" data-view="overview" class="overview-layout">
@@ -376,6 +367,15 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
           <aside class="overview-aside" id="overviewAside" aria-label="Capital plan"></aside>
         </section>
         <section class="grid" id="danger" data-view="overview"><div class="panel span-12"><div class="section-head"><h2>Needs attention</h2><span class="muted" style="font-size:11px">DD watch 15% / review 25%</span></div><div class="danger-list" id="dangerList"></div></div></section>
+        <section class="manual-portfolio" id="manualPortfolio" data-view="overview" aria-labelledby="manualTitle">
+          <div><h3 id="manualTitle">MT4 · FX portfolio</h3><p>1411****13 · Manual / เก็บเฉพาะเบราว์เซอร์นี้</p></div>
+          <div><b id="manualBalance">—</b><p id="manualUpdated">ยังไม่ได้บันทึก Balance</p><p>ไม่รวมในยอด MT5, Equity, DD และเป้าหมาย</p></div>
+          <form id="manualBalanceForm">
+            <div class="field"><label for="manualBalanceInput">Balance (USD)</label><input id="manualBalanceInput" type="number" min="0" max="1000000000" step="0.01" required inputmode="decimal" autocomplete="off"></div>
+            <button class="btn" type="submit">บันทึก Balance</button>
+            <p id="manualBalanceStatus" role="status" aria-live="polite"></p>
+          </form>
+        </section>
         <section class="grid" id="accounts" data-view="accounts" hidden style="margin-top: 12px">
           <div class="panel pad span-12">
             <div class="section-head">
@@ -1267,6 +1267,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           localStorage.setItem(MANUAL_BALANCE_KEY, JSON.stringify(next));
           manualBalance = next;
           renderManualBalance();
+          renderAccounts();
           $("manualBalanceStatus").textContent = "บันทึกแล้ว · ไม่ได้ส่งข้อมูลออกจากเบราว์เซอร์";
         } catch {
           $("manualBalanceStatus").textContent = "บันทึกไม่ได้ ยอดเดิมยังไม่เปลี่ยน ตรวจสอบพื้นที่จัดเก็บของเบราว์เซอร์";
@@ -1543,7 +1544,25 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           rows = rows.filter((account) => [account.id, maskAccount(account.id), account.broker, account.server, account.note, account.bots.join(" ")].join(" ").toLowerCase().includes(query));
         }
         if (state.sortDanger) rows.sort((a, b) => severityScore(b) - severityScore(a) || a.id.localeCompare(b.id));
-        $("accountList").innerHTML = rows.length ? rows.map(accountCard).join("") : `<div class="empty">${state.accounts.length ? "No accounts match." : "No live accounts loaded yet."}</div>`;
+        const manualMatch = manualBalance && (!query || "1411****13 mt4 fx manual คู่เงิน".includes(query));
+        const cards = rows.map(accountCard).join("") + (manualMatch ? manualAccountCard() : "");
+        $("accountList").innerHTML = cards || `<div class="empty">${state.accounts.length || manualBalance ? "No accounts match." : "No live accounts loaded yet."}</div>`;
+      }
+
+      function manualAccountCard() {
+        return `<article id="manualAccountCard" class="account-card">
+          <div class="account-title"><strong>1411****13</strong><span>MT4 / FX portfolio</span>
+            <small class="account-last">บันทึกเอง ${escapeHtml(new Date(manualBalance.updatedAt).toLocaleString("th-TH"))}</small>
+            <div class="pill-row"><span class="pill">Manual</span><span class="pill">Risk unverified</span></div>
+            <small>เก็บเฉพาะเบราว์เซอร์นี้ · ไม่รวมในยอด MT5 และเป้าหมาย</small>
+          </div>
+          <div class="account-metrics">
+            ${mini("Balance (USD)", "$" + money.format(manualBalance.usd))}
+            ${mini("THB / planning FX " + USDTHB_RATE.toFixed(2), fmtThb(manualBalance.usd * USDTHB_RATE))}
+            ${mini("Equity", "Unavailable")}${mini("DD", "Unavailable")}
+            ${mini("Margin / Positions", "Unverified")}
+          </div>
+        </article>`;
       }
 
       function accountCard(account) {
