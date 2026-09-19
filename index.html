@@ -144,6 +144,32 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
 .manual-portfolio h3{font-size:16px;margin:0 0 8px}.manual-portfolio p{font-size:12px;color:var(--muted);margin:7px 0;overflow-wrap:anywhere}.manual-portfolio b{font-size:18px;overflow-wrap:anywhere}
 .manual-portfolio form{display:flex;flex-wrap:wrap;gap:8px;align-items:end}.manual-portfolio .field{flex:1;min-width:130px}.manual-portfolio input{width:100%;box-sizing:border-box}.manual-portfolio form p{flex-basis:100%;margin:0}
 @media(max-width:700px){.manual-portfolio{grid-template-columns:1fr}.manual-portfolio form{max-width:100%}}
+.history-notice{padding:12px 0;border-bottom:1px solid var(--line);margin-bottom:20px;display:flex;gap:12px;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}
+.history-notice[hidden]{display:none}
+#overview .kpi-grid{grid-template-columns:1.65fr 1fr 1fr .85fr;padding:4px 0 26px}
+#overview .kpi:first-child>strong{font-size:42px;line-height:1.2}
+.kpi>small{font-size:12px}.balance-thb{font-weight:500}.equity-subtotal{display:block;margin-top:10px;font-size:14px;color:var(--ink)}
+.balance-detail{font-size:12px;line-height:1.7;color:var(--muted)}.balance-detail summary{cursor:pointer;color:#a9bfd0}.balance-detail p{margin:8px 0 0}
+#overview .decision-strip{margin:20px 0 0;padding:14px 18px}.snapshot-table td{padding-top:18px;padding-bottom:18px}
+#overview .decision-strip:first-child{margin:0 0 20px}
+.row-status{font-size:10px;font-weight:500;display:inline-block;margin-left:7px;color:var(--muted)}
+.row-status.red{color:var(--red)}.row-status.yellow{color:var(--gold)}
+@media(max-width:1180px){#overview .kpi-grid{grid-template-columns:1.4fr 1fr 1fr 1fr;gap:16px}#overview .kpi:first-child>strong{font-size:34px}}
+@media(max-width:900px){#overview .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.overview-layout{grid-template-columns:1fr}.overview-aside{border-left:0;border-top:1px solid var(--line);padding:24px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:24px}.overview-aside .aside-block+.aside-block{margin:0;padding:0;border:0}.present-note{grid-column:auto}}
+@media(max-width:640px){
+  #overview .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 12px}
+  #overview .kpi:first-child{grid-column:1/-1;border:0;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  #overview .kpi:first-child>strong{font-size:38px}
+  #overview .kpi:not(:first-child)>strong{font-size:21px}
+  #overview .kpi:nth-child(2){border-right:1px solid var(--line)}
+  #overview .kpi:nth-child(3){border:0}
+  #overview .kpi:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr auto;gap:6px 16px;border-top:1px solid var(--line);padding-top:16px}
+  #overview .kpi:last-child>strong{grid-column:2;grid-row:1/3}
+  #overview .kpi:last-child>small{grid-column:1}
+  .kpi>small{font-size:11px}.kpi>span{font-size:11px}
+  .row-status{display:block;margin:5px 0 0}.history-notice{flex-wrap:wrap}
+  .overview-aside{grid-template-columns:1fr}.present-note{border-top:0!important;padding-top:0!important}
+}
 </style>
 
   </head>
@@ -327,13 +353,14 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
           <button class="btn primary" id="connectBtn" type="button">Connect</button><button class="btn" id="clearBtn" type="button">Disconnect</button><button class="btn" id="exportBtn" type="button">Export CSV</button>
         </div>
         <div class="page-heading"><div><p class="eyebrow" id="viewEyebrow">YOUR CAPITAL, AT A GLANCE</p><h1 id="viewTitle">Portfolio overview</h1><p id="viewSubtitle">รักษาทุนให้ได้ก่อน แล้วค่อยเดินต่อ</p></div><button class="text-button" id="disciplineOpenBtn" type="button" aria-label="Capital-first note">ก่อนเพิ่มลอท</button></div>
+        <div id="historyNotice" class="history-notice" role="status" hidden><span id="historyNoticeText"></span><button id="historyRetry" class="text-button" type="button" hidden>ลองโหลดประวัติอีกครั้ง</button></div>
         <section class="grid" id="overview" data-view="overview"><div class="panel span-12">
-          <div class="decision-strip tone-watch" id="decisionStrip" role="status" aria-live="polite"></div>
           <div class="kpi-grid" id="kpiGrid"></div>
-          <div class="principles-bar" aria-label="Portfolio principles"><span><b>01</b><strong>รักษาทุนก่อนผลตอบแทน</strong></span><span><b>02</b><strong>ไม่เร่งลอท ไม่ไล่เอาคืน</strong></span><span><b>03</b><strong>มีความสุขกับวันนี้ด้วย</strong></span></div>
+          <div class="decision-strip tone-watch" id="decisionStrip" role="status" aria-live="polite"></div>
         </div></section>
+        <section class="grid" id="danger" data-view="overview"><div class="panel span-12"><div class="section-head"><h2>พอร์ตที่ต้องดูแล</h2><span class="muted" style="font-size:12px">DD เฝ้าดู 15% / ทบทวน 25%</span></div><div class="danger-list" id="dangerList"></div></div></section>
         <section id="snapshot" data-view="overview" class="overview-layout">
-          <div class="overview-main"><div class="section-head"><h2>Account watch</h2><a class="section-link" href="#accounts">Account details <svg aria-hidden="true" class="icon"
+          <div class="overview-main"><div class="section-head"><h2>พอร์ตทั้งหมด</h2><a class="section-link" href="#accounts">ดูรายละเอียด <svg aria-hidden="true" class="icon"
   xmlns="http://www.w3.org/2000/svg"
   width="20"
   height="20"
@@ -348,25 +375,9 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
   <path d="M7 17 17 7" />
 </svg>
 </a></div><div id="accountSnapshot"></div>
-            <div class="overview-chart"><div class="section-head"><div><h3>Monthly balance change</h3><p>Transfers included / not trading profit</p></div><a class="section-link" href="#pnl">History <svg aria-hidden="true" class="icon"
-  xmlns="http://www.w3.org/2000/svg"
-  width="20"
-  height="20"
-  viewBox="0 0 24 24"
-  fill="none"
-  stroke="currentColor"
-  stroke-width="2"
-  stroke-linecap="round"
-  stroke-linejoin="round"
->
-  <path d="M7 7h10v10" />
-  <path d="M7 17 17 7" />
-</svg>
-</a></div><div id="overviewHistory"></div></div>
           </div>
           <aside class="overview-aside" id="overviewAside" aria-label="Capital plan"></aside>
         </section>
-        <section class="grid" id="danger" data-view="overview"><div class="panel span-12"><div class="section-head"><h2>Needs attention</h2><span class="muted" style="font-size:11px">DD watch 15% / review 25%</span></div><div class="danger-list" id="dangerList"></div></div></section>
         <section class="manual-portfolio" id="manualPortfolio" data-view="overview" aria-labelledby="manualTitle">
           <div><h3 id="manualTitle">MT4 · FX portfolio</h3><p>1411****13 · Manual / เก็บเฉพาะเบราว์เซอร์นี้</p></div>
           <div><b id="manualBalance">—</b><p id="manualUpdated">ยังไม่ได้บันทึก Balance</p><p>รวมใน Total Balance เท่านั้น · ไม่รวม Equity, DD และเป้าหมาย</p></div>
@@ -402,6 +413,7 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
               </div>
             </div>
             <div class="period-grid" id="periodCards"></div>
+            <div class="overview-chart"><div class="section-head"><div><h3>Monthly balance change</h3><p>รวมเงินเข้าออก · ไม่ใช่กำไรจากการเทรด</p></div></div><div id="overviewHistory"></div></div>
           </div>
           <div class="panel pad span-12">
             <div class="history-grid">
@@ -596,6 +608,10 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         goalMonthlyContribution: DEFAULT_GOAL_MONTHLY_CONTRIBUTION_USD,
         loading: false,
         loadingHistory: false,
+        historyRequestedId: -1,
+        historyError: false,
+        activeView: "overview",
+        readSource: null,
         requestId: 0,
       };
       let modalReturnFocus = null;
@@ -646,8 +662,10 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const withProtocol = raw.startsWith("script.google.com/") ? "https://" + raw : raw;
         try {
           const url = new URL(withProtocol);
-          if (url.hostname !== "script.google.com" || !url.pathname.includes("/macros/s/")) return "";
+          if (url.protocol !== "https:" || url.hostname !== "script.google.com" || url.port
+              || url.username || url.password || !/^\/macros\/s\/[a-zA-Z0-9_-]+\/exec$/.test(url.pathname)) return "";
           url.search = "";
+          url.hash = "";
           return url.toString();
         } catch {
           return "";
@@ -862,8 +880,11 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const expected = EXPECTED.find((item) => item.id === maskAccount(id)) || {};
         const note = String(row.note || "");
         const isBlockedLegacyAccount = id.startsWith("601");
-        const balanceValid = hasNumber(row.balance);
-        const equityValid = hasNumber(row.equity);
+        // The existing connector contract is USC; explicit conflicting units fail closed.
+        const currency = String(row.currency ?? row.account_currency ?? "USC").trim().toUpperCase();
+        const currencyValid = currency === "USC";
+        const balanceValid = currencyValid && hasNumber(row.balance);
+        const equityValid = currencyValid && hasNumber(row.equity);
         const balance = n(row.balance);
         const equity = n(row.equity);
         const equityGap = equity - balance;
@@ -906,6 +927,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         return {
           id,
           isBlockedLegacyAccount,
+          currencyValid,
           dataComplete: Boolean(id) && balanceValid && equityValid && balance >= 0,
           balanceValid,
           equityValid,
@@ -1001,9 +1023,11 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       function baselineConfidence(meta, period) {
         if (!meta || !hasNumber(meta.baselineBalance) || Number(meta.baselineBalance) <= 0) return { kind: "bad", label: "No baseline", detail: "history missing" };
         const source = String(meta.baselineSource || "unknown");
+        if (source === "manual") return { kind: "good", label: "Manual baseline", detail: "locked override" };
+        if (!["at_start", "snapshot", "summary_first", "summary_latest", "summary_max_dd", "near_start", "late_start"].includes(source)
+            || !hasNumber(meta.baselineOffsetMinutes)) return { kind: "bad", label: "Unverified baseline", detail: "source or offset missing" };
         const signedOffset = n(meta.baselineOffsetMinutes, 0);
         const offset = Math.abs(signedOffset);
-        if (source === "manual") return { kind: "good", label: "Manual baseline", detail: "locked override" };
         if (source === "late_start") return { kind: "bad", label: "Late baseline", detail: "missing start snapshot" };
         if (signedOffset < 0 && offset <= 3 * 24 * 60) return { kind: "good", label: "Prior market close", detail: Math.round(offset) + "m before reset" };
         if (signedOffset < 0) return { kind: "bad", label: "Baseline too old", detail: Math.round(offset) + "m before reset" };
@@ -1038,6 +1062,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const reasons = [];
         const age = minutesAgo(account.lastAt);
         if (!account.id) reasons.push({ severity: "red", text: "Missing account id" });
+        if (!account.currencyValid) reasons.push({ severity: "red", text: "Account currency does not match USC connector" });
         if (!account.dataComplete) reasons.push({ severity: "red", text: "Data incomplete" });
         if (!account.exposureComplete) reasons.push({ severity: "yellow", text: "Exposure unverified" });
         if (!account.marginValid && account.openPositions !== 0) reasons.push({ severity: "yellow", text: "Margin unverified" });
@@ -1113,40 +1138,27 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       async function loadAll() {
         const cfg = settings();
         const requestId = ++state.requestId;
+        state.readSource = null;
+        state.loadingHistory = false;
+        state.historyRequestedId = -1;
+        state.historyError = false;
+        state.historyOk = false;
+        state.historyAt = null;
+        state.performance = {};
         setLoading(true);
         setConnection("Loading", "warn");
         try {
           const live = await fetchJson(authedUrl(cfg.url, cfg.key), 18000, "Live");
           if (requestId !== state.requestId) return;
-          if (!Array.isArray(live.accounts)) throw new Error("Invalid account payload");
+          if (!live || live.ok === false || !Array.isArray(live.accounts)) throw new Error("Invalid account payload");
           state.liveOk = true;
+          state.readSource = cfg;
           state.liveAt = new Date();
           state.historyOk = false;
           state.performance = {};
           state.meta = live.meta || {};
           state.accounts = (live.accounts || []).map(normalizeAccount).filter(isVisibleAccount);
           log("Live loaded: " + state.accounts.length + " accounts", "live");
-          state.loadingHistory = true;
-          setConnection("Live • history loading", "live");
-          render();
-
-          try {
-            const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 75000, "History");
-            if (requestId !== state.requestId) return;
-            state.historyOk = true;
-            state.historyAt = new Date();
-            state.performance = history.performance || {};
-            state.meta = { ...state.meta, ...(history.meta || {}) };
-            mergeHistoryAccounts(history.accounts || []);
-            log("History loaded", "live");
-          } catch (historyError) {
-            if (requestId !== state.requestId) return;
-            state.historyOk = false;
-            state.performance = {};
-            log("History failed: " + historyError.message, "bad");
-          }
-
-          state.loadingHistory = false;
           updateFreshnessBadge();
           setSettingsOpen(false);
           render();
@@ -1159,8 +1171,57 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           log("Live failed: " + error.message, "bad");
           render();
         } finally {
-          if (requestId === state.requestId) { setLoading(false); updateFreshnessBadge(); }
+          if (requestId === state.requestId) {
+            setLoading(false);
+            updateFreshnessBadge();
+            ensureHistory();
+          }
         }
+      }
+
+      async function ensureHistory() {
+        if (!["accounts", "performance", "data"].includes(state.activeView)
+            || state.loading || !state.liveOk || state.historyOk || state.loadingHistory
+            || state.historyRequestedId === state.requestId) return;
+        const requestId = state.requestId;
+        const cfg = state.readSource;
+        if (!cfg) return;
+        state.historyRequestedId = requestId;
+        state.loadingHistory = true;
+        state.historyError = false;
+        renderHistoryNotice();
+        try {
+          const history = await fetchJson(authedUrl(cfg.url, cfg.key, "history"), 75000, "History");
+          if (requestId !== state.requestId) return;
+          if (!history || history.ok === false || !Array.isArray(history.accounts) || !history.performance
+              || typeof history.performance !== "object" || Array.isArray(history.performance)) throw new Error("Invalid history payload");
+          state.historyOk = true;
+          state.historyAt = new Date();
+          state.performance = history.performance;
+          state.meta = { ...state.meta, ...(history.meta || {}) };
+          mergeHistoryAccounts(history.accounts);
+          log("History loaded", "live");
+        } catch (error) {
+          if (requestId !== state.requestId) return;
+          state.historyOk = false;
+          state.historyError = true;
+          state.performance = {};
+          log("History failed: " + error.message, "bad");
+        } finally {
+          if (requestId === state.requestId) {
+            state.loadingHistory = false;
+            render();
+          }
+        }
+      }
+
+      function renderHistoryNotice() {
+        const relevant = ["accounts", "performance", "data"].includes(state.activeView);
+        $("historyNotice").hidden = !relevant || (!state.loadingHistory && !state.historyError);
+        $("historyNoticeText").textContent = state.loadingHistory
+          ? "กำลังโหลดประวัติ · ยอดและความเสี่ยงปัจจุบันดูได้แล้ว"
+          : "โหลดประวัติไม่สำเร็จ · ยังไม่แสดงผลย้อนหลัง";
+        $("historyRetry").hidden = !state.historyError;
       }
 
       function xauExposureLabel(account) {
@@ -1206,6 +1267,12 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
 
       function renderDecisionStrip() {
         const decision = portfolioDecision();
+        const strip = $("decisionStrip");
+        const panel = $("kpiGrid").parentElement;
+        if (panel) {
+          if (decision.tone === "tone-negative") panel.insertBefore(strip, $("kpiGrid"));
+          else panel.appendChild(strip);
+        }
         $("decisionStrip").className = "decision-strip " + decision.tone;
         $("decisionStrip").innerHTML = `
           <div class="decision-cell"><span>PORTFOLIO STATUS</span><strong>${escapeHtml(decision.label)}</strong><small>${escapeHtml(decision.detail)}</small></div>
@@ -1213,6 +1280,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       }
 
       function renderKpis() {
+        const detailOpen = Boolean($("kpiGrid").querySelector?.(".balance-detail")?.open);
         const s = portfolioSnapshot();
         const worst = s.valid.reduce((best,a) => a.ddValid && (!best || a.ddPct < best.ddPct) ? a : best, null);
         const risk = state.accounts.filter((a) => severityScore(a) > SEVERITY_WEIGHT.green);
@@ -1224,17 +1292,20 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           : "<br>MT4 ยังไม่บันทึก · แสดงเฉพาะ MT5");
         $("kpiGrid").innerHTML = [
           kpi("Total Balance", s.ready ? fmtUsdFromUsc(totalBalance) : "—",
-            s.ready ? "<b class=\"balance-thb\">" + fmtUscThb(totalBalance) + "</b><br>เรทสมมติ " + USDTHB_RATE.toFixed(2) + " THB/USD · ไม่ใช่เรทสด<br>" + balanceSources + "<br>Equity " + fmtUsdFromUsc(s.equity) + " (MT5 only)<br>" + note : note),
+            s.ready ? "<b class=\"balance-thb\">" + fmtUscThb(totalBalance) + " · เรทสมมติ</b><br><b class=\"equity-subtotal\">Equity " + fmtUsdFromUsc(s.equity) + " (MT5 only)</b>" : note,
+            "", s.ready ? balanceSources + "<br>เรทสมมติ " + USDTHB_RATE.toFixed(2) + " THB/USD · ไม่ใช่เรทสด<br>" + note : ""),
           kpi("Equity gap (MT5)", s.ready ? fmtSignedUsdFromUsc(s.equity-s.balance) : "—",
-            s.ready ? "MT5 equity minus MT5 balance<br>MT5 DD " + pct.format(s.balance > 0 ? Math.max(0,(s.balance-s.equity)/s.balance*100) : 0) + "%" : "Not assumed to be zero",
+            s.ready ? "ส่วนต่าง Equity กับ Balance<br>DD รวม MT5 " + pct.format(s.balance > 0 ? Math.max(0,(s.balance-s.equity)/s.balance*100) : 0) + "%" : "Not assumed to be zero",
             s.ready && s.equity < s.balance ? "tone-negative" : ""),
           kpi("Worst Current DD", s.ready && worst ? pct.format(Math.abs(worst.ddPct)) + "%" : "—",
-            s.ready && worst ? maskAccount(worst.id) + "<br>Review threshold 25%" : "Fresh account data required",
+            s.ready && worst ? maskAccount(worst.id) + "<br>พอร์ตที่ DD สูงสุด" : "Fresh account data required",
             s.ready && worst && worst.ddPct <= -25 ? "tone-negative" : s.ready && worst && worst.ddPct <= -15 ? "tone-watch" : ""),
           kpi("Accounts at Risk", s.ready ? String(risk.length) : "—",
-            s.ready ? critical + " review / " + (risk.length-critical) + " watch<br>Includes data-quality alerts" : s.coverage + "/" + EXPECTED.length + " accounts reported",
+            s.ready ? critical + " ทบทวน / " + (risk.length-critical) + " เฝ้าดู<br>รวมปัญหาคุณภาพข้อมูล" : s.coverage + "/" + EXPECTED.length + " accounts reported",
             s.ready && risk.length ? critical ? "tone-negative" : "tone-watch" : ""),
         ].join("");
+        const detail = $("kpiGrid").querySelector?.(".balance-detail");
+        if (detail) detail.open = detailOpen;
       }
 
       function renderManualBalance() {
@@ -1279,8 +1350,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         }
       }
 
-      function kpi(label, value, note, tone = "") {
-        return `<div class="kpi ${tone}"><span>${label}</span><strong>${value}</strong><small>${note}</small></div>`;
+      function kpi(label, value, note, tone = "", detail = "") {
+        return `<div class="kpi ${tone}"><span>${label}</span><strong>${value}</strong><small>${note}</small>${detail ? '<details class="balance-detail"><summary>ที่มาของยอด / อัตราแลกเปลี่ยน</summary><p>'+detail+'</p></details>' : ""}</div>`;
       }
 
       function toneClass(value) {
@@ -1295,7 +1366,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       function livePeriodItem(period, fallback = {}) {
         const rows = state.accounts
           .map((account) => ({ account, meta: account.periodMeta?.[period] }))
-          .filter((row) => row.account.balanceValid && row.meta && Number.isFinite(Number(row.meta.baselineBalance)) && Number(row.meta.baselineBalance) > 0);
+          .filter((row) => row.account.balanceValid && row.meta && Number.isFinite(Number(row.meta.baselineBalance)) && Number(row.meta.baselineBalance) > 0
+            && baselineConfidence(row.meta, period).kind !== "bad");
         if (!completeAccountMapping() || !state.liveOk || rows.length !== EXPECTED.length) return null;
 
         const baselineBalance = rows.reduce((sum, row) => sum + n(row.meta.baselineBalance), 0);
@@ -1309,7 +1381,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           rawProfit: profit,
           profit,
           profitPct: baselineBalance > 0 ? (profit / baselineBalance) * 100 : 0,
-          drawdownPct: n(state.performance[period]?.drawdownPct ?? fallback?.drawdownPct),
+          drawdownPct: hasNumber(state.performance[period]?.drawdownPct ?? fallback?.drawdownPct)
+            ? Number(state.performance[period]?.drawdownPct ?? fallback?.drawdownPct) : null,
           accounts: rows.length,
         };
       }
@@ -1359,7 +1432,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           ? rows.map((account) => {
               const reasons = dangerFor(account);
               const top = topDangerReason(account);
-              const riskText = reasons.filter((item) => item.severity !== "green").map((item) => escapeHtml(item.text)).join(" • ");
+              const riskText = reasons.filter((item) => item.severity !== "green" && item.text !== top.text).map((item) => escapeHtml(item.text)).join(" • ");
               const balance = account.balanceValid ? fmtUsdFromUsc(account.balance) : "balance missing";
               const gap = account.balanceValid && account.equityValid ? fmtSignedUsdFromUsc(account.equityGap) : "gap unavailable";
               return `<div class="danger-card ${top.severity}">
@@ -1384,7 +1457,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           button.setAttribute("aria-pressed", active ? "true" : "false");
         });
 
-        const rows = state.accounts
+        const rows = (state.historyOk && portfolioSnapshot().ready ? state.accounts : [])
           .map((account) => rankingRow(account, mode))
           .filter((row) => Number.isFinite(row.score))
           .sort((a, b) => b.score - a.score || b.profit - a.profit || a.account.id.localeCompare(b.account.id))
@@ -1417,7 +1490,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const hasVerifiedPerformance = requiredPeriods.every((period) => {
           const meta = account.periodMeta?.[period];
           const baseline = Number(meta?.baselineBalance);
-          return account.balanceValid && Boolean(meta) && Number.isFinite(baseline) && baseline > 0;
+          return account.balanceValid && Boolean(meta) && Number.isFinite(baseline) && baseline > 0
+            && baselineConfidence(meta, period).kind !== "bad";
         });
         const profit = n(base[0]);
         const profitPct = n(base[1]);
@@ -1465,8 +1539,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         ];
         $("periodCards").innerHTML = labels.map(([key, label, liveOverride]) => {
           const item = liveOverride || state.performance[key] || {};
-          const has = state.historyOk && portfolioSnapshot().ready && hasCompletePortfolioCoverage(item) && hasNumber(item.profit);
           const confidence = portfolioConfidence(key);
+          const has = state.historyOk && portfolioSnapshot().ready && hasCompletePortfolioCoverage(item) && hasNumber(item.profit) && confidence.kind !== "bad";
           const missingNote = state.loadingHistory
             ? "live risk is ready; history is loading"
             : item.accounts
@@ -1475,7 +1549,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           return `<div class="period-card">
             <span class="card-label">${label}</span>
             <strong class="${clsNum(item.profit)}">${has ? fmtSignedUsdFromUsc(item.profit) : state.loadingHistory ? "Loading…" : "Need history"}</strong>
-            ${has ? `<span class="period-thb">${fmtSigned(item.profit || 0)} / ${fmtUscThb(item.profit || 0) + " at planning FX " + USDTHB_RATE}</span><small class="period-meta">${pct.format(item.profitPct || 0)}% / DD ${pct.format(item.drawdownPct || 0)}% / ${confidence.label}</small>` : `<small class="period-meta">${missingNote}</small>`}
+            ${has ? `<span class="period-thb">${fmtSigned(item.profit)} / ${fmtUscThb(item.profit) + " at planning FX " + USDTHB_RATE}</span><small class="period-meta">${hasNumber(item.profitPct) ? pct.format(item.profitPct)+"%" : "Unverified %"} / DD ${hasNumber(item.drawdownPct) ? pct.format(item.drawdownPct)+"%" : "Unverified"} / ${confidence.label}</small>` : `<small class="period-meta">${state.historyOk && confidence.kind === "bad" ? escapeHtml(confidence.label + " / " + confidence.detail) : missingNote}</small>`}
           </div>`;
         }).join("");
         renderBaselineAudit();
@@ -1612,7 +1686,9 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
 
       function plStack(account) {
         const ready = (period) => state.historyOk && hasNumber(account.periodMeta?.[period]?.baselineBalance)
-          && Number(account.periodMeta[period].baselineBalance) > 0 && account.balanceValid;
+          && Number(account.periodMeta[period].baselineBalance) > 0 && account.balanceValid
+          && baselineConfidence(account.periodMeta[period], period).kind !== "bad"
+          && state.liveOk && minutesAgo(account.lastAt) <= RISK_THRESHOLDS.staleMinutes;
         return `<div class="pl-grid">` + [
           plRow("D", account.dayProfit, account.dayPct, ready("day")),
           plRow("W", account.weekProfit, account.weekPct, ready("week")),
@@ -1684,7 +1760,10 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           healthCard("Oldest account snapshot", fmtAge(s.oldest), state.liveOk ? "Age since receipt; not broker tick age" : "Not connected / previous data only", s.ready ? "ok" : "warn"),
           healthCard("History rows", rowData ? money.format(sheet.used_rows) + " / " + money.format(sheet.max_rows) : "Unknown", rowData ? pct.format(n(sheet.usage_pct)) + "% used" : "No storage metadata received", rowData ? healthStatusClass(sheet.status) : "warn"),
           healthCard("Last history append", health.last_history_append_error ? "Error" : health.last_history_append_at ? "OK" : "Unknown", health.last_history_append_at || "No append confirmation", health.last_history_append_error ? "bad" : health.last_history_append_at ? "ok" : "warn"),
-          healthCard("Unit convention", "100 USC = 1 USD", "Connector amounts are USC. THB is a planning estimate at " + USDTHB_RATE + ".", ""),
+          healthCard("Unit convention", "100 USC = 1 USD", "USC is the configured connector contract, not a live broker-currency check. Conflicting currency fields block totals. THB uses planning FX " + USDTHB_RATE + ".", ""),
+          healthCard("Review thresholds", "DD " + Math.abs(RISK_THRESHOLDS.ddWatchPct) + "% / " + Math.abs(RISK_THRESHOLDS.ddCriticalPct) + "%",
+            "Watch / review policy, not broker stop-out: margin " + RISK_THRESHOLDS.marginWatchPct + "% / " + RISK_THRESHOLDS.marginCriticalPct +
+            "%; receipt age " + RISK_THRESHOLDS.slowMinutes + "m / " + RISK_THRESHOLDS.staleMinutes + "m. No survival guarantee.", ""),
           healthCard("Refresh policy", "Manual refresh", "Snapshot age updates locally. No AI or background network polling.", ""),
         ].join("");
         const gaps = Array.isArray(health.known_data_gaps) ? health.known_data_gaps : [];
@@ -1709,6 +1788,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       }
 
       function render() {
+        renderHistoryNotice();
         $("exportBtn").disabled = !state.accounts.length;
         updateFreshnessBadge();
         renderDecisionStrip();
@@ -1735,6 +1815,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           account.dataComplete ? account.equityGap : "", account.ddValid ? account.ddPct : "",
           ...["day", "week", "month"].map((period) => state.historyOk && account.balanceValid
             && hasNumber(account.periodMeta?.[period]?.baselineBalance) && Number(account.periodMeta[period].baselineBalance) > 0
+            && baselineConfidence(account.periodMeta[period], period).kind !== "bad"
+            && state.liveOk && minutesAgo(account.lastAt) <= RISK_THRESHOLDS.staleMinutes
               ? account.balance - Number(account.periodMeta[period].baselineBalance) : ""), account.lastAt,
           !state.liveOk || minutesAgo(account.lastAt) > RISK_THRESHOLDS.staleMinutes ? "STALE" : account.dataComplete ? "SNAPSHOT" : "INCOMPLETE"]));
         const csv = rows.map((row) => row.map((cell) => {
@@ -1754,6 +1836,9 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         ++state.requestId;
         setLoading(false);
         state.loadingHistory = false;
+        state.historyError = false;
+        state.historyRequestedId = -1;
+        state.readSource = null;
         state.meta = {};
         state.liveAt = null;
         state.historyAt = null;
@@ -1827,7 +1912,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
             const top = topDangerReason(a);
             const dd = a.ddValid ? Math.abs(a.ddPct) : null;
             const old = !state.liveOk || minutesAgo(a.lastAt) > RISK_THRESHOLDS.staleMinutes;
-            return `<tr><td><a class="account-link" href="#accounts" data-account="${escapeHtml(maskAccount(a.id))}">${escapeHtml(maskAccount(a.id))}</a><small>${escapeHtml(a.broker)} / ${old ? "STALE" : escapeHtml(fmtAge(minutesAgo(a.lastAt)))}</small></td>
+            return `<tr><td><a class="account-link" href="#accounts" data-account="${escapeHtml(maskAccount(a.id))}">${escapeHtml(maskAccount(a.id))}</a><span class="row-status ${top.severity}" title="${escapeHtml(top.text)}">${old ? "ข้อมูลเก่า" : top.severity === "red" ? "ทบทวน" : top.severity === "yellow" ? "เฝ้าดู" : ""}</span><small>${escapeHtml(a.broker)} / ${old ? "STALE" : escapeHtml(fmtAge(minutesAgo(a.lastAt)))}</small></td>
               <td><strong>${a.equityValid ? fmtUsdFromUsc(a.equity) : "—"}</strong><small>${a.dataComplete ? fmtSignedUsdFromUsc(a.equityGap)+" gap" : "Incomplete"}</small></td>
               <td><strong class="${dd !== null && dd >= 25 ? "negative" : ""}">${dd !== null ? pct.format(dd)+"%" : "—"}</strong><div class="dd-meter ${dd >= 25 ? "critical" : dd >= 15 ? "watch" : ""}" title="DD relative to 25% review threshold"><span style="width:${dd === null ? 0 : Math.min(100,dd/25*100)}%"></span></div></td>
               <td class="exposure-column">${escapeHtml(xauExposureLabel(a))}<small>broker lots</small></td>
@@ -1843,8 +1928,6 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         $("overviewAside").innerHTML = `<div class="aside-block"><p class="aside-label">NEXT MILESTONE</p><div class="aside-value">${s.ready ? fmtUsd(target) : "$100,000"}</div>
           <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div><p class="aside-copy">${s.ready ? pct.format(progress)+"% funded by current equity" : "Progress awaits verified equity."}</p>
           <div class="aside-pair"><span>Monthly contribution</span><b>${fmtUsd(state.goalMonthlyContribution)}</b></div><a class="section-link" href="#goal">View scenarios</a></div>
-          <div class="aside-block"><p class="aside-label">YOUR PORTFOLIO PLAN</p><div class="aside-pair"><span>Main</span><b>$20,000</b></div><div class="aside-pair"><span>Aggressive</span><b>$3,000</b></div>
-          <p class="aside-copy">Recorded plan, not current allocation. Keep the main portfolio separate from aggressive risk.</p><a class="section-link" href="#plans">Review allocations</a></div>
           <div class="aside-block present-note"><p class="aside-label">WEALTH IS ALSO HOW YOU LIVE</p>
           <blockquote>สร้างอนาคตที่มั่งคั่ง<br>โดยไม่ทิ้งความสุขของวันนี้</blockquote>
           <p class="aside-copy">เป้าหมายมีไว้กำหนดทิศทาง ไม่ใช่เร่งความเสี่ยง ไม่เพิ่มลอทเพียงเพราะอยากถึงเร็วขึ้น</p>
@@ -1866,6 +1949,7 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const hash = location.hash.slice(1);
         const routes = {overview:"overview",snapshot:"overview",danger:"overview",accounts:"accounts",pnl:"performance",ranking:"performance",plans:"plans",goal:"plans",health:"data"};
         const view = routes[hash] || "overview";
+        state.activeView = view;
         const titles = {
           overview:["YOUR CAPITAL, AT A GLANCE","Portfolio overview","รักษาทุนให้ได้ก่อน แล้วค่อยเดินต่อ"],
           accounts:["THE POSITION BEHIND THE NUMBER","Your accounts","Equity, drawdown and exposure. Account by account."],
@@ -1880,6 +1964,8 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         ["viewEyebrow","viewTitle","viewSubtitle"].forEach((id,i) => { $(id).textContent = titles[view][i]; });
         if (hash === "goal" || hash === "ranking") $(hash).scrollIntoView({block:"start"});
         else window.scrollTo({top:0,behavior:"instant"});
+        renderHistoryNotice();
+        ensureHistory();
       }
 
       function init() {
@@ -1908,16 +1994,21 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         $("connectBtn").addEventListener("click", connect);
         $("settingsToggle").addEventListener("click", toggleSettings);
         $("refreshBtn").addEventListener("click", connect);
+        $("historyRetry").addEventListener("click", () => {
+          state.historyRequestedId = -1;
+          ensureHistory();
+        });
         $("clearBtn").addEventListener("click", clearSettings);
         $("exportBtn").addEventListener("click", exportCsv);
         $("endpointInput").addEventListener("change", () => {
           const nextUrl = cleanUrl($("endpointInput").value);
           const savedEndpoint = cleanUrl(localStorage.getItem(STORAGE.url)) || DEFAULT_ENDPOINT;
-          if (!nextUrl || nextUrl === savedEndpoint || !$("readKeyInput").value) return;
-          $("readKeyInput").value = "";
-          localStorage.removeItem(STORAGE.key);
+          if (nextUrl === savedEndpoint) return;
+          const enteredUrl = $("endpointInput").value;
+          clearSettings();
+          $("endpointInput").value = nextUrl || enteredUrl;
           setConnection("Re-enter key", "warn");
-          log("Endpoint changed. Saved key cleared for safety.", "warn");
+          log("Endpoint changed. Prior requests, data and saved key cleared.", "warn");
         });
         $("disciplineOpenBtn").addEventListener("click", () => setDisciplineOpen(true));
         $("disciplineCloseBtn").addEventListener("click", () => setDisciplineOpen(false));
