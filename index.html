@@ -192,6 +192,7 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
 :root[data-theme="light"] .account-card,:root[data-theme="light"] .rank-card,:root[data-theme="light"] .audit-card,:root[data-theme="light"] .health-card,:root[data-theme="light"] .plan-card,:root[data-theme="light"] .plan-card.fast{background:#fafbfc}:root[data-theme="light"] .account-title>strong,:root[data-theme="light"] .aside-value,:root[data-theme="light"] .goal-big,:root[data-theme="light"] .present-note blockquote{color:var(--ink)}:root[data-theme="light"] .account-card.danger-red .account-title>strong{color:var(--red)}:root[data-theme="light"] .danger-card{background:var(--panel)}:root[data-theme="light"] .danger-card.red{background:var(--red-soft)}:root[data-theme="light"] .pill{background:#e9eef0;color:#475b66}:root[data-theme="light"] .pill.red{background:var(--red-soft);color:var(--red)}:root[data-theme="light"] .pill.yellow{background:var(--gold-soft);color:var(--gold)}:root[data-theme="light"] .pill.green{background:var(--green-soft);color:var(--green)}
 :root[data-theme="light"] .snapshot-table tbody tr:hover{background:#f1f6f6}:root[data-theme="light"] .dd-meter,:root[data-theme="light"] .bar-track,:root[data-theme="light"] .progress-track{background:#e4ebed}:root[data-theme="light"] .rank-tab.active{background:#e4eeed;color:var(--ink)}:root[data-theme="light"] .aside-label,:root[data-theme="light"] .present-note .aside-copy,:root[data-theme="light"] .present-note .present-signature{color:var(--muted)}:root[data-theme="light"] .page-footer{border-color:var(--line)}:root[data-theme="light"] .page-footer .footer-principle{color:var(--accent)}:root[data-theme="light"] .discipline-dialog{background:#fff;border-color:#cbbf9f}:root[data-theme="light"] .discipline-dialog h2,:root[data-theme="light"] .discipline-note{color:var(--ink)}:root[data-theme="light"] .discipline-quote{color:#76613b}
 .snapshot-table td{padding-top:14px;padding-bottom:14px}.snapshot-table .row-status{display:none}.snapshot-table .profit-cell strong{font-weight:650}#overview{margin-bottom:24px}
+.accounting-notice{border-left:3px solid var(--gold);background:var(--gold-soft);padding:12px 16px;margin:0 0 20px;font-size:13px;line-height:1.7;color:var(--ink)}.accounting-notice strong{display:block}.accounting-notice p{margin:4px 0 0;color:var(--muted)}.accounting-notice a{color:var(--ink)}.period-card .reading-type{display:block;font-size:12px;color:var(--muted);margin:9px 0 0}.period-card>strong.reading-empty{font-size:22px;line-height:1.5}.period-card .period-meta{line-height:1.65}.movement-value{color:var(--ink)}.pl-entry .balance-movement{display:block;color:var(--muted);font-size:11px;margin-top:4px}
 @media(max-width:1100px){#overview .kpi-grid{gap:16px}#overview .kpi:first-child>strong{font-size:30px}#overview .kpi:not(:first-child)>strong{font-size:25px}.snapshot-table .status-column{padding-left:12px}}
 @media(max-width:900px){#overview .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}:root[data-theme="light"] .topbar{background:var(--bg);border-color:var(--line)}:root[data-theme="light"] .topbar .brand strong{color:var(--ink)}:root[data-theme="light"] .nav a{color:var(--muted)}:root[data-theme="light"] .nav a:hover{background:var(--panel);color:var(--ink)}:root[data-theme="light"] .nav a[aria-current="page"]{background:transparent;color:var(--ink);border-color:var(--green)}.overview-aside{gap:24px}}
 @media(max-width:640px){.page-heading h1{font-size:25px}.page-heading{padding:20px 0 18px}#overview .kpi-grid{gap:18px 12px}#overview .kpi:first-child{grid-column:auto;border-right:1px solid var(--line);border-bottom:0;padding-bottom:0}#overview .kpi:first-child>strong{font-size:28px}#overview .kpi:not(:first-child)>strong{font-size:25px}#overview .kpi:last-child{grid-column:auto;display:flex;border:0;padding:0}#overview .kpi:nth-child(2){border:0}#overview .kpi:nth-child(3){border-right:1px solid var(--line)}#overview .kpi>span{font-size:11px}.equity-subtotal{font-size:11px}.balance-thb{font-size:10px}.utility-context{display:none}.utility-bar{justify-content:flex-end}.status-pill{margin-right:auto}.topbar-actions{width:100%}.account-toolbar{gap:10px}.account-toolbar h2{font-size:18px}.period-switch{width:100%}.period-switch button{flex:1;min-width:0;padding:6px 8px}.snapshot-table{font-size:12px}.snapshot-table th{font-size:10px;padding:9px 5px}.snapshot-table th:first-child{width:28%}.snapshot-table th:nth-child(2){width:25%}.snapshot-table th:nth-child(3){width:28%}.snapshot-table th:nth-child(4){width:19%}.snapshot-table .status-column{display:none}.snapshot-table td{padding:15px 5px}.snapshot-table td strong,.snapshot-table td .account-link{font-size:12px}.snapshot-table td small{font-size:10px}.snapshot-table .equity-gap{display:none}.overview-aside{grid-template-columns:1fr}.decision-strip{grid-template-columns:1fr}#overview .decision-strip{gap:7px}.decision-cell:last-child>strong{font-size:11px}.decision-data{font-size:10px}.snapshot-table .row-status{display:block}.balance-detail{font-size:10px}.account-toolbar .section-link{display:none}}
@@ -435,10 +436,11 @@ body { background: var(--bg); -webkit-font-smoothing: antialiased; }
             <div class="section-head">
               <div>
                 <p class="eyebrow">Daily command center</p>
-                <h2>Trading P/L</h2>
-                <p>Balance change minus net deposits and non-trading adjustments. P/L % uses opening balance, not time-weighted return. Floating P/L stays separate.</p>
+                <h2>ผลลัพธ์รายวัน / สัปดาห์ / เดือน</h2>
+                <p>กำไรเทรดแยกจากเงินฝาก–ถอน และ Floating P/L · รอบวันอิง 00:00 MT5 server</p>
               </div>
             </div>
+            <div class="accounting-notice" id="accountingNotice" role="status" hidden></div>
             <div class="period-grid" id="periodCards"></div>
             <p class="period-meta">Deposits / withdrawals follow broker BALANCE entries; credit changes are separate. Unknown adjustments block P/L. Bot-level performance: unverified until trade ownership can be reconciled.</p>
             <div class="overview-chart"><div class="section-head"><div><h3>Monthly balance change</h3><p>รวมเงินเข้าออก · ไม่ใช่กำไรจากการเทรด</p></div></div><div id="overviewHistory"></div></div>
@@ -1116,6 +1118,35 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         return baseline;
       }
 
+      function accountPeriodReadout(account, period) {
+        const missing = (reason) => ({ kind: "unavailable", value: null, reason });
+        if (!state.liveOk || minutesAgo(account.lastAt) > RISK_THRESHOLDS.staleMinutes) return missing("รอข้อมูลพอร์ตใหม่");
+        if (state.loading || state.loadingHistory) return missing("กำลังโหลดข้อมูล");
+        if (!state.historyOk) return missing("รอประวัติ Balance");
+        if (!account.balanceValid || !EXPECTED.some(item => item.id === maskAccount(account.id))
+            || state.accounts.filter(item => maskAccount(item.id) === maskAccount(account.id)).length !== 1)
+          return missing("ตรวจสอบข้อมูลพอร์ต");
+        const meta = account.periodMeta?.[period];
+        const baseline = baselineConfidence(meta, period);
+        if (baseline.kind === "bad" || meta.baselineSource === "summary_max_dd") return missing("รอยอดต้นงวดที่ยืนยันได้");
+        const raw = account.balance - Number(meta.baselineBalance);
+        const verified = performanceConfidence(meta, period).kind !== "bad";
+        return { kind: verified ? "profit" : "balance", value: verified ? Number(meta.profit) : raw,
+          raw, meta, reason: verified ? baseline.label : "รอข้อมูลฝาก–ถอน" };
+      }
+
+      function portfolioPeriodReadout(period) {
+        const rows = state.accounts.map(account => accountPeriodReadout(account, period));
+        const verifiedAccounts = rows.filter(item => item.kind === "profit").length;
+        const missing = { kind: "unavailable", value: null, verifiedAccounts };
+        if (!portfolioSnapshot().ready || !state.historyOk || state.loading || state.loadingHistory
+            || rows.some(item => item.kind === "unavailable")) return missing;
+        const profit = livePeriodItem(period);
+        if (profit) return { kind: "profit", value: profit.profit, item: profit, verifiedAccounts };
+        // One missing cashflow blocks portfolio profit, not the separately named balance movement.
+        return { kind: "balance", value: rows.reduce((sum, item) => sum + item.raw, 0), verifiedAccounts };
+      }
+
       function staticStopout(account) {
         const unavailable = (reason) => ({ ok: false, reason });
         const risk = analyticsObject(account.raw.static_gold_risk);
@@ -1437,7 +1468,9 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
         const worst = s.valid.reduce((best,a) => a.ddValid && (!best || a.ddPct < best.ddPct) ? a : best, null);
         const risk = state.accounts.filter((a) => severityScore(a) > SEVERITY_WEIGHT.green);
         const critical = risk.filter((a) => severityScore(a) === SEVERITY_WEIGHT.red).length;
-        const today = s.ready && state.historyOk ? livePeriodItem("day") : null;
+        const todayReadout = portfolioPeriodReadout("day");
+        const today = todayReadout.kind === "profit" ? todayReadout.item : null;
+        const movement = todayReadout.kind === "balance";
         const note = s.ready ? "Verified values / " + s.coverage + " accounts" : "Awaiting a complete, fresh snapshot";
         const totalBalance = s.balance + (manualBalance ? manualBalance.usd * 100 : 0);
         const balanceSources = "MT5 " + fmtUsdFromUsc(s.balance) + (manualBalance
@@ -1447,9 +1480,10 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           kpi("Total Balance", s.ready ? fmtUsdFromUsc(totalBalance) : "—",
             s.ready ? "<b class=\"balance-thb\">" + fmtUscThb(totalBalance) + " · เรทสมมติ</b><br><b class=\"equity-subtotal\">Equity " + fmtUsdFromUsc(s.equity) + " (MT5 only)</b>" : note,
             "", s.ready ? balanceSources + "<br>เรทสมมติ " + USDTHB_RATE.toFixed(2) + " THB/USD · ไม่ใช่เรทสด<br>" + note : ""),
-          kpi("กำไรวันนี้ · ปิดแล้ว", today ? fmtSignedUsdFromUsc(today.profit) : "—",
+          kpi(movement ? "Balance เปลี่ยนวันนี้" : "กำไรวันนี้ · ปิดแล้ว", today ? fmtSignedUsdFromUsc(today.profit) : movement ? fmtSignedUsdFromUsc(todayReadout.value) : "—",
             today ? pct.format(today.profitPct) + "% ของ Balance ต้นงวด<br>ไม่รวมฝาก–ถอน"
-              : state.loading || state.loadingHistory ? "กำลังตรวจสอบประวัติและเงินเข้า–ออก" : "รอประวัติและ cashflows ที่ยืนยันได้",
+              : movement ? "รวมฝาก–ถอน · ไม่ใช่กำไร<br>กำไรเทรด: รอข้อมูลฝาก–ถอน"
+              : state.loading || state.loadingHistory ? "กำลังตรวจสอบประวัติและเงินเข้า–ออก" : "รอข้อมูลพอร์ต / ยอดต้นงวดที่ยืนยันได้",
             today ? today.profit < 0 ? "tone-negative" : today.profit > 0 ? "tone-positive" : "" : ""),
           kpi("Equity gap (MT5)", s.ready ? fmtSignedUsdFromUsc(s.equity-s.balance) : "—",
             s.ready ? "DD รวม MT5 " + pct.format(s.balance > 0 ? Math.max(0,(s.balance-s.equity)/s.balance*100) : 0) + "%" : "Not assumed to be zero",
@@ -1688,26 +1722,32 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       }
 
       function renderPeriods() {
-        const dayDisplay = currentDayDisplay();
         const labels = [
-          ["day", dayDisplay.label, dayDisplay.item],
-          ["week", "This Week", livePeriodItem("week")],
-          ["month", "This Month", livePeriodItem("month")],
+          ["day", "วันนี้ · MT5 server"],
+          ["week", "สัปดาห์นี้"],
+          ["month", "เดือนนี้"],
         ];
-        $("periodCards").innerHTML = labels.map(([key, label, liveOverride]) => {
-          const item = liveOverride || state.performance[key] || {};
+        const readouts = labels.map(([key]) => portfolioPeriodReadout(key));
+        const notice = $("accountingNotice");
+        notice.hidden = !state.accounts.length || readouts.every(item => item.kind === "profit");
+        notice.innerHTML = state.loading || state.loadingHistory
+          ? "กำลังตรวจสอบข้อมูลกำไรและเงินเข้า–ออก"
+          : !state.liveOk || !portfolioSnapshot().ready
+            ? "<strong>ข้อมูลพอร์ตยังไม่ครบหรือไม่สด</strong><p>ยอดผลลัพธ์รวมยังไม่พร้อม กรุณาตรวจสอบ Data health</p>"
+            : "<strong>กำไรเทรดยังยืนยันไม่ครบ · ไม่ใช่กำไรเป็นศูนย์</strong><p>ข้อมูลฝาก–ถอนหรือยอดต้นงวดยังไม่ครบ จึงแสดง Balance ที่เปลี่ยนแยกไว้ ไม่ใช้แทนกำไร / ขาดทุน ต้องอัปเดตการส่งข้อมูลก่อนกำไรจริงจะกลับมาครบ</p>"
+              + `<p>กำไรที่ตรวจสอบได้: วันนี้ ${readouts[0].verifiedAccounts}/${EXPECTED.length} · สัปดาห์ ${readouts[1].verifiedAccounts}/${EXPECTED.length} · เดือน ${readouts[2].verifiedAccounts}/${EXPECTED.length} พอร์ต · <a href="#health">Data health</a></p>`;
+        $("periodCards").innerHTML = labels.map(([key, label], index) => {
+          const readout = readouts[index];
+          const item = readout.item || {};
           const confidence = portfolioConfidence(key);
-          const has = state.historyOk && portfolioSnapshot().ready && hasCompletePortfolioCoverage(item) && hasNumber(item.profit) && confidence.kind !== "bad";
-          const missingNote = state.loadingHistory
-            ? "live risk is ready; history is loading"
-            : item.accounts
-              ? `partial history ${n(item.accounts)}/${EXPECTED.length} accounts`
-              : "history endpoint not ready";
+          const has = readout.kind === "profit";
+          const movement = readout.kind === "balance";
           return `<div class="period-card">
             <span class="card-label">${label}</span>
-            <strong class="${has ? clsNum(item.profit) : "neutral"}">${has ? fmtSignedUsdFromUsc(item.profit) : state.loadingHistory ? "Loading…" : "Unverified P/L"}</strong>
+            <span class="reading-type">${has ? "กำไรเทรด · ปิดแล้ว" : movement ? "Balance เปลี่ยน · รวมฝาก–ถอน" : "กำไรเทรด"}</span>
+            <strong class="${has ? clsNum(item.profit) : movement ? "movement-value" : "neutral reading-empty"}">${hasNumber(readout.value) ? fmtSignedUsdFromUsc(readout.value) : state.loading || state.loadingHistory ? "กำลังโหลด…" : "รอข้อมูล"}</strong>
             ${has ? `<small class="period-meta">Deposits ${fmtUsdFromUsc(item.deposits)} / Withdrawals ${fmtUsdFromUsc(item.withdrawals)} / Adjustments ${fmtSignedUsdFromUsc(item.adjustments)}</small>` : ""}
-            ${has ? `<span class="period-thb">${fmtSigned(item.profit)} / ${fmtUscThb(item.profit) + " at planning FX " + USDTHB_RATE}</span><small class="period-meta">${hasNumber(item.profitPct) ? pct.format(item.profitPct)+"%" : "Unverified %"} / DD ${hasNumber(item.drawdownPct) ? pct.format(item.drawdownPct)+"%" : "Unverified"} / ${confidence.label}</small>` : `<small class="period-meta">${state.historyOk && confidence.kind === "bad" ? escapeHtml(confidence.label + " / " + confidence.detail) : missingNote}</small>`}
+            ${has ? `<span class="period-thb">${fmtSigned(item.profit)} / ${fmtUscThb(item.profit) + " at planning FX " + USDTHB_RATE}</span><small class="period-meta">${pct.format(item.profitPct)}% ของ Balance ต้นงวด · ${escapeHtml(confidence.label)}</small>` : movement ? '<small class="period-meta">ไม่ใช่กำไร / ขาดทุน<br>กำไรเทรด: รอข้อมูลฝาก–ถอน</small>' : `<small class="period-meta">${escapeHtml(state.historyOk && confidence.kind === "bad" ? confidence.label + " / " + confidence.detail : "รอข้อมูลพอร์ตและประวัติที่ยืนยันได้")}</small>`}
           </div>`;
         }).join("");
         renderBaselineAudit();
@@ -1846,15 +1886,13 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
       }
 
       function plStack(account) {
-        const ready = (period) => state.historyOk && hasNumber(account.periodMeta?.[period]?.baselineBalance)
-          && Number(account.periodMeta[period].baselineBalance) > 0 && account.balanceValid
-          && performanceConfidence(account.periodMeta[period], period).kind !== "bad"
-          && state.liveOk && minutesAgo(account.lastAt) <= RISK_THRESHOLDS.staleMinutes;
-        return `<div class="pl-grid">` + [
-          plRow("D", account.dayProfit, account.dayPct, ready("day"), account.periodMeta.day),
-          plRow("W", account.weekProfit, account.weekPct, ready("week"), account.periodMeta.week),
-          plRow("M", account.monthProfit, account.monthPct, ready("month"), account.periodMeta.month),
-        ].join("") + `</div>`;
+        return '<div class="pl-grid">' + [["day", "D"], ["week", "W"], ["month", "M"]].map(([period, label]) => {
+          const readout = accountPeriodReadout(account, period);
+          const meta = account.periodMeta?.[period];
+          if (readout.kind === "profit") return plRow(label, meta.profit, meta.profitPct, true, meta);
+          const text = readout.kind === "balance" ? "รอฝาก–ถอน" : readout.reason;
+          return `<span class="pl-entry"><span class="pl-row neutral"><b>${{D:"Day",W:"Week",M:"Month"}[label]} P/L</b><span>${escapeHtml(text)}</span><em>—</em></span>${readout.kind === "balance" ? `<small class="balance-movement">Balance เปลี่ยน ${fmtSignedUsdFromUsc(readout.value)} · รวมฝาก–ถอน ไม่ใช่กำไร</small>` : ""}</span>`;
+        }).join("") + '</div>';
       }
 
       function maxDdLabel(account) {
@@ -2097,27 +2135,27 @@ DD 25% = ถึงเส้นที่ต้องทบทวนแผนอ�
           $("accountSnapshot").innerHTML = '<div class="empty tall"><strong>Your capital stays private.</strong>No account snapshot is connected on this browser.<br><button class="text-button" data-connect type="button">Connect read-only data</button></div>';
           return;
         }
-        $("accountSnapshot").innerHTML = `<table class="snapshot-table"><thead><tr><th scope="col">พอร์ต</th><th scope="col">กำไร${label}</th><th scope="col">Equity</th><th scope="col">DD</th><th scope="col" class="status-column">สถานะ</th></tr></thead><tbody>` +
+        $("accountSnapshot").innerHTML = `<table class="snapshot-table"><thead><tr><th scope="col">พอร์ต</th><th scope="col">ผลลัพธ์${label}</th><th scope="col">Equity</th><th scope="col">DD</th><th scope="col" class="status-column">สถานะ</th></tr></thead><tbody>` +
           rows.map((a) => {
             const top = topDangerReason(a);
             const dd = a.ddValid ? Math.abs(a.ddPct) : null;
             const old = !state.liveOk || minutesAgo(a.lastAt) > RISK_THRESHOLDS.staleMinutes;
             const meta = a.periodMeta?.[period];
             const confidence = performanceConfidence(meta, period);
-            const verified = state.historyOk && !state.loading && !old && a.dataComplete
-              && state.accounts.filter(other => maskAccount(other.id) === maskAccount(a.id)).length === 1
-              && confidence.kind !== "bad";
+            const readout = accountPeriodReadout(a, period);
+            const verified = readout.kind === "profit";
+            const movement = readout.kind === "balance";
             const status = old ? "ข้อมูลเก่า" : top.severity === "red" ? "ทบทวนทันที" : top.severity === "yellow" ? "เฝ้าดู" : "ยังไม่ถึงจุดเตือน";
             const profitNote = verified ? pct.format(meta.profitPct) + "%"
               + (meta.cashflows.withdrawals > 0 ? " · ถอน " + fmtUsdFromUsc(meta.cashflows.withdrawals) : "")
               + (confidence.kind === "warn" ? " · " + escapeHtml(confidence.label) : "")
-              : old ? "รอข้อมูลใหม่" : state.loading || state.loadingHistory ? "กำลังโหลดประวัติ" : escapeHtml(confidence.label);
+              : movement ? "รวมฝาก–ถอน · ไม่ใช่กำไร<br>กำไร: รอข้อมูลฝาก–ถอน" : escapeHtml(readout.reason);
             return `<tr class="${top.severity === "red" ? "row-critical" : top.severity === "yellow" ? "row-watch" : ""}"><td><a class="account-link" href="#accounts" data-account="${escapeHtml(maskAccount(a.id))}">${escapeHtml(maskAccount(a.id))}</a><span class="row-status ${top.severity}" title="${escapeHtml(top.text)}">${status}</span><small>${escapeHtml(a.broker)} / ${old ? "STALE" : escapeHtml(fmtAge(minutesAgo(a.lastAt)))}</small></td>
-              <td class="profit-cell"><strong class="${verified ? clsNum(meta.profit) : "neutral"}">${verified ? fmtSignedUsdFromUsc(meta.profit) : "—"}</strong><small>${profitNote}</small></td>
+              <td class="profit-cell">${movement ? '<small>Balance เปลี่ยน</small>' : verified ? '<small>กำไรเทรด</small>' : ''}<strong class="${verified ? clsNum(meta.profit) : "neutral"}">${hasNumber(readout.value) ? fmtSignedUsdFromUsc(readout.value) : "—"}</strong><small>${profitNote}</small></td>
               <td><strong>${a.equityValid ? fmtUsdFromUsc(a.equity) : "—"}</strong><small>${a.dataComplete ? fmtSignedUsdFromUsc(a.equityGap)+" gap" : "Incomplete"}</small></td>
               <td><strong class="${dd !== null && dd >= 25 ? "negative" : ""}">${dd !== null ? pct.format(dd)+"%" : "—"}</strong><div class="dd-meter ${dd >= 25 ? "critical" : dd >= 15 ? "watch" : ""}" title="DD relative to 25% review threshold"><span style="width:${dd === null ? 0 : Math.min(100,dd/25*100)}%"></span></div></td>
               <td class="status-column"><span class="${top.severity === "red" ? "negative" : ""}" title="${escapeHtml(top.text)}">${escapeHtml(status)}</span><small>Margin ${a.openPositions === 0 ? "—" : a.marginValid ? pct.format(a.marginLevel)+"%" : "Unverified"}</small></td></tr>`;
-          }).join("") + missing.map((a) => `<tr><td>${escapeHtml(a.id)}<small>${escapeHtml(a.broker)}</small></td><td colspan="4" class="negative">Missing account snapshot</td></tr>`).join("") + '</tbody></table><p class="snapshot-caption">กำไรที่ปิดแล้ว หักผลฝาก–ถอนและรายการปรับยอด · วันเริ่ม 00:00 MT5 server · % เทียบ Balance ต้นงวด · DD เทียบ Balance ปัจจุบัน</p>';
+          }).join("") + missing.map((a) => `<tr><td>${escapeHtml(a.id)}<small>${escapeHtml(a.broker)}</small></td><td colspan="4" class="negative">Missing account snapshot</td></tr>`).join("") + '</tbody></table><p class="snapshot-caption">กำไรเทรด = หักผลฝาก–ถอนแล้ว · Balance เปลี่ยน = ยังรวมเงินเข้าออก ไม่ใช่กำไร · วันเริ่ม 00:00 MT5 server · % เทียบ Balance ต้นงวด · DD เทียบ Balance ปัจจุบัน</p>';
       }
 
       function renderOverviewAside() {
